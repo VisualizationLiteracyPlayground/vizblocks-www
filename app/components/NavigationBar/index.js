@@ -52,7 +52,7 @@ function NavigationBar({ isLoggedIn }) {
               <b>Join Community</b>
             </Strong>
           </Link>
-          <Link to="/" style={{ textDecoration: 'none' }}>
+          <Link to="/sign-in" style={{ textDecoration: 'none' }}>
             <LogInIcon color="white" marginBottom="0.3rem" />
             <Strong
               color="white"
