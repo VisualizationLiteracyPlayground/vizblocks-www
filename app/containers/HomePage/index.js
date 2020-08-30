@@ -11,9 +11,14 @@ import LandingMast from '../../components/LandingMast';
 import NavigationBar from '../../components/NavigationBar';
 
 export default function HomePage() {
+  function isLoggedIn() {
+    // TO ADD BACKEND CALL
+    return false;
+  }
+
   return (
     <div>
-      <NavigationBar />
+      <NavigationBar isLoggedIn={isLoggedIn()} />
       <LandingMast />
     </div>
   );

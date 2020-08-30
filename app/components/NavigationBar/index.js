@@ -5,13 +5,14 @@
  */
 
 import React, { memo } from 'react';
-import { Pane, Strong } from 'evergreen-ui';
+import { HandIcon, LogInIcon, Pane, Strong } from 'evergreen-ui';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 import ColorPallete from '../../colorPallete';
 import LogoWord from '../LogoWord';
 
-function NavigationBar() {
+function NavigationBar({ isLoggedIn }) {
   return (
     <Pane
       background={ColorPallete.primaryColor}
@@ -38,11 +39,38 @@ function NavigationBar() {
           </Strong>
         </Link>
       </Pane>
-      <Pane>{/* Right side */}</Pane>
+      <Pane>
+        <div style={{ display: !isLoggedIn }}>
+          <Link to="/register-user" style={{ textDecoration: 'none' }}>
+            <HandIcon color="white" marginBottom="0.3rem" />
+            <Strong
+              color="white"
+              marginLeft="0.5rem"
+              marginRight="3rem"
+              size={500}
+            >
+              <b>Join Community</b>
+            </Strong>
+          </Link>
+          <Link to="/" style={{ textDecoration: 'none' }}>
+            <LogInIcon color="white" marginBottom="0.3rem" />
+            <Strong
+              color="white"
+              marginLeft="0.5rem"
+              marginRight="3rem"
+              size={500}
+            >
+              <b>Sign In</b>
+            </Strong>
+          </Link>
+        </div>
+      </Pane>
     </Pane>
   );
 }
 
-NavigationBar.propTypes = {};
+NavigationBar.propTypes = {
+  isLoggedIn: PropTypes.bool,
+};
 
 export default memo(NavigationBar);
