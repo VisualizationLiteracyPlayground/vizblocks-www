@@ -12,7 +12,7 @@ ENV PATH /usr/app/node_modules/.bin:$PATH
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm install --unsafe-perm
 
 # copy local files to app folder
 COPY . .
