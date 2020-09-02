@@ -12,6 +12,7 @@
   },
   "author": "Max Stoiber",
   "license": "MIT",
+  "proxy": "http://server:8080",
   "scripts": {
     "analyze:clean": "rimraf stats.json",
     "preanalyze": "npm run analyze:clean",
