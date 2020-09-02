@@ -3,6 +3,7 @@
  */
 
 const path = require('path');
+
 const webpack = require('webpack');
 
 module.exports = options => ({
@@ -85,7 +86,7 @@ module.exports = options => ({
                 optimizationLevel: 7,
               },
               pngquant: {
-                quality: '65-90',
+                quality: [0.65, 0.9],
                 speed: 4,
               },
             },
