@@ -12,10 +12,8 @@ WORKDIR /usr/app
 # add `/app/node_modules/.bin` to $PATH
 ENV PATH /usr/app/node_modules/.bin:$PATH
 
-COPY package*.json ./
-
 # Install dependencies
-RUN npm install --unsafe-perm --no-optional --save-dev react-redux@^6.0.0 styled-components@^3.0.2
+RUN npm install --unsafe-perm
 
 EXPOSE 3000
 
