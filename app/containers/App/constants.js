@@ -8,3 +8,6 @@
  * Follow this format:
  * export const YOUR_ACTION_CONSTANT = 'yourproject/YourContainer/YOUR_ACTION_CONSTANT';
  */
+
+export const SET_ERROR = 'app/App/SET_ERROR';
+export const SET_SUCCESS = 'app/App/SET_SUCCESS';

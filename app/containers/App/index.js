@@ -1,3 +1,5 @@
+/* eslint-disable no-shadow */
+/* eslint-disable react/prop-types */
 /**
  *
  * App.js
@@ -7,17 +9,39 @@
  *
  */
 
-import React from 'react';
+import React, { memo, useEffect } from 'react';
 import { Switch, Route } from 'react-router-dom';
+import { toaster } from 'evergreen-ui';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
+import { createStructuredSelector } from 'reselect';
 
 import HomePage from 'containers/HomePage/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
 import RegisterUser from 'containers/RegisterUser/';
 import SignInPage from 'containers/SignInPage';
 
+import { makeSelectError, makeSelectSuccess } from './selectors';
+import { setError, setSuccess } from './actions';
 import GlobalStyle from '../../global-styles';
 
-export default function App() {
+function App({ error, setError, success }) {
+  useEffect(() => {
+    if (error) {
+      toaster.danger(error.title, {
+        description: error.description,
+      });
+      setError(false);
+    }
+  }, [error]);
+  useEffect(() => {
+    if (success) {
+      toaster.success(success.title, {
+        description: success.description,
+      });
+      setSuccess(false);
+    }
+  }, [success]);
   return (
     <div>
       <Switch>
@@ -30,3 +54,26 @@ export default function App() {
     </div>
   );
 }
+
+const mapStateToProps = createStructuredSelector({
+  error: makeSelectError(),
+  success: makeSelectSuccess(),
+});
+
+function mapDispatchToProps(dispatch) {
+  return {
+    dispatch,
+    setError: error => dispatch(setError(error)),
+    setSuccess: error => dispatch(setSuccess(error)),
+  };
+}
+
+const withConnect = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+);
+
+export default compose(
+  withConnect,
+  memo,
+)(App);

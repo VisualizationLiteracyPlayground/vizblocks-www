@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 /* eslint-disable react/prop-types */
 /* eslint-disable no-case-declarations */
 /**
@@ -6,7 +7,7 @@
  *
  */
 
-import React, { memo, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
@@ -25,7 +26,8 @@ import {
 import { useInjectSaga } from 'utils/injectSaga';
 import { useInjectReducer } from 'utils/injectReducer';
 
-import makeSelectRegisterUser from './selectors';
+import { registerUser, registerUserFailure } from './actions';
+import makeSelectRegisterUser, { makeSelectError } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
 import ColorPallete from '../../colorPallete';
@@ -38,7 +40,7 @@ const formFields = {
   PASSWORD: 'password',
 };
 
-export function RegisterUser({ history }) {
+export function RegisterUser({ error, setError, registerUser }) {
   useInjectReducer({ key: 'registerUser', reducer });
   useInjectSaga({ key: 'registerUser', saga });
   const [username, setUsername] = useState('');
@@ -54,9 +56,7 @@ export function RegisterUser({ history }) {
 
   function confirmationSuccessCallback() {
     setConfirmationIsShown(false);
-    // Call API to create account
-    toaster.success('Successfully joined community!');
-    history.push('/');
+    registerUser(username, email, password);
   }
 
   // Returns null if field is valid
@@ -123,6 +123,15 @@ export function RegisterUser({ history }) {
     }
     return null;
   }
+
+  useEffect(() => {
+    if (error) {
+      toaster.danger('Registration failed', {
+        description: error,
+      });
+      setError(false);
+    }
+  }, [error]);
 
   return (
     <div
@@ -239,11 +248,15 @@ RegisterUser.propTypes = {
 
 const mapStateToProps = createStructuredSelector({
   registerUser: makeSelectRegisterUser(),
+  error: makeSelectError(),
 });
 
 function mapDispatchToProps(dispatch) {
   return {
     dispatch,
+    registerUser: (username, email, password) =>
+      dispatch(registerUser(username, email, password)),
+    setError: error => dispatch(registerUserFailure(error)),
   };
 }
 

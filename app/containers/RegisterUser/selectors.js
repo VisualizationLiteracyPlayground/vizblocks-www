@@ -22,5 +22,11 @@ const makeSelectRegisterUser = () =>
     substate => substate,
   );
 
+const makeSelectError = () =>
+  createSelector(
+    selectRegisterUserDomain,
+    substate => substate.error,
+  );
+
 export default makeSelectRegisterUser;
-export { selectRegisterUserDomain };
+export { selectRegisterUserDomain, makeSelectError };
