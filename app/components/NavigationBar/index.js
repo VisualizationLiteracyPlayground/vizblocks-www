@@ -38,6 +38,11 @@ function NavigationBar({ isLoggedIn }) {
             <b>Explore</b>
           </Strong>
         </Link>
+        <Link to="/" style={{ display: isLoggedIn, textDecoration: 'none' }}>
+          <Strong color="white" marginLeft="3rem" size={500}>
+            <b>My Stuff</b>
+          </Strong>
+        </Link>
       </Pane>
       <Pane>
         <div style={{ display: !isLoggedIn }}>

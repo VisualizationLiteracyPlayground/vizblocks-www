@@ -17,10 +17,12 @@ import { makeSelectCurrentUser } from '../App/selectors';
 
 function HomePage({ user }) {
   function isLoggedIn() {
-    // TO ADD BACKEND CALL
-    // eslint-disable-next-line no-console
-    console.log(user);
-    return false;
+    if (user) {
+      // eslint-disable-next-line no-console
+      console.log(JSON.stringify(user));
+    }
+    // eslint-disable-next-line no-unneeded-ternary
+    return user ? true : false;
   }
 
   return (
