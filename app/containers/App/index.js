@@ -25,7 +25,7 @@ import { makeSelectError, makeSelectSuccess } from './selectors';
 import { setError, setSuccess } from './actions';
 import GlobalStyle from '../../global-styles';
 
-function App({ error, setError, success }) {
+function App({ error, setError, success, setSuccess }) {
   useEffect(() => {
     if (error) {
       toaster.danger(error.title, {
@@ -64,7 +64,7 @@ function mapDispatchToProps(dispatch) {
   return {
     dispatch,
     setError: error => dispatch(setError(error)),
-    setSuccess: error => dispatch(setSuccess(error)),
+    setSuccess: success => dispatch(setSuccess(success)),
   };
 }
 
