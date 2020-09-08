@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /*
  * HomePage
  *
@@ -6,13 +7,19 @@
  */
 
 import React from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
+import { createStructuredSelector } from 'reselect';
 
 import LandingMast from '../../components/LandingMast';
 import NavigationBar from '../../components/NavigationBar';
+import { makeSelectCurrentUser } from '../App/selectors';
 
-export default function HomePage() {
+function HomePage({ user }) {
   function isLoggedIn() {
     // TO ADD BACKEND CALL
+    // eslint-disable-next-line no-console
+    console.log(user);
     return false;
   }
 
@@ -23,3 +30,10 @@ export default function HomePage() {
     </div>
   );
 }
+const mapStateToProps = createStructuredSelector({
+  user: makeSelectCurrentUser(),
+});
+
+const withConnect = connect(mapStateToProps);
+
+export default compose(withConnect)(HomePage);

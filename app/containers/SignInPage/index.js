@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 /* eslint-disable react/prop-types */
 /**
  *
@@ -5,7 +6,7 @@
  *
  */
 
-import React, { memo, useState } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
@@ -16,27 +17,35 @@ import { Button, Card, Heading, TextInputField, toaster } from 'evergreen-ui';
 import { useInjectSaga } from 'utils/injectSaga';
 import { useInjectReducer } from 'utils/injectReducer';
 
-import makeSelectSignInPage from './selectors';
+import { userSignIn, userSignInFailure } from './actions';
+import makeSelectSignInPage, { makeSelectError } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
 import ColorPallete from '../../colorPallete';
 import LogoWord from '../../components/LogoWord';
 
-export function SignInPage({ history }) {
+export function SignInPage({ error, setError, userSignIn }) {
   useInjectReducer({ key: 'signInPage', reducer });
   useInjectSaga({ key: 'signInPage', saga });
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   function requestSignIn() {
-    // Call api to sign in
-    toaster.success('Sign in successful!');
-    history.push('/');
+    userSignIn(email, password);
   }
 
   function validateInputs() {
-    return username !== '' && password !== '';
+    return email !== '' && password !== '';
   }
+
+  useEffect(() => {
+    if (error) {
+      toaster.danger('Login failed', {
+        description: error,
+      });
+      setError(false);
+    }
+  }, [error]);
 
   return (
     <div
@@ -78,12 +87,12 @@ export function SignInPage({ history }) {
           <TextInputField
             width="80%"
             marginTop="2rem"
-            label="Username"
-            placeholder="username"
+            label="Email"
+            placeholder="email"
             required
-            validationMessage={username === '' ? 'Username is required' : null}
-            value={username}
-            onChange={e => setUsername(e.target.value)}
+            validationMessage={email === '' ? 'Email is required' : null}
+            value={email}
+            onChange={e => setEmail(e.target.value)}
           />
           <TextInputField
             type="password"
@@ -119,11 +128,14 @@ SignInPage.propTypes = {
 
 const mapStateToProps = createStructuredSelector({
   signInPage: makeSelectSignInPage(),
+  error: makeSelectError(),
 });
 
 function mapDispatchToProps(dispatch) {
   return {
     dispatch,
+    setError: error => dispatch(userSignInFailure(error)),
+    userSignIn: (email, password) => dispatch(userSignIn(email, password)),
   };
 }
 

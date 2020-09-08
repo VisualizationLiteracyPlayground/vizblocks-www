@@ -22,5 +22,11 @@ const makeSelectSignInPage = () =>
     substate => substate,
   );
 
+const makeSelectError = () =>
+  createSelector(
+    selectSignInPageDomain,
+    substate => substate.error,
+  );
+
 export default makeSelectSignInPage;
-export { selectSignInPageDomain };
+export { selectSignInPageDomain, makeSelectError };
