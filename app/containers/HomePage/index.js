@@ -15,7 +15,7 @@ import LandingMast from '../../components/LandingMast';
 import NavigationBar from '../../components/NavigationBar';
 import { makeSelectCurrentUser } from '../App/selectors';
 
-function HomePage({ user }) {
+export function HomePage({ user }) {
   function isLoggedIn() {
     if (user) {
       // eslint-disable-next-line no-console
