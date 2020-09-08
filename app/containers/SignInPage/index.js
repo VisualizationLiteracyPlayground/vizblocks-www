@@ -97,7 +97,7 @@ export function SignInPage({ error, setError, userSignIn }) {
           <TextInputField
             type="password"
             width="80%"
-            label="Choose a password"
+            label="Password"
             placeholder="password"
             required
             validationMessage={password === '' ? 'Password is required' : null}
@@ -108,7 +108,7 @@ export function SignInPage({ error, setError, userSignIn }) {
             onClick={() =>
               validateInputs()
                 ? requestSignIn()
-                : toaster.danger('Invalid username/password')
+                : toaster.danger('Invalid email/password')
             }
             appearance="primary"
             intent="success"

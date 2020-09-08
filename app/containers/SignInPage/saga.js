@@ -27,7 +27,7 @@ function* userSignIn({ email, password }) {
   } else {
     let msg = 'Unable to reach the server, please try again later.';
     if (response) {
-      msg = response.data.error[Object.keys(response.data.error)[0]][0];
+      msg = response.data.error;
     }
     yield put(userSignInFailure(msg));
   }
