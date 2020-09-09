@@ -29,7 +29,14 @@ import {
 import { setError, setSuccess, userSignedIn } from './actions';
 import GlobalStyle from '../../global-styles';
 
-function App({ error, setError, success, setSuccess, user, userSignedIn }) {
+export function App({
+  error,
+  setError,
+  success,
+  setSuccess,
+  user,
+  userSignedIn,
+}) {
   const [loaded, setLoaded] = useState(false);
   const storedUser = localStorage.getItem('user');
 
