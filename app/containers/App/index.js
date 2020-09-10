@@ -18,10 +18,12 @@ import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
 import styled from 'styled-components';
 
+import PrivateRoute from 'components/PrivateRoute';
 import HomePage from 'containers/HomePage/Loadable';
+import MyStuff from 'containers/MyStuff/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
-import RegisterUser from 'containers/RegisterUser/';
-import SignInPage from 'containers/SignInPage';
+import RegisterUser from 'containers/RegisterUser/Loadable';
+import SignInPage from 'containers/SignInPage/Loadable';
 
 import {
   makeSelectCurrentUser,
@@ -98,6 +100,11 @@ export function App({
       {loaded && (
         <Switch>
           <Route exact path="/" component={HomePage} />
+          <PrivateRoute
+            path="/my-stuff"
+            isAuthenticated={user}
+            component={MyStuff}
+          />
           <Route exact path="/register-user" component={RegisterUser} />
           <Route exact path="/sign-in" component={SignInPage} />
           <Route component={NotFoundPage} />

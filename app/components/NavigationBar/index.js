@@ -28,6 +28,7 @@ import ColorPallete from '../../colorPallete';
 import LogoWord from '../LogoWord';
 import LogoutConfirmation from '../LogoutConfirmation';
 import { userSignedOut } from '../../containers/App/actions';
+import history from '../../utils/history';
 
 function NavigationBar({ user, userSignedOut }) {
   const [displayLogout, setDisplayLogout] = useState(false);
@@ -39,6 +40,7 @@ function NavigationBar({ user, userSignedOut }) {
   function logoutConfirmCallback() {
     setDisplayLogout(false);
     userSignedOut();
+    history.push('/');
   }
 
   return (
@@ -67,7 +69,7 @@ function NavigationBar({ user, userSignedOut }) {
           </Strong>
         </Link>
         {user && (
-          <Link to="/" style={{ textDecoration: 'none' }}>
+          <Link to="/my-stuff" style={{ textDecoration: 'none' }}>
             <Strong color="white" marginLeft="3rem" size={500}>
               <b>My Stuff</b>
             </Strong>

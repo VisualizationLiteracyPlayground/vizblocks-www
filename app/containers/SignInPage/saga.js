@@ -23,7 +23,7 @@ function* userSignIn({ email, password }) {
   if (success) {
     yield put(userSignInSuccess());
     yield put(userSignedIn(response.data));
-    yield history.push('/');
+    yield history.push('/my-stuff');
   } else {
     let msg = 'Unable to reach the server, please try again later.';
     if (response) {
