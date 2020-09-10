@@ -13,8 +13,10 @@ import React, { memo, useState, useEffect } from 'react';
 import { Switch, Route } from 'react-router-dom';
 import { toaster } from 'evergreen-ui';
 import { connect } from 'react-redux';
+import { Helmet } from 'react-helmet';
 import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
+import styled from 'styled-components';
 
 import HomePage from 'containers/HomePage/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
@@ -28,6 +30,23 @@ import {
 } from './selectors';
 import { setError, setSuccess, userSignedIn } from './actions';
 import GlobalStyle from '../../global-styles';
+
+const AppWrapper = styled.div`
+  margin: 0 auto;
+  display: flex;
+  min-height: 100vh;
+  max-height: 100vh;
+  flex-direction: column;
+  background-color: white;
+  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
+  min-height: calc(var(--vh, 1vh) * 100);
+  max-height: calc(var(--vh, 1vh) * 100);
+`;
+window.onresize = () => {
+  document.body.height = window.innerHeight;
+};
+window.onresize();
 
 export function App({
   error,
@@ -66,8 +85,16 @@ export function App({
       setSuccess(false);
     }
   }, [success]);
+  useEffect(() => {
+    const vh = window.innerHeight * 0.01;
+    // Then we set the value in the --vh custom property to the root of the document
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+  }, []);
   return (
-    <div>
+    <AppWrapper>
+      <Helmet titleTemplate="Vizblocks" defaultTitle="Vizblocks">
+        <meta name="description" content="Education tool for data literacy!" />
+      </Helmet>
       {loaded && (
         <Switch>
           <Route exact path="/" component={HomePage} />
@@ -77,7 +104,7 @@ export function App({
         </Switch>
       )}
       <GlobalStyle />
-    </div>
+    </AppWrapper>
   );
 }
 

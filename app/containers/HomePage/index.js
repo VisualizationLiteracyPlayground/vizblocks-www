@@ -16,18 +16,9 @@ import NavigationBar from '../../components/NavigationBar';
 import { makeSelectCurrentUser } from '../App/selectors';
 
 export function HomePage({ user }) {
-  function isLoggedIn() {
-    if (user) {
-      // eslint-disable-next-line no-console
-      console.log(JSON.stringify(user));
-    }
-    // eslint-disable-next-line no-unneeded-ternary
-    return user ? true : false;
-  }
-
   return (
     <div>
-      <NavigationBar isLoggedIn={isLoggedIn()} />
+      <NavigationBar user={user} />
       <LandingMast />
     </div>
   );

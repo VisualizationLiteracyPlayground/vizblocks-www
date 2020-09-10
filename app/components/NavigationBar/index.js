@@ -1,18 +1,46 @@
+/* eslint-disable no-shadow */
+/* eslint-disable react/prop-types */
 /**
  *
  * NavigationBar
  *
  */
 
-import React, { memo } from 'react';
-import { HandIcon, LogInIcon, Pane, Strong } from 'evergreen-ui';
+import React, { memo, useState } from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
+import {
+  Avatar,
+  Button,
+  ChevronDownIcon,
+  HandIcon,
+  LogInIcon,
+  LogOutIcon,
+  Pane,
+  Popover,
+  SettingsIcon,
+  Strong,
+  UserIcon,
+} from 'evergreen-ui';
 import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
 
 import ColorPallete from '../../colorPallete';
 import LogoWord from '../LogoWord';
+import LogoutConfirmation from '../LogoutConfirmation';
+import { userSignedOut } from '../../containers/App/actions';
 
-function NavigationBar({ isLoggedIn }) {
+function NavigationBar({ user, userSignedOut }) {
+  const [displayLogout, setDisplayLogout] = useState(false);
+
+  function logoutCloseCallback() {
+    setDisplayLogout(false);
+  }
+
+  function logoutConfirmCallback() {
+    setDisplayLogout(false);
+    userSignedOut();
+  }
+
   return (
     <Pane
       background={ColorPallete.primaryColor}
@@ -38,16 +66,16 @@ function NavigationBar({ isLoggedIn }) {
             <b>Explore</b>
           </Strong>
         </Link>
-        {isLoggedIn && (
-          <Link to="/" style={{ display: isLoggedIn, textDecoration: 'none' }}>
+        {user && (
+          <Link to="/" style={{ textDecoration: 'none' }}>
             <Strong color="white" marginLeft="3rem" size={500}>
               <b>My Stuff</b>
             </Strong>
           </Link>
         )}
       </Pane>
-      <Pane>
-        <div style={{ display: !isLoggedIn }}>
+      {!user && (
+        <Pane>
           <Link to="/register-user" style={{ textDecoration: 'none' }}>
             <HandIcon color="white" marginBottom="0.3rem" />
             <Strong
@@ -70,14 +98,82 @@ function NavigationBar({ isLoggedIn }) {
               <b>Sign In</b>
             </Strong>
           </Link>
-        </div>
-      </Pane>
+        </Pane>
+      )}
+      {user && (
+        <Pane>
+          <Popover
+            content={
+              <Pane
+                display="flex"
+                padding="0.5rem"
+                alignItems="left"
+                justifyContent="center"
+                flexDirection="column"
+              >
+                <Button
+                  iconBefore={UserIcon}
+                  appearance="minimal"
+                  onClick={() => {}}
+                >
+                  Profile
+                </Button>
+                <Button
+                  iconBefore={SettingsIcon}
+                  appearance="minimal"
+                  onClick={() => {}}
+                >
+                  Account Setting
+                </Button>
+                <Button
+                  iconBefore={LogOutIcon}
+                  appearance="minimal"
+                  onClick={() => {
+                    setDisplayLogout(true);
+                  }}
+                >
+                  Log out
+                </Button>
+              </Pane>
+            }
+          >
+            <Pane display="flex" alignItems="center">
+              <Avatar isSolid name={user.data.username} size={32} />
+              <Strong
+                color="white"
+                marginLeft="1rem"
+                marginRight="0.5rem"
+                size={500}
+              >
+                <b>{user.data.username}</b>
+              </Strong>
+              <ChevronDownIcon color="white" marginRight="1.5rem" />
+            </Pane>
+          </Popover>
+          <LogoutConfirmation
+            isShown={displayLogout}
+            closeCallback={logoutCloseCallback}
+            confirmCallback={logoutConfirmCallback}
+          />
+        </Pane>
+      )}
     </Pane>
   );
 }
 
-NavigationBar.propTypes = {
-  isLoggedIn: PropTypes.bool,
-};
+function mapDispatchToProps(dispatch) {
+  return {
+    dispatch,
+    userSignedOut: () => dispatch(userSignedOut()),
+  };
+}
 
-export default memo(NavigationBar);
+const withConnect = connect(
+  null,
+  mapDispatchToProps,
+);
+
+export default compose(
+  withConnect,
+  memo,
+)(NavigationBar);
