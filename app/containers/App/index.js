@@ -24,6 +24,7 @@ import MyStuff from 'containers/MyStuff/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
 import RegisterUser from 'containers/RegisterUser/Loadable';
 import SignInPage from 'containers/SignInPage/Loadable';
+import VizblocksGui from 'containers/VizblocksGui';
 
 import {
   makeSelectCurrentUser,
@@ -107,6 +108,7 @@ export function App({
           />
           <Route exact path="/register-user" component={RegisterUser} />
           <Route exact path="/sign-in" component={SignInPage} />
+          <Route exact path="/project-gui" component={VizblocksGui} />
           <Route component={NotFoundPage} />
         </Switch>
       )}

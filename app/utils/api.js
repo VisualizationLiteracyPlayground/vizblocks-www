@@ -5,12 +5,10 @@ import axios from 'axios';
 import { push } from 'connected-react-router';
 
 const ACCESS_TOKEN_KEY = 'access_token';
-// export const API_URL = 'http://127.0.0.1:8080/api/';
-export const API_URL = 'http://vizblocks-i.comp.nus.edu.sg/api/';
 
 const vizAxios = axios.create({
   withCredentials: true,
-  baseURL: API_URL,
+  baseURL: process.env.API_HOST,
   xhrFields: {
     withCredentials: true,
   },

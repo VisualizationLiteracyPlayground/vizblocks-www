@@ -52,7 +52,9 @@ function NavigationBar({ user, userSignedOut }) {
       border="default"
     >
       <Pane flex={1} display="flex" alignItems="center">
-        <LogoWord />
+        <Link to="/">
+          <LogoWord />
+        </Link>
         <Link to="/" style={{ textDecoration: 'none' }}>
           <Strong color="white" marginLeft="2rem" size={500}>
             <b>Ideas</b>

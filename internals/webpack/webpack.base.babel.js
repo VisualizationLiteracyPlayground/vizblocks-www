@@ -5,6 +5,7 @@
 const path = require('path');
 
 const webpack = require('webpack');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = options => ({
   mode: options.mode,
@@ -22,7 +23,11 @@ module.exports = options => ({
     rules: [
       {
         test: /\.jsx?$/, // Transform all .js and .jsx files required somewhere with Babel
-        exclude: /node_modules/,
+        include: [
+          path.resolve(process.cwd(), 'app'),
+          /node_modules[\\/]scratch-[^\\/]+[\\/]src/,
+        ],
+        // exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
           options: options.babelQuery,
@@ -112,8 +117,17 @@ module.exports = options => ({
     // Always expose NODE_ENV to webpack, in order to use `process.env.NODE_ENV`
     // inside your code for any environment checks; Terser will automatically
     // drop any unreachable code.
+    new CopyPlugin([
+      {
+        from: './node_modules/scratch-gui/dist/static/',
+        to: './static/',
+      },
+    ]),
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'development',
+      API_HOST: 'http://vizblocks-i.comp.nus.edu.sg/api/',
+      ASSET_HOST: 'https://assets.scratch.mit.edu',
+      PROJECT_HOST: 'https://projects.scratch.mit.edu',
     }),
   ]),
   resolve: {
