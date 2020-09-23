@@ -1,5 +1,5 @@
 const ColorPallete = {
-  backgroundColor: '#F8F7F7',
+  backgroundColor: '#F5F6F7',
   primaryColor: '#6CDDAA',
   secondaryColor: '#DAF2E7',
   accentColor: '#2CE592',
