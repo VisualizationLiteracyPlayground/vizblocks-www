@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable react/no-unused-prop-types */
 /**
@@ -18,6 +19,7 @@ import { useInjectReducer } from 'utils/injectReducer';
 import makeSelectVizblocksGui from './selectors';
 import reducer from './reducer';
 import saga from './saga';
+import { makeSelectCurrentUser } from '../App/selectors';
 
 const redux = require('redux');
 const thunk = require('redux-thunk').default;
@@ -26,37 +28,39 @@ const { IntlProvider } = require('react-intl');
 
 const ProjectView = require('./project-view.jsx');
 
-export function VizblocksGui() {
+export function VizblocksGui({ user }) {
   useInjectReducer({ key: 'vizblocksGui', reducer });
   useInjectSaga({ key: 'vizblocksGui', saga });
 
   const locale = window._locale || 'en';
-  const allReducer = {
-    ...ProjectView.guiReducers,
-  };
-
-  const reducers = redux.combineReducers(allReducer);
-
-  const initState = {
-    locales: ProjectView.initLocale(ProjectView.localesInitialState, locale),
-    scratchGui: ProjectView.initGuiState(ProjectView.guiInitialState),
-  };
-
-  const composeEnhancers =
-    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || redux.compose;
-  const enhancers = composeEnhancers(
-    redux.applyMiddleware(thunk),
-    ProjectView.guiMiddleware,
-  );
-
-  const store = redux.createStore(reducers, initState, enhancers);
-
   const messages = {};
 
+  function createStore() {
+    const allReducer = {
+      ...ProjectView.guiReducers,
+    };
+
+    const reducers = redux.combineReducers(allReducer);
+
+    const initState = {
+      locales: ProjectView.initLocale(ProjectView.localesInitialState, locale),
+      scratchGui: ProjectView.initGuiState(ProjectView.guiInitialState),
+    };
+
+    const composeEnhancers =
+      window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || redux.compose;
+    const enhancers = composeEnhancers(
+      redux.applyMiddleware(thunk),
+      ProjectView.guiMiddleware,
+    );
+
+    return redux.createStore(reducers, initState, enhancers);
+  }
+
   return (
-    <Provider store={store}>
+    <Provider store={createStore()}>
       <IntlProvider locale={locale} messages={messages}>
-        <ProjectView.View />
+        <ProjectView.View user={user} />
       </IntlProvider>
     </Provider>
   );
@@ -68,6 +72,7 @@ VizblocksGui.propTypes = {
 
 const mapStateToProps = createStructuredSelector({
   vizblocksGui: makeSelectVizblocksGui(),
+  user: makeSelectCurrentUser(),
 });
 
 function mapDispatchToProps(dispatch) {

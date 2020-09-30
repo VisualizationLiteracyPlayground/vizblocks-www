@@ -15,7 +15,7 @@ function* userSignIn({ email, password }) {
       password,
     },
     res => {
-      localStorage.setItem('access_token', res.data.access_token);
+      localStorage.setItem('access_token', res.data['access-token']);
       return res;
     },
     e => e.response,

@@ -27,7 +27,7 @@ vizAxios.interceptors.request.use(
   config => {
     const token = getAccessToken();
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.Authorization = `${token}`;
     }
     return config;
   },
@@ -60,8 +60,8 @@ vizAxios.interceptors.response.use(
       // eslint-disable-next-line consistent-return
       return vizAxios.post('/refresh', {}).then(res => {
         if (res.status === 200) {
-          setAccessToken(res.data.access_token);
-          vizAxios.defaults.headers.common.Authorization = `Bearer ${getAccessToken()}`;
+          setAccessToken(res.data['access-token']);
+          vizAxios.defaults.headers.common.Authorization = `${getAccessToken()}`;
           return vizAxios(originalRequest);
         }
       });

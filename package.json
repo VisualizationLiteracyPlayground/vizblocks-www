@@ -85,6 +85,7 @@
     "minimist": "^1.2.5",
     "optipng-bin": "7.0.0",
     "prop-types": "15.7.2",
+    "query-string": "^6.13.4",
     "react": "16.8.6",
     "react-dom": "16.8.6",
     "react-helmet": "6.0.0-beta",
