@@ -116,7 +116,10 @@ export function MyStuff({ user, projects, error, setError, loadProjects }) {
                 aria-hidden={index !== tabIndex}
                 display={index === tabIndex ? 'block' : 'none'}
               >
-                {index === 0 && projects.length <= 0 && <Spinner />}
+                {index === 0 && !loaded && <Spinner />}
+                {index === 0 && loaded && projects.length === 0 && (
+                  <Paragraph>Start creating projects now!</Paragraph>
+                )}
                 {index === 0 && projects.length > 0 && (
                   <Table display="flex" height="100%">
                     <Table.Body>

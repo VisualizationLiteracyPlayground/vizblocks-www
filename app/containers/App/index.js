@@ -108,7 +108,11 @@ export function App({
           />
           <Route exact path="/register-user" component={RegisterUser} />
           <Route exact path="/sign-in" component={SignInPage} />
-          <Route exact path="/project-gui" component={VizblocksGui} />
+          <PrivateRoute
+            path="/project-gui"
+            isAuthenticated={user}
+            component={VizblocksGui}
+          />
           <Route component={NotFoundPage} />
         </Switch>
       )}
