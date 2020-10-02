@@ -33,7 +33,7 @@ function MyStuffMast() {
         </Strong>
         <div style={{ marginTop: '1rem' }}>
           <Link
-            to="/TODO"
+            to="/project-gui"
             style={{ marginTop: '1rem', textDecoration: 'none' }}
           >
             <Button width="8rem" iconBefore={PlusIcon}>

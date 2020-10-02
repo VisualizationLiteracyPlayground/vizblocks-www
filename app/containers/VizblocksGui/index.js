@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 /* eslint-disable react/prop-types */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable react/no-unused-prop-types */
@@ -10,13 +11,15 @@
 import React, { memo } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
 
 import { useInjectSaga } from 'utils/injectSaga';
 import { useInjectReducer } from 'utils/injectReducer';
+import history from 'utils/history';
 
-import makeSelectVizblocksGui from './selectors';
+import { makeSelectVizblocksGui } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
 import { makeSelectCurrentUser } from '../App/selectors';
@@ -31,6 +34,10 @@ const ProjectView = require('./project-view.jsx');
 export function VizblocksGui({ user }) {
   useInjectReducer({ key: 'vizblocksGui', reducer });
   useInjectSaga({ key: 'vizblocksGui', saga });
+
+  const location = useLocation();
+  const title = location.state ? location.state.title : '';
+  const projectid = location.state ? location.state.projectid : 0;
 
   const locale = window._locale || 'en';
   const messages = {};
@@ -60,7 +67,12 @@ export function VizblocksGui({ user }) {
   return (
     <Provider store={createStore()}>
       <IntlProvider locale={locale} messages={messages}>
-        <ProjectView.View user={user} />
+        <ProjectView.View
+          user={user}
+          projectid={projectid}
+          title={title}
+          history={history}
+        />
       </IntlProvider>
     </Provider>
   );

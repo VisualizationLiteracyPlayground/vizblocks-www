@@ -11,10 +11,13 @@ export const initialState = {};
 
 /* eslint-disable default-case, no-param-reassign */
 const vizblocksGuiReducer = (state = initialState, action) =>
-  produce(state, (/* draft */) => {
+  // eslint-disable-next-line consistent-return
+  produce(state, draft => {
     switch (action.type) {
       case DEFAULT_ACTION:
         break;
+      default:
+        return draft;
     }
   });
 

@@ -127,7 +127,7 @@ module.exports = options => ({
       NODE_ENV: 'development',
       API_HOST: 'http://vizblocks-i.comp.nus.edu.sg/api/',
       ASSET_HOST: 'https://assets.scratch.mit.edu',
-      PROJECT_HOST: 'http://vizblocks-i.comp.nus.edu.sg/api/project/',
+      PROJECT_HOST: 'http://vizblocks-i.comp.nus.edu.sg/api/project',
     }),
   ]),
   resolve: {

@@ -9,10 +9,6 @@ import { initialState } from './reducer';
 const selectVizblocksGuiDomain = state => state.vizblocksGui || initialState;
 
 /**
- * Other specific selectors
- */
-
-/**
  * Default selector used by VizblocksGui
  */
 
@@ -22,5 +18,4 @@ const makeSelectVizblocksGui = () =>
     substate => substate,
   );
 
-export default makeSelectVizblocksGui;
-export { selectVizblocksGuiDomain };
+export { makeSelectVizblocksGui, selectVizblocksGuiDomain };

@@ -9,10 +9,6 @@ import { initialState } from './reducer';
 const selectMyStuffDomain = state => state.myStuff || initialState;
 
 /**
- * Other specific selectors
- */
-
-/**
  * Default selector used by MyStuff
  */
 
@@ -22,5 +18,21 @@ const makeSelectMyStuff = () =>
     substate => substate,
   );
 
-export default makeSelectMyStuff;
-export { selectMyStuffDomain };
+const makeSelectProjects = () =>
+  createSelector(
+    selectMyStuffDomain,
+    substate => substate.projects,
+  );
+
+const makeSelectError = () =>
+  createSelector(
+    selectMyStuffDomain,
+    substate => substate.error,
+  );
+
+export {
+  makeSelectMyStuff,
+  selectMyStuffDomain,
+  makeSelectProjects,
+  makeSelectError,
+};

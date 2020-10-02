@@ -1,6 +1,6 @@
-// import { take, call, put, select } from 'redux-saga/effects';
+/* eslint-disable no-shadow */
 
 // Individual exports for testing
 export default function* vizblocksGuiSaga() {
-  // See example in containers/HomePage/saga.js
+  //
 }

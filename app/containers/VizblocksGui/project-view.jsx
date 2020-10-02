@@ -20,10 +20,10 @@ class Preview extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
-      projectId: 0,
+      projectId: this.props.projectid ? this.props.projectid : 0,
       authorId: this.props.user ? this.props.user.data.id : null,
       authorUsername: this.props.user ? this.props.user.data.username : null,
-      projectTitle: '',
+      projectTitle: this.props.title ? this.props.title : '',
     };
     bindAll(this, [
       'setProjectId',
@@ -37,8 +37,12 @@ class Preview extends React.Component {
     this.state.projectId = newId;
   }
 
+  setProjectTitle(newTitle) {
+    this.state.projectTitle = newTitle;
+  }
+
   handleClickLogo () {
-    window.location = '/';
+    this.props.history.push('/');
   }
 
   handleUpdateProjectData (projectId, vmState, params) {
@@ -83,7 +87,10 @@ class Preview extends React.Component {
         {
           title
         },
-        response => resolve(response.data),
+        response => {
+          this.setProjectTitle(title);
+          resolve(response.data);
+        },
         e => reject(e.response),
       );
     });
