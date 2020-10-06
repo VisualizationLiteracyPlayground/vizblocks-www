@@ -27,6 +27,7 @@ import {
   Table,
   Text,
   TrashIcon,
+  UndoIcon,
   toaster,
 } from 'evergreen-ui';
 
@@ -36,11 +37,12 @@ import history from 'utils/history';
 import { sortDateDesc, prettyDateFormat } from 'utils/dateUtil';
 import DefaultThumbnail from 'images/default-project-thumbnail.png';
 
-import { loadProjects, loadProjectsFailure } from './actions';
+import { loadProjects, loadProjectsFailure, deleteProject } from './actions';
 import {
   makeSelectMyStuff,
   makeSelectProjects,
   makeSelectError,
+  makeSelectDeletedProjects,
 } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
@@ -49,21 +51,48 @@ import NavigationBar from '../../components/NavigationBar';
 import MyStuffMast from '../../components/MyStuffMast';
 import { makeSelectCurrentUser } from '../App/selectors';
 
-export function MyStuff({ user, projects, error, setError, loadProjects }) {
+export function MyStuff({
+  user,
+  projects,
+  deletedProjects,
+  error,
+  setError,
+  loadProjects,
+  deleteProject,
+}) {
   useInjectReducer({ key: 'myStuff', reducer });
   useInjectSaga({ key: 'myStuff', saga });
 
   const [tabIndex, setTabIndex] = useState(0);
   const [loaded, setLoaded] = useState(false);
+  const [data, setData] = useState(projects);
 
   const tabsList = ['My Projects', 'My Studio', 'Bookmark Projects', 'Trash'];
+
+  function switchTab(idx) {
+    switch (idx) {
+      case 0:
+        setData(projects);
+        break;
+      case 3:
+        setData(deletedProjects);
+        break;
+      default:
+        setData([]);
+        break;
+    }
+    setTabIndex(idx);
+  }
 
   useEffect(() => {
     if (user && !loaded) {
       loadProjects(user.data.id);
-      setLoaded(true);
     }
   }, []);
+  useEffect(() => {
+    switchTab(tabIndex);
+    setLoaded(true);
+  }, [projects, deletedProjects]);
   useEffect(() => {
     // Catch and alert error messages
     if (error) {
@@ -90,7 +119,7 @@ export function MyStuff({ user, projects, error, setError, loadProjects }) {
               <SidebarTab
                 key={tab}
                 id={tab}
-                onSelect={() => setTabIndex(index)}
+                onSelect={() => switchTab(index)}
                 isSelected={index === tabIndex}
                 aria-controls={`panel-${tab}`}
               >
@@ -116,14 +145,23 @@ export function MyStuff({ user, projects, error, setError, loadProjects }) {
                 aria-hidden={index !== tabIndex}
                 display={index === tabIndex ? 'block' : 'none'}
               >
-                {index === 0 && !loaded && <Spinner />}
-                {index === 0 && loaded && projects.length === 0 && (
+                {!loaded && <Spinner />}
+                {index === 0 && loaded && data.length === 0 && (
                   <Paragraph>Start creating projects now!</Paragraph>
                 )}
-                {index === 0 && projects.length > 0 && (
+                {index === 1 && loaded && data.length === 0 && (
+                  <Paragraph>Start joining studios!</Paragraph>
+                )}
+                {index === 2 && loaded && data.length === 0 && (
+                  <Paragraph>Coming soon!</Paragraph>
+                )}
+                {index === 3 && loaded && data.length === 0 && (
+                  <Paragraph>You have not deleted any projects!</Paragraph>
+                )}
+                {index !== 1 && data.length > 0 && (
                   <Table display="flex" height="100%">
                     <Table.Body>
-                      {projects
+                      {data
                         .sort((a, b) => {
                           const aCreated = Date.parse(a.history.created);
                           const bCreated = Date.parse(b.history.created);
@@ -217,21 +255,36 @@ export function MyStuff({ user, projects, error, setError, loadProjects }) {
                                   </Text>
                                 </Pane>
                               </Pane>
-                              <TrashIcon
-                                marginRight="1rem"
-                                size={24}
-                                onClickCapture={event => {
-                                  event.stopPropagation();
-                                  console.log('icon captured');
-                                }}
-                              />
+                              {index === 0 && (
+                                <TrashIcon
+                                  marginRight="1rem"
+                                  size={24}
+                                  onClickCapture={event => {
+                                    event.stopPropagation();
+                                    deleteProject(
+                                      project.id,
+                                      projects,
+                                      deletedProjects,
+                                    );
+                                  }}
+                                />
+                              )}
+                              {index === 3 && (
+                                <UndoIcon
+                                  marginRight="1rem"
+                                  size={24}
+                                  onClickCapture={event => {
+                                    event.stopPropagation();
+                                    console.log('icon captured');
+                                  }}
+                                />
+                              )}
                             </Table.Cell>
                           </Table.Row>
                         ))}
                     </Table.Body>
                   </Table>
                 )}
-                {index !== 0 && <Paragraph>Panel {tab}</Paragraph>}
               </Pane>
             ))}
           </Pane>
@@ -248,6 +301,7 @@ MyStuff.propTypes = {
 const mapStateToProps = createStructuredSelector({
   myStuff: makeSelectMyStuff(),
   projects: makeSelectProjects(),
+  deletedProjects: makeSelectDeletedProjects(),
   error: makeSelectError(),
   user: makeSelectCurrentUser(),
 });
@@ -256,6 +310,8 @@ function mapDispatchToProps(dispatch) {
   return {
     dispatch,
     loadProjects: userid => dispatch(loadProjects(userid)),
+    deleteProject: (projectid, projects, deletedProjects) =>
+      dispatch(deleteProject(projectid, projects, deletedProjects)),
     setError: error => dispatch(loadProjectsFailure(error)),
   };
 }
