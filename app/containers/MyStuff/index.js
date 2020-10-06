@@ -37,7 +37,12 @@ import history from 'utils/history';
 import { sortDateDesc, prettyDateFormat } from 'utils/dateUtil';
 import DefaultThumbnail from 'images/default-project-thumbnail.png';
 
-import { loadProjects, loadProjectsFailure, deleteProject } from './actions';
+import {
+  loadProjects,
+  loadProjectsFailure,
+  deleteProject,
+  undeleteProject,
+} from './actions';
 import {
   makeSelectMyStuff,
   makeSelectProjects,
@@ -59,6 +64,7 @@ export function MyStuff({
   setError,
   loadProjects,
   deleteProject,
+  undeleteProject,
 }) {
   useInjectReducer({ key: 'myStuff', reducer });
   useInjectSaga({ key: 'myStuff', saga });
@@ -275,7 +281,11 @@ export function MyStuff({
                                   size={24}
                                   onClickCapture={event => {
                                     event.stopPropagation();
-                                    console.log('icon captured');
+                                    undeleteProject(
+                                      project.id,
+                                      projects,
+                                      deletedProjects,
+                                    );
                                   }}
                                 />
                               )}
@@ -312,6 +322,8 @@ function mapDispatchToProps(dispatch) {
     loadProjects: userid => dispatch(loadProjects(userid)),
     deleteProject: (projectid, projects, deletedProjects) =>
       dispatch(deleteProject(projectid, projects, deletedProjects)),
+    undeleteProject: (projectid, projects, deletedProjects) =>
+      dispatch(undeleteProject(projectid, projects, deletedProjects)),
     setError: error => dispatch(loadProjectsFailure(error)),
   };
 }

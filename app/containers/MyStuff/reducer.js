@@ -11,6 +11,7 @@ import {
   LOAD_PROJECTS_SUCCESS,
   LOAD_DELETED_SUCCESS,
   DELETE_PROJECT_FAILURE,
+  UNDELETE_PROJECT_FAILURE,
   UPDATE_PROJECTS_SUCCESS,
   UPDATE_DELETED_SUCCESS,
 } from './constants';
@@ -30,6 +31,7 @@ const myStuffReducer = (state = initialState, action) =>
         break;
       case LOAD_PROJECTS_FAILURE:
       case DELETE_PROJECT_FAILURE:
+      case UNDELETE_PROJECT_FAILURE:
         draft.error = action.error;
         break;
       case LOAD_PROJECTS_SUCCESS:

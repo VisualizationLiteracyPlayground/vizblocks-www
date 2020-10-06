@@ -12,6 +12,8 @@ import {
   LOAD_DELETED_SUCCESS,
   DELETE_PROJECT,
   DELETE_PROJECT_FAILURE,
+  UNDELETE_PROJECT,
+  UNDELETE_PROJECT_FAILURE,
   UPDATE_PROJECTS_SUCCESS,
   UPDATE_DELETED_SUCCESS,
 } from './constants';
@@ -62,6 +64,22 @@ export function deleteProject(projectid, projects, deletedProjects) {
 export function deleteProjectFailure(error) {
   return {
     type: DELETE_PROJECT_FAILURE,
+    error,
+  };
+}
+
+export function undeleteProject(projectid, projects, deletedProjects) {
+  return {
+    type: UNDELETE_PROJECT,
+    projectid,
+    projects,
+    deletedProjects,
+  };
+}
+
+export function undeleteProjectFailure(error) {
+  return {
+    type: UNDELETE_PROJECT_FAILURE,
     error,
   };
 }
