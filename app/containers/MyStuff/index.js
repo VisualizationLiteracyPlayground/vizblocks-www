@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable react/no-unused-prop-types */
 /* eslint-disable no-shadow */
 /* eslint-disable react/prop-types */
@@ -175,7 +176,7 @@ export function MyStuff({
                         })
                         .map(project => (
                           <Table.Row
-                            key={project.id}
+                            key={project._id}
                             height="auto"
                             paddingY={12}
                             isSelectable
@@ -184,7 +185,7 @@ export function MyStuff({
                                 pathname: `/project-gui`,
                                 state: {
                                   title: project.title,
-                                  projectid: project.id,
+                                  projectid: project._id,
                                 },
                               })
                             }
@@ -268,7 +269,7 @@ export function MyStuff({
                                   onClickCapture={event => {
                                     event.stopPropagation();
                                     deleteProject(
-                                      project.id,
+                                      project._id,
                                       projects,
                                       deletedProjects,
                                     );
@@ -282,7 +283,7 @@ export function MyStuff({
                                   onClickCapture={event => {
                                     event.stopPropagation();
                                     undeleteProject(
-                                      project.id,
+                                      project._id,
                                       projects,
                                       deletedProjects,
                                     );

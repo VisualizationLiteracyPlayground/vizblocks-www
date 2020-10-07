@@ -14,15 +14,6 @@ import {
   updateDeletedSuccess,
 } from './actions';
 
-// Helper method to fetch project details
-async function loadProjectDetail(projectid) {
-  return get(
-    `/project/details/${projectid}`,
-    response => response.data,
-    e => e.response,
-  );
-}
-
 function* loadProjects({ userid }) {
   const [success, response] = yield get(
     `/user/projects/${userid}`,
@@ -30,22 +21,17 @@ function* loadProjects({ userid }) {
     e => e.response,
   );
   if (success) {
-    const projectIds = response.data.projects;
+    const { projects } = response.data;
     const projectDetails = [];
     const deletedDetails = [];
-    // Fetch each project details using project id
-    yield Promise.all(
-      projectIds.map(async id => {
-        const [success, details] = await loadProjectDetail(id);
-        if (success) {
-          if (!details.deleted) {
-            projectDetails.push(details);
-          } else {
-            deletedDetails.push(details);
-          }
-        }
-      }),
-    );
+    // Check each project for deleted flag
+    projects.forEach(project => {
+      if (!project.deleted) {
+        projectDetails.push(project);
+      } else {
+        deletedDetails.push(project);
+      }
+    });
     yield put(loadProjectsSuccess(projectDetails));
     yield put(loadDeletedSuccess(deletedDetails));
   } else {
