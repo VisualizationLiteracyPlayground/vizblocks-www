@@ -14,12 +14,15 @@ import {
   UNDELETE_PROJECT_FAILURE,
   UPDATE_PROJECTS_SUCCESS,
   UPDATE_DELETED_SUCCESS,
+  LOAD_STUDIOS_FAILURE,
+  LOAD_STUDIOS_SUCCESS,
 } from './constants';
 
 export const initialState = {
   error: false,
   projects: [],
   deletedProjects: [],
+  studios: [],
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -32,6 +35,7 @@ const myStuffReducer = (state = initialState, action) =>
       case LOAD_PROJECTS_FAILURE:
       case DELETE_PROJECT_FAILURE:
       case UNDELETE_PROJECT_FAILURE:
+      case LOAD_STUDIOS_FAILURE:
         draft.error = action.error;
         break;
       case LOAD_PROJECTS_SUCCESS:
@@ -43,6 +47,10 @@ const myStuffReducer = (state = initialState, action) =>
       case UPDATE_DELETED_SUCCESS:
         draft.error = false;
         draft.deletedProjects = action.projects;
+        break;
+      case LOAD_STUDIOS_SUCCESS:
+        draft.error = false;
+        draft.studios = action.studios;
         break;
       default:
         return draft;

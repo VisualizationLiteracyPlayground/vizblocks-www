@@ -1,9 +1,15 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable no-shadow */
 import { put, takeLatest } from 'redux-saga/effects';
 
 import { get, patch } from '../../utils/api';
 import { setSuccess } from '../App/actions';
-import { DELETE_PROJECT, UNDELETE_PROJECT, LOAD_PROJECTS } from './constants';
+import {
+  DELETE_PROJECT,
+  UNDELETE_PROJECT,
+  LOAD_PROJECTS,
+  LOAD_STUDIOS,
+} from './constants';
 import {
   loadDeletedSuccess,
   loadProjectsFailure,
@@ -12,6 +18,8 @@ import {
   undeleteProjectFailure,
   updateProjectsSuccess,
   updateDeletedSuccess,
+  loadStudiosFailure,
+  loadStudiosSuccess,
 } from './actions';
 
 function* loadProjects({ userid }) {
@@ -51,8 +59,8 @@ function* deleteProject({ projectid, projects, deletedProjects }) {
     e => e.response,
   );
   if (success) {
-    const newProjects = projects.filter(project => project.id !== projectid);
-    const newDeleted = [...deletedProjects];
+    const newProjects = projects.filter(project => project._id !== projectid);
+    const newDeleted = Array.from(deletedProjects);
     newDeleted.push(response.data.project);
     yield put(
       setSuccess({
@@ -79,10 +87,10 @@ function* undeleteProject({ projectid, projects, deletedProjects }) {
     e => e.response,
   );
   if (success) {
-    const newProjects = [...projects];
+    const newProjects = Array.from(projects);
     newProjects.push(response.data.project);
     const newDeleted = deletedProjects.filter(
-      project => project.id !== projectid,
+      project => project._id !== projectid,
     );
     yield put(
       setSuccess({
@@ -101,9 +109,28 @@ function* undeleteProject({ projectid, projects, deletedProjects }) {
   }
 }
 
+function* loadStudios({ userid }) {
+  const [success, response] = yield get(
+    `/user/studios/${userid}`,
+    response => response.data,
+    e => e.response,
+  );
+  if (success) {
+    const { studios } = response.data;
+    yield put(loadStudiosSuccess(studios));
+  } else {
+    let msg = 'Unable to reach the server, please try again later.';
+    if (response) {
+      msg = response.data.error;
+    }
+    yield put(loadStudiosFailure(msg));
+  }
+}
+
 // Individual exports for testing
 export default function* myStuffSaga() {
   yield takeLatest(LOAD_PROJECTS, loadProjects);
   yield takeLatest(DELETE_PROJECT, deleteProject);
   yield takeLatest(UNDELETE_PROJECT, undeleteProject);
+  yield takeLatest(LOAD_STUDIOS, loadStudios);
 }

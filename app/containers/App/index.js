@@ -24,6 +24,7 @@ import MyStuff from 'containers/MyStuff/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
 import RegisterUser from 'containers/RegisterUser/Loadable';
 import SignInPage from 'containers/SignInPage/Loadable';
+import StudioPage from 'containers/StudioPage/Loadable';
 import VizblocksGui from 'containers/VizblocksGui';
 
 import {
@@ -113,6 +114,7 @@ export function App({
             isAuthenticated={user}
             component={VizblocksGui}
           />
+          <Route exact path="/studio" component={StudioPage} />
           <Route component={NotFoundPage} />
         </Switch>
       )}

@@ -30,6 +30,12 @@ const makeSelectDeletedProjects = () =>
     substate => substate.deletedProjects,
   );
 
+const makeSelectStudios = () =>
+  createSelector(
+    selectMyStuffDomain,
+    substate => substate.studios,
+  );
+
 const makeSelectError = () =>
   createSelector(
     selectMyStuffDomain,
@@ -41,5 +47,6 @@ export {
   selectMyStuffDomain,
   makeSelectProjects,
   makeSelectDeletedProjects,
+  makeSelectStudios,
   makeSelectError,
 };

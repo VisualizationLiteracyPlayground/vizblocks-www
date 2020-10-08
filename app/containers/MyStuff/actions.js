@@ -16,6 +16,9 @@ import {
   UNDELETE_PROJECT_FAILURE,
   UPDATE_PROJECTS_SUCCESS,
   UPDATE_DELETED_SUCCESS,
+  LOAD_STUDIOS,
+  LOAD_STUDIOS_FAILURE,
+  LOAD_STUDIOS_SUCCESS,
 } from './constants';
 
 export function defaultAction() {
@@ -95,5 +98,26 @@ export function updateDeletedSuccess(projects) {
   return {
     type: UPDATE_DELETED_SUCCESS,
     projects,
+  };
+}
+
+export function loadStudios(userid) {
+  return {
+    type: LOAD_STUDIOS,
+    userid,
+  };
+}
+
+export function loadStudiosFailure(error) {
+  return {
+    type: LOAD_STUDIOS_FAILURE,
+    error,
+  };
+}
+
+export function loadStudiosSuccess(studios) {
+  return {
+    type: LOAD_STUDIOS_SUCCESS,
+    studios,
   };
 }
