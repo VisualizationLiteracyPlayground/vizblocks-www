@@ -6,8 +6,6 @@
  */
 
 import React from 'react';
-// import PropTypes from 'prop-types';
-// import styled from 'styled-components';
 import { Route, Redirect } from 'react-router-dom';
 
 function PrivateRoute({ component: Component, isAuthenticated, ...rest }) {

@@ -41,7 +41,10 @@ function MyStuffMast() {
             </Button>
           </Link>
           <Link
-            to="/TODO"
+            to={{
+              pathname: '/studio',
+              state: { studioid: 0 },
+            }}
             style={{
               marginTop: '1rem',
               marginLeft: '2rem',

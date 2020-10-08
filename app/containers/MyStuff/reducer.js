@@ -25,7 +25,7 @@ export const initialState = {
   studios: [],
 };
 
-/* eslint-disable default-case, no-param-reassign */
+/* eslint-disable no-param-reassign */
 const myStuffReducer = (state = initialState, action) =>
   // eslint-disable-next-line consistent-return
   produce(state, draft => {

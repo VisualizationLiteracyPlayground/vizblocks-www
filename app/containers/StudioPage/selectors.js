@@ -9,10 +9,6 @@ import { initialState } from './reducer';
 const selectStudioPageDomain = state => state.studioPage || initialState;
 
 /**
- * Other specific selectors
- */
-
-/**
  * Default selector used by StudioPage
  */
 
@@ -22,5 +18,21 @@ const makeSelectStudioPage = () =>
     substate => substate,
   );
 
-export default makeSelectStudioPage;
-export { selectStudioPageDomain };
+const makeSelectStudio = () =>
+  createSelector(
+    selectStudioPageDomain,
+    substate => substate.studio,
+  );
+
+const makeSelectError = () =>
+  createSelector(
+    selectStudioPageDomain,
+    substate => substate.error,
+  );
+
+export {
+  makeSelectStudioPage,
+  selectStudioPageDomain,
+  makeSelectStudio,
+  makeSelectError,
+};
