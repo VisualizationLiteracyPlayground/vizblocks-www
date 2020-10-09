@@ -12,6 +12,11 @@ import {
   LOAD_STUDIO,
   LOAD_STUDIO_FAILURE,
   LOAD_STUDIO_SUCCESS,
+  UPDATE_STUDIO_PERMISSIONS,
+  UPDATE_STUDIO_PERMISSIONS_FAILURE,
+  UPDATE_STUDIO_INFORMATION,
+  UPDATE_STUDIO_INFORMATION_FAILURE,
+  UPDATE_STUDIO_SUCCESS,
 } from './constants';
 
 export function defaultAction() {
@@ -57,6 +62,45 @@ export function loadStudioFailure(error) {
 export function loadStudioSuccess(studio) {
   return {
     type: LOAD_STUDIO_SUCCESS,
+    studio,
+  };
+}
+
+export function updateStudioPermissions(studioid, permissions, studio) {
+  return {
+    type: UPDATE_STUDIO_PERMISSIONS,
+    studioid,
+    permissions,
+    studio,
+  };
+}
+
+export function updateStudioPermissionsFailure(error) {
+  return {
+    type: UPDATE_STUDIO_PERMISSIONS_FAILURE,
+    error,
+  };
+}
+
+export function updateStudioInformation(studioid, information, studio) {
+  return {
+    type: UPDATE_STUDIO_INFORMATION,
+    studioid,
+    information,
+    studio,
+  };
+}
+
+export function updateStudioInformationFailure(error) {
+  return {
+    type: UPDATE_STUDIO_INFORMATION_FAILURE,
+    error,
+  };
+}
+
+export function updateStudioSuccess(studio) {
+  return {
+    type: UPDATE_STUDIO_SUCCESS,
     studio,
   };
 }

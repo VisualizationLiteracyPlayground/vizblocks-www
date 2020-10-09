@@ -39,6 +39,7 @@ import ColorPallete from '../../colorPallete';
 import NavigationBar from '../../components/NavigationBar';
 import MyStuffMast from '../../components/MyStuffMast';
 import ProjectListView from '../../components/ProjectListView';
+import StudioListView from '../../components/StudioListView';
 import { makeSelectCurrentUser } from '../App/selectors';
 
 export function MyStuff({
@@ -121,13 +122,11 @@ export function MyStuff({
                 display={index === tabIndex ? 'block' : 'none'}
               >
                 {!loaded && <Spinner />}
-                {index === 1 && loaded && studios.length === 0 && (
-                  <Paragraph>Start joining studios!</Paragraph>
-                )}
                 {index === 2 && <Paragraph>Coming soon!</Paragraph>}
                 {loaded && (index === 0 || index === 3) && (
                   <ProjectListView showDeleted={index === 3} />
                 )}
+                {loaded && index === 1 && <StudioListView />}
               </Pane>
             ))}
           </Pane>

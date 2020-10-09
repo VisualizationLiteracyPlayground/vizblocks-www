@@ -11,6 +11,9 @@ import {
   CREATE_STUDIO_SUCCESS,
   LOAD_STUDIO_FAILURE,
   LOAD_STUDIO_SUCCESS,
+  UPDATE_STUDIO_PERMISSIONS_FAILURE,
+  UPDATE_STUDIO_INFORMATION_FAILURE,
+  UPDATE_STUDIO_SUCCESS,
 } from './constants';
 
 export const initialState = {
@@ -27,10 +30,13 @@ const studioPageReducer = (state = initialState, action) =>
         break;
       case CREATE_STUDIO_FAILURE:
       case LOAD_STUDIO_FAILURE:
+      case UPDATE_STUDIO_PERMISSIONS_FAILURE:
+      case UPDATE_STUDIO_INFORMATION_FAILURE:
         draft.error = action.error;
         break;
       case CREATE_STUDIO_SUCCESS:
       case LOAD_STUDIO_SUCCESS:
+      case UPDATE_STUDIO_SUCCESS:
         draft.studio = action.studio;
         break;
       default:
