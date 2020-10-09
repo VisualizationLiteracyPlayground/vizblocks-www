@@ -1,8 +1,5 @@
-/* eslint-disable no-nested-ternary */
-/* eslint-disable no-return-assign */
 /* eslint-disable no-shadow */
 /* eslint-disable no-underscore-dangle */
-/* eslint-disable prefer-destructuring */
 /* eslint-disable react/prop-types */
 /* eslint-disable react/no-unused-prop-types */
 /**
@@ -11,7 +8,7 @@
  *
  */
 
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { useLocation, Redirect } from 'react-router-dom';
@@ -21,6 +18,7 @@ import {
   Button,
   CogIcon,
   Dialog,
+  DuplicateIcon,
   Heading,
   IconButton,
   Pane,
@@ -31,10 +29,12 @@ import {
   Spinner,
   Switch,
   Tablist,
+  TextareaField,
   TextInputField,
   toaster,
 } from 'evergreen-ui';
 
+import { WEBSITE_BASE_URL } from 'utils/constants';
 import { useInjectSaga } from 'utils/injectSaga';
 import { useInjectReducer } from 'utils/injectReducer';
 import { prettyDateFormat } from 'utils/dateUtil';
@@ -46,6 +46,8 @@ import {
   loadStudioFailure,
   updateStudioPermissions,
   updateStudioInformation,
+  addFollower,
+  removeFollower,
 } from './actions';
 import {
   makeSelectError,
@@ -58,6 +60,7 @@ import saga from './saga';
 import ColorPallete from '../../colorPallete';
 import NavigationBar from '../../components/NavigationBar';
 import CuratorListView from '../../components/CuratorListView';
+import StudioUnfollowConfirmation from '../../components/StudioUnfollowConfirmation';
 import { makeSelectCurrentUser } from '../App/selectors';
 
 function getStudioHeaderInfo(studio) {
@@ -92,6 +95,8 @@ export function StudioPage({
   loadStudio,
   updateStudioPermissions,
   updateStudioInformation,
+  addFollower,
+  removeFollower,
   error,
   setError,
 }) {
@@ -108,6 +113,7 @@ export function StudioPage({
     isStateful ? location.state.studioid : 0,
   );
   const [loaded, setLoaded] = useState(false);
+  // Dialog States
   const [permissionFields, setPermissionFields] = useState({
     member: {
       addFolder: false,
@@ -121,8 +127,19 @@ export function StudioPage({
     description: '',
   });
   const [showInformation, setShowInformation] = useState(false);
+  const [showShareURL, setShowShareURL] = useState(false);
+  const [showUnfollowConfirmation, setShowUnfollowConfirmation] = useState(
+    false,
+  );
+  // Text area that contains studio share url
+  const copyAreaRef = useRef(null);
 
   const tabsList = ['Projects', 'Comments', 'Curators'];
+
+  function copyUrlToClipboard() {
+    copyAreaRef.current.select();
+    document.execCommand('copy');
+  }
 
   function setUserInformation() {
     if (!user) {
@@ -130,7 +147,7 @@ export function StudioPage({
       setUserRole(USER_ROLE.GUEST);
     }
     const userCuratorProfile = studio.curators.find(
-      curator => curator.user._id === user.user.id,
+      curator => curator.user._id === user.data.id,
     );
     if (userCuratorProfile) {
       setUserRole(userCuratorProfile.role);
@@ -163,10 +180,18 @@ export function StudioPage({
     );
 
     if (!checkTitle && !checkDescription) {
-      updateStudioInformation(studioid, informationFields, studio);
+      updateStudioInformation(studioid, informationFields);
       setShowInformation(false);
     } else {
       setError(checkTitle || checkDescription || 'There are fields with error');
+    }
+  }
+
+  function triggerFollowUnfollow() {
+    if (userRole === USER_ROLE.UNLISTED) {
+      addFollower(studioid);
+    } else {
+      setShowUnfollowConfirmation(true);
     }
   }
 
@@ -301,7 +326,7 @@ export function StudioPage({
                   appearance="primary"
                   intent="success"
                   marginRight="1rem"
-                  onClick={() => {}}
+                  onClick={() => setShowShareURL(true)}
                 >
                   Share
                 </Button>
@@ -311,7 +336,7 @@ export function StudioPage({
                   intent={
                     userRole === USER_ROLE.UNLISTED ? 'success' : 'warning'
                   }
-                  onClick={() => {}}
+                  onClick={() => triggerFollowUnfollow()}
                 >
                   {userRole === USER_ROLE.UNLISTED ? 'Follow' : 'Unfollow'}
                 </Button>
@@ -368,97 +393,142 @@ export function StudioPage({
               ))}
             </Pane>
           </Pane>
+          <Dialog
+            isShown={showPermissions}
+            title="Permissions Settings"
+            intent="success"
+            onCloseComplete={() => {
+              setPermissions();
+              setShowPermissions(false);
+            }}
+            onConfirm={() => {
+              updateStudioPermissions(studioid, permissionFields);
+              setShowPermissions(false);
+            }}
+            confirmLabel="Save"
+          >
+            <Heading size={300} marginTop="0.5rem" color="gray">
+              <b>Member</b>
+            </Heading>
+            <Pane>
+              <Heading size={300} marginTop="0.5rem" color="gray">
+                Add new folder
+              </Heading>
+              <Switch
+                checked={permissionFields.member.addFolder}
+                onChange={e => {
+                  const newPermissions = Object.assign({}, permissionFields);
+                  newPermissions.member.addFolder = e.target.checked;
+                  setPermissionFields(newPermissions);
+                }}
+              />
+              <Heading size={300} marginTop="0.5rem" color="gray">
+                Add new project
+              </Heading>
+              <Switch
+                checked={permissionFields.member.addProject}
+                onChange={e => {
+                  const newPermissions = Object.assign({}, permissionFields);
+                  newPermissions.member.addProject = e.target.checked;
+                  setPermissionFields(newPermissions);
+                }}
+              />
+              <Heading size={300} marginTop="0.5rem" color="gray">
+                Comment
+              </Heading>
+              <Switch
+                checked={permissionFields.member.commenting}
+                onChange={e => {
+                  const newPermissions = Object.assign({}, permissionFields);
+                  newPermissions.member.commenting = e.target.checked;
+                  setPermissionFields(newPermissions);
+                }}
+              />
+            </Pane>
+          </Dialog>
+          <Dialog
+            isShown={showInformation}
+            title="Studio Information"
+            intent="success"
+            onCloseComplete={() => setShowInformation(false)}
+            onConfirm={() => {
+              submitInformationChange();
+            }}
+            confirmLabel="Save"
+          >
+            <TextInputField
+              width="100%"
+              label="Title"
+              placeholder="Title"
+              validationMessage={validateStudioTitle(informationFields.title)}
+              value={informationFields.title}
+              onChange={e => {
+                const newInformationFields = Object.assign(
+                  {},
+                  informationFields,
+                );
+                newInformationFields.title = e.target.value;
+                setInformationFields(newInformationFields);
+              }}
+            />
+            <TextInputField
+              width="100%"
+              height="auto"
+              marginTop="2rem"
+              label="Description"
+              placeholder="Description"
+              validationMessage={validateStudioDescription(
+                informationFields.description,
+              )}
+              value={informationFields.description}
+              onChange={e => {
+                const newInformationFields = Object.assign(
+                  {},
+                  informationFields,
+                );
+                newInformationFields.description = e.target.value;
+                setInformationFields(newInformationFields);
+              }}
+            />
+          </Dialog>
+          <Dialog
+            isShown={showShareURL}
+            hasFooter={false}
+            hasHeader={false}
+            onCloseComplete={() => setShowShareURL(false)}
+          >
+            <Pane display="flex" alignItems="center">
+              <Heading size={400}>
+                <b>Share studio url:</b>
+              </Heading>
+              {document.queryCommandSupported('copy') && (
+                <IconButton
+                  icon={DuplicateIcon}
+                  marginLeft="1rem"
+                  appearance="minimal"
+                  onClick={() => copyUrlToClipboard()}
+                />
+              )}
+            </Pane>
+            <TextareaField
+              marginTop="1rem"
+              flexGrow={2}
+              ref={copyAreaRef}
+              value={`${WEBSITE_BASE_URL}share-studio/${studioid}`}
+            />
+          </Dialog>
+          <StudioUnfollowConfirmation
+            isShown={showUnfollowConfirmation}
+            userRole={userRole}
+            curators={studio.curators}
+            closeCallback={() => setShowUnfollowConfirmation(false)}
+            confirmCallback={() => {
+              setShowUnfollowConfirmation(false);
+              removeFollower(studioid);
+            }}
+          />
         </Pane>
       )}
-      <Dialog
-        isShown={showPermissions}
-        title="Permissions Settings"
-        intent="success"
-        onCloseComplete={() => setShowPermissions(false)}
-        onConfirm={() => {
-          updateStudioPermissions(studioid, permissionFields, studio);
-          setShowPermissions(false);
-        }}
-        confirmLabel="Save"
-      >
-        <Heading size={300} marginTop="0.5rem" color="gray">
-          <b>Member</b>
-        </Heading>
-        <Pane>
-          <Heading size={300} marginTop="0.5rem" color="gray">
-            Add new folder
-          </Heading>
-          <Switch
-            checked={permissionFields.member.addFolder}
-            onChange={e => {
-              const newPermissions = Object.assign({}, permissionFields);
-              newPermissions.member.addFolder = e.target.checked;
-              setPermissionFields(newPermissions);
-            }}
-          />
-          <Heading size={300} marginTop="0.5rem" color="gray">
-            Add new project
-          </Heading>
-          <Switch
-            checked={permissionFields.member.addProject}
-            onChange={e => {
-              const newPermissions = Object.assign({}, permissionFields);
-              newPermissions.member.addProject = e.target.checked;
-              setPermissionFields(newPermissions);
-            }}
-          />
-          <Heading size={300} marginTop="0.5rem" color="gray">
-            Comment
-          </Heading>
-          <Switch
-            checked={permissionFields.member.commenting}
-            onChange={e => {
-              const newPermissions = Object.assign({}, permissionFields);
-              newPermissions.member.commenting = e.target.checked;
-              setPermissionFields(newPermissions);
-            }}
-          />
-        </Pane>
-      </Dialog>
-      <Dialog
-        isShown={showInformation}
-        title="Studio Information"
-        intent="success"
-        onCloseComplete={() => setShowInformation(false)}
-        onConfirm={() => {
-          submitInformationChange();
-        }}
-        confirmLabel="Save"
-      >
-        <TextInputField
-          width="100%"
-          label="Title"
-          placeholder="Title"
-          validationMessage={validateStudioTitle(informationFields.title)}
-          value={informationFields.title}
-          onChange={e => {
-            const newInformationFields = Object.assign({}, informationFields);
-            newInformationFields.title = e.target.value;
-            setInformationFields(newInformationFields);
-          }}
-        />
-        <TextInputField
-          width="100%"
-          height="auto"
-          marginTop="2rem"
-          label="Description"
-          placeholder="Description"
-          validationMessage={validateStudioDescription(
-            informationFields.description,
-          )}
-          value={informationFields.description}
-          onChange={e => {
-            const newInformationFields = Object.assign({}, informationFields);
-            newInformationFields.description = e.target.value;
-            setInformationFields(newInformationFields);
-          }}
-        />
-      </Dialog>
     </Pane>
   ) : (
     <Redirect to="/" />
@@ -481,10 +551,12 @@ function mapDispatchToProps(dispatch) {
     dispatch,
     createStudio: () => dispatch(createStudio()),
     loadStudio: studioid => dispatch(loadStudio(studioid)),
-    updateStudioPermissions: (studioid, permissions, studio) =>
-      dispatch(updateStudioPermissions(studioid, permissions, studio)),
-    updateStudioInformation: (studioid, information, studio) =>
-      dispatch(updateStudioInformation(studioid, information, studio)),
+    updateStudioPermissions: (studioid, permissions) =>
+      dispatch(updateStudioPermissions(studioid, permissions)),
+    updateStudioInformation: (studioid, information) =>
+      dispatch(updateStudioInformation(studioid, information)),
+    addFollower: studioid => dispatch(addFollower(studioid)),
+    removeFollower: studioid => dispatch(removeFollower(studioid)),
     setError: error => dispatch(loadStudioFailure(error)),
   };
 }

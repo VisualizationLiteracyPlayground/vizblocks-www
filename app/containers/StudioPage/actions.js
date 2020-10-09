@@ -16,6 +16,10 @@ import {
   UPDATE_STUDIO_PERMISSIONS_FAILURE,
   UPDATE_STUDIO_INFORMATION,
   UPDATE_STUDIO_INFORMATION_FAILURE,
+  ADD_FOLLOWER,
+  ADD_FOLLOWER_FAILURE,
+  REMOVE_FOLLOWER,
+  REMOVE_FOLLOWER_FAILURE,
   UPDATE_STUDIO_SUCCESS,
 } from './constants';
 
@@ -66,12 +70,11 @@ export function loadStudioSuccess(studio) {
   };
 }
 
-export function updateStudioPermissions(studioid, permissions, studio) {
+export function updateStudioPermissions(studioid, permissions) {
   return {
     type: UPDATE_STUDIO_PERMISSIONS,
     studioid,
     permissions,
-    studio,
   };
 }
 
@@ -82,18 +85,45 @@ export function updateStudioPermissionsFailure(error) {
   };
 }
 
-export function updateStudioInformation(studioid, information, studio) {
+export function updateStudioInformation(studioid, information) {
   return {
     type: UPDATE_STUDIO_INFORMATION,
     studioid,
     information,
-    studio,
   };
 }
 
 export function updateStudioInformationFailure(error) {
   return {
     type: UPDATE_STUDIO_INFORMATION_FAILURE,
+    error,
+  };
+}
+
+export function addFollower(studioid) {
+  return {
+    type: ADD_FOLLOWER,
+    studioid,
+  };
+}
+
+export function addFollowerFailure(error) {
+  return {
+    type: ADD_FOLLOWER_FAILURE,
+    error,
+  };
+}
+
+export function removeFollower(studioid) {
+  return {
+    type: REMOVE_FOLLOWER,
+    studioid,
+  };
+}
+
+export function removeFollowerFailure(error) {
+  return {
+    type: REMOVE_FOLLOWER_FAILURE,
     error,
   };
 }

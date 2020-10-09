@@ -10,7 +10,7 @@
  */
 
 import React, { memo, useState, useEffect } from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 import { toaster } from 'evergreen-ui';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
@@ -115,6 +115,18 @@ export function App({
             component={VizblocksGui}
           />
           <Route exact path="/studio" component={StudioPage} />
+          <Route
+            exact
+            path="/share-studio/:studioid"
+            render={props => (
+              <Redirect
+                to={{
+                  pathname: '/studio',
+                  state: { studioid: props.match.params.studioid },
+                }}
+              />
+            )}
+          />
           <Route component={NotFoundPage} />
         </Switch>
       )}
