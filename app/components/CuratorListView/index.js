@@ -38,7 +38,6 @@ function CuratorListView({ userRole, curators }) {
           <IconButton
             icon={sortManagerFirst ? CaretDownIcon : CaretUpIcon}
             appearance="minimal"
-            size={24}
             onClick={() => setSortManagerFirst(!sortManagerFirst)}
           />
         </Table.HeaderCell>
@@ -74,7 +73,6 @@ function CuratorListView({ userRole, curators }) {
                   icon={EditIcon}
                   display={userRole === USER_ROLE.MANAGER ? 'block' : 'none'}
                   appearance="minimal"
-                  size={32}
                   onClickCapture={event => {
                     event.stopPropagation();
                     console.log('clicked edit icon in table');

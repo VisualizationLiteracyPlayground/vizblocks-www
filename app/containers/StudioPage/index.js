@@ -511,10 +511,12 @@ export function StudioPage({
               )}
             </Pane>
             <TextareaField
+              label=""
               marginTop="1rem"
               flexGrow={2}
               ref={copyAreaRef}
               value={`${WEBSITE_BASE_URL}share-studio/${studioid}`}
+              readOnly
             />
           </Dialog>
           <StudioUnfollowConfirmation
