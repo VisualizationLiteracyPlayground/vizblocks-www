@@ -10,7 +10,7 @@ import React, { memo } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { Heading, Pane, Paragraph, Table, Text } from 'evergreen-ui';
+import { Heading, Pane, Paragraph, Table, Strong } from 'evergreen-ui';
 
 import { makeSelectStudios } from 'containers/MyStuff/selectors';
 import history from 'utils/history';
@@ -69,15 +69,13 @@ function StudioListView({ studios }) {
                   >
                     <Pane display="flex" flexDirection="column">
                       <Heading size={600}>{studio.title}</Heading>
-                      <Text size={400}>
+                      <Heading size={300} marginTop="0.2rem" color="dark-gray">
                         Last modified:{' '}
                         {prettyDateFormat(studio.history.modified)}
-                      </Text>
-                    </Pane>
-                    <Pane display="flex">
-                      <Heading size={300} marginTop="0.5rem" color="gray">
-                        {`Curators: ${studio.curators.length}`}
                       </Heading>
+                      <Strong size={300} marginTop="0.5rem" color="gray">
+                        {`Curators: ${studio.curators.length}`}
+                      </Strong>
                     </Pane>
                   </Pane>
                 </Table.Cell>

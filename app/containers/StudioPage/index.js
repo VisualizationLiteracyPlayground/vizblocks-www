@@ -27,7 +27,6 @@ import {
   Position,
   SidebarTab,
   Spinner,
-  Switch,
   Tablist,
   TextareaField,
   TextInputField,
@@ -60,6 +59,7 @@ import saga from './saga';
 import ColorPallete from '../../colorPallete';
 import NavigationBar from '../../components/NavigationBar';
 import CuratorListView from '../../components/CuratorListView';
+import StudioPermissionsDialog from '../../components/StudioPermissionsDialog';
 import StudioUnfollowConfirmation from '../../components/StudioUnfollowConfirmation';
 import { makeSelectCurrentUser } from '../App/selectors';
 
@@ -108,19 +108,13 @@ export function StudioPage({
   const isStateful = !!location.state;
 
   const [tabIndex, setTabIndex] = useState(0);
+  const [success, setSuccess] = useState(false);
   const [userRole, setUserRole] = useState(USER_ROLE.UNLISTED);
   const [studioid, setStudioid] = useState(
     isStateful ? location.state.studioid : 0,
   );
   const [loaded, setLoaded] = useState(false);
   // Dialog States
-  const [permissionFields, setPermissionFields] = useState({
-    member: {
-      addFolder: false,
-      addProject: false,
-      commenting: false,
-    },
-  });
   const [showPermissions, setShowPermissions] = useState(false);
   const [informationFields, setInformationFields] = useState({
     title: '',
@@ -139,6 +133,10 @@ export function StudioPage({
   function copyUrlToClipboard() {
     copyAreaRef.current.select();
     document.execCommand('copy');
+    setSuccess({
+      title: 'Copied link to clipboard!',
+      description: '',
+    });
   }
 
   function setUserInformation() {
@@ -154,16 +152,6 @@ export function StudioPage({
     } else {
       setUserRole(USER_ROLE.UNLISTED);
     }
-  }
-
-  function setPermissions() {
-    setPermissionFields({
-      member: {
-        addFolder: studio.settings.member.addFolder,
-        addProject: studio.settings.member.addProject,
-        commenting: studio.settings.member.commenting,
-      },
-    });
   }
 
   function setInformation() {
@@ -211,7 +199,6 @@ export function StudioPage({
     if (studio) {
       setStudioid(studio._id);
       setUserInformation();
-      setPermissions();
       setInformation();
     }
   }, [studio]);
@@ -224,6 +211,14 @@ export function StudioPage({
       setError(false);
     }
   }, [error]);
+  useEffect(() => {
+    if (success) {
+      toaster.success(success.title, {
+        description: success.description,
+      });
+      setSuccess(false);
+    }
+  }, [success]);
 
   return isStateful ? (
     <Pane height="100vh" background={ColorPallete.backgroundColor}>
@@ -393,59 +388,14 @@ export function StudioPage({
               ))}
             </Pane>
           </Pane>
-          <Dialog
+          <StudioPermissionsDialog
             isShown={showPermissions}
-            title="Permissions Settings"
-            intent="success"
-            onCloseComplete={() => {
-              setPermissions();
-              setShowPermissions(false);
-            }}
-            onConfirm={() => {
-              updateStudioPermissions(studioid, permissionFields);
-              setShowPermissions(false);
-            }}
-            confirmLabel="Save"
-          >
-            <Heading size={300} marginTop="0.5rem" color="gray">
-              <b>Member</b>
-            </Heading>
-            <Pane>
-              <Heading size={300} marginTop="0.5rem" color="gray">
-                Add new folder
-              </Heading>
-              <Switch
-                checked={permissionFields.member.addFolder}
-                onChange={e => {
-                  const newPermissions = Object.assign({}, permissionFields);
-                  newPermissions.member.addFolder = e.target.checked;
-                  setPermissionFields(newPermissions);
-                }}
-              />
-              <Heading size={300} marginTop="0.5rem" color="gray">
-                Add new project
-              </Heading>
-              <Switch
-                checked={permissionFields.member.addProject}
-                onChange={e => {
-                  const newPermissions = Object.assign({}, permissionFields);
-                  newPermissions.member.addProject = e.target.checked;
-                  setPermissionFields(newPermissions);
-                }}
-              />
-              <Heading size={300} marginTop="0.5rem" color="gray">
-                Comment
-              </Heading>
-              <Switch
-                checked={permissionFields.member.commenting}
-                onChange={e => {
-                  const newPermissions = Object.assign({}, permissionFields);
-                  newPermissions.member.commenting = e.target.checked;
-                  setPermissionFields(newPermissions);
-                }}
-              />
-            </Pane>
-          </Dialog>
+            studio={studio}
+            updateCallback={(studioid, permissionFields) =>
+              updateStudioPermissions(studioid, permissionFields)
+            }
+            setShown={shown => setShowPermissions(shown)}
+          />
           <Dialog
             isShown={showInformation}
             title="Studio Information"

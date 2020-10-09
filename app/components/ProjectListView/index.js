@@ -111,10 +111,10 @@ function ProjectListView({
                       <Heading size={600}>
                         {project.title ? project.title : 'Untitled'}
                       </Heading>
-                      <Text size={400}>
+                      <Heading size={300} marginTop="0.2rem" color="dark-gray">
                         Last modified:{' '}
                         {prettyDateFormat(project.history.modified)}
-                      </Text>
+                      </Heading>
                     </Pane>
                     <Pane display="flex" alignItems="flex-end">
                       <EyeOpenIcon color="info" marginRight="0.5rem" />
