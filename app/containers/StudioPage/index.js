@@ -29,7 +29,6 @@ import {
   Spinner,
   Tablist,
   TextareaField,
-  TextInputField,
   toaster,
 } from 'evergreen-ui';
 
@@ -59,6 +58,7 @@ import saga from './saga';
 import ColorPallete from '../../colorPallete';
 import NavigationBar from '../../components/NavigationBar';
 import CuratorListView from '../../components/CuratorListView';
+import StudioInformationDialog from '../../components/StudioInformationDialog';
 import StudioPermissionsDialog from '../../components/StudioPermissionsDialog';
 import StudioUnfollowConfirmation from '../../components/StudioUnfollowConfirmation';
 import { makeSelectCurrentUser } from '../App/selectors';
@@ -68,24 +68,6 @@ function getStudioHeaderInfo(studio) {
     ? `Updated: ${prettyDateFormat(studio.history.modified)} | Curators: 
       ${studio.curators.length}`
     : '';
-}
-
-function validateStudioTitle(title) {
-  let msg = null;
-  if (title === '') {
-    msg = 'Title is required';
-  } else if (title.length > 50) {
-    msg = `${title.length}/50 characters`;
-  }
-  return msg;
-}
-
-function validateStudioDescription(description) {
-  let msg = null;
-  if (description.length > 255) {
-    msg = `${description.length}/255 characters`;
-  }
-  return msg;
 }
 
 export function StudioPage({
@@ -116,10 +98,6 @@ export function StudioPage({
   const [loaded, setLoaded] = useState(false);
   // Dialog States
   const [showPermissions, setShowPermissions] = useState(false);
-  const [informationFields, setInformationFields] = useState({
-    title: '',
-    description: '',
-  });
   const [showInformation, setShowInformation] = useState(false);
   const [showShareURL, setShowShareURL] = useState(false);
   const [showUnfollowConfirmation, setShowUnfollowConfirmation] = useState(
@@ -154,27 +132,6 @@ export function StudioPage({
     }
   }
 
-  function setInformation() {
-    setInformationFields({
-      title: studio.title,
-      description: studio.description,
-    });
-  }
-
-  function submitInformationChange() {
-    const checkTitle = validateStudioTitle(informationFields.title);
-    const checkDescription = validateStudioDescription(
-      informationFields.description,
-    );
-
-    if (!checkTitle && !checkDescription) {
-      updateStudioInformation(studioid, informationFields);
-      setShowInformation(false);
-    } else {
-      setError(checkTitle || checkDescription || 'There are fields with error');
-    }
-  }
-
   function triggerFollowUnfollow() {
     if (userRole === USER_ROLE.UNLISTED) {
       addFollower(studioid);
@@ -199,7 +156,6 @@ export function StudioPage({
     if (studio) {
       setStudioid(studio._id);
       setUserInformation();
-      setInformation();
     }
   }, [studio]);
   useEffect(() => {
@@ -396,51 +352,15 @@ export function StudioPage({
             }
             setShown={shown => setShowPermissions(shown)}
           />
-          <Dialog
+          <StudioInformationDialog
             isShown={showInformation}
-            title="Studio Information"
-            intent="success"
-            onCloseComplete={() => setShowInformation(false)}
-            onConfirm={() => {
-              submitInformationChange();
-            }}
-            confirmLabel="Save"
-          >
-            <TextInputField
-              width="100%"
-              label="Title"
-              placeholder="Title"
-              validationMessage={validateStudioTitle(informationFields.title)}
-              value={informationFields.title}
-              onChange={e => {
-                const newInformationFields = Object.assign(
-                  {},
-                  informationFields,
-                );
-                newInformationFields.title = e.target.value;
-                setInformationFields(newInformationFields);
-              }}
-            />
-            <TextInputField
-              width="100%"
-              height="auto"
-              marginTop="2rem"
-              label="Description"
-              placeholder="Description"
-              validationMessage={validateStudioDescription(
-                informationFields.description,
-              )}
-              value={informationFields.description}
-              onChange={e => {
-                const newInformationFields = Object.assign(
-                  {},
-                  informationFields,
-                );
-                newInformationFields.description = e.target.value;
-                setInformationFields(newInformationFields);
-              }}
-            />
-          </Dialog>
+            studio={studio}
+            updateCallback={(studioid, informationFields) =>
+              updateStudioInformation(studioid, informationFields)
+            }
+            validationErrorCallback={error => setError(error)}
+            setShown={shown => setShowInformation(shown)}
+          />
           <Dialog
             isShown={showShareURL}
             hasFooter={false}
