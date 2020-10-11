@@ -11,6 +11,7 @@ import {
   UPDATE_STUDIO_INFORMATION,
   ADD_FOLLOWER,
   REMOVE_FOLLOWER,
+  UPDATE_CURATOR_ROLE,
 } from './constants';
 import {
   createStudioFailure,
@@ -20,6 +21,7 @@ import {
   updateStudioInformationFailure,
   addFollowerFailure,
   removeFollowerFailure,
+  updateCuratorRoleFailure,
   updateStudioSuccess,
 } from './actions';
 import { setSuccess, setError } from '../App/actions';
@@ -169,6 +171,34 @@ function* removeFollower({ studioid }) {
   }
 }
 
+function* updateCuratorRole({ studioid, curatorid, curatorRole }) {
+  const [success, response] = yield patch(
+    `/studio/curator-role/${studioid}`,
+    {
+      curatorid,
+      curatorRole,
+    },
+    response => response.data,
+    e => e.response,
+  );
+  if (success) {
+    const { studio } = response.data;
+    yield put(updateStudioSuccess(studio));
+    yield put(
+      setSuccess({
+        title: 'Curator role modified!',
+        description: '',
+      }),
+    );
+  } else {
+    let msg = 'Unable to reach the server, please try again later.';
+    if (response) {
+      msg = response.data.error;
+    }
+    yield put(updateCuratorRoleFailure(msg));
+  }
+}
+
 // Individual exports for testing
 export default function* studioPageSaga() {
   yield takeLatest(CREATE_STUDIO, createStudio);
@@ -177,4 +207,5 @@ export default function* studioPageSaga() {
   yield takeLatest(UPDATE_STUDIO_INFORMATION, updateStudioInformation);
   yield takeLatest(ADD_FOLLOWER, addFollower);
   yield takeLatest(REMOVE_FOLLOWER, removeFollower);
+  yield takeLatest(UPDATE_CURATOR_ROLE, updateCuratorRole);
 }

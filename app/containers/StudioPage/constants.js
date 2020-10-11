@@ -24,6 +24,9 @@ export const ADD_FOLLOWER = 'app/StudioPage/ADD_FOLLOWER';
 export const ADD_FOLLOWER_FAILURE = 'app/StudioPage/ADD_FOLLOWER_FAILURE';
 export const REMOVE_FOLLOWER = 'app/StudioPage/REMOVE_FOLLOWER';
 export const REMOVE_FOLLOWER_FAILURE = 'app/StudioPage/REMOVE_FOLLOWER_FAILURE';
+export const UPDATE_CURATOR_ROLE = 'app/StudioPage/UPDATE_CURATOR_ROLE';
+export const UPDATE_CURATOR_ROLE_FAILURE =
+  'app/StudioPage/UPDATE_CURATOR_ROLE_FAILURE';
 export const UPDATE_STUDIO_SUCCESS = 'app/StudioPage/UPDATE_STUDIO_SUCCESS';
 
 export const USER_ROLE = {

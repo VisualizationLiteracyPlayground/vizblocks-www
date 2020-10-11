@@ -15,6 +15,7 @@ import {
   UPDATE_STUDIO_INFORMATION_FAILURE,
   ADD_FOLLOWER_FAILURE,
   REMOVE_FOLLOWER_FAILURE,
+  UPDATE_CURATOR_ROLE_FAILURE,
   UPDATE_STUDIO_SUCCESS,
 } from './constants';
 
@@ -36,6 +37,7 @@ const studioPageReducer = (state = initialState, action) =>
       case UPDATE_STUDIO_INFORMATION_FAILURE:
       case ADD_FOLLOWER_FAILURE:
       case REMOVE_FOLLOWER_FAILURE:
+      case UPDATE_CURATOR_ROLE_FAILURE:
         draft.error = action.error;
         break;
       case CREATE_STUDIO_SUCCESS:

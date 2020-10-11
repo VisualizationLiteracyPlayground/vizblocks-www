@@ -20,6 +20,8 @@ import {
   ADD_FOLLOWER_FAILURE,
   REMOVE_FOLLOWER,
   REMOVE_FOLLOWER_FAILURE,
+  UPDATE_CURATOR_ROLE,
+  UPDATE_CURATOR_ROLE_FAILURE,
   UPDATE_STUDIO_SUCCESS,
 } from './constants';
 
@@ -124,6 +126,22 @@ export function removeFollower(studioid) {
 export function removeFollowerFailure(error) {
   return {
     type: REMOVE_FOLLOWER_FAILURE,
+    error,
+  };
+}
+
+export function updateCuratorRole(studioid, curatorid, curatorRole) {
+  return {
+    type: UPDATE_CURATOR_ROLE,
+    studioid,
+    curatorid,
+    curatorRole,
+  };
+}
+
+export function updateCuratorRoleFailure(error) {
+  return {
+    type: UPDATE_CURATOR_ROLE_FAILURE,
     error,
   };
 }

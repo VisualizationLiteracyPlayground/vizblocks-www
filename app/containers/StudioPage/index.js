@@ -337,7 +337,9 @@ export function StudioPage({
                   {index === 2 && (
                     <CuratorListView
                       userRole={userRole}
+                      user={user}
                       curators={studio.curators}
+                      studioid={studioid}
                     />
                   )}
                 </Pane>
