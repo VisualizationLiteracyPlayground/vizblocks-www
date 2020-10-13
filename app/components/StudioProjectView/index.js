@@ -29,6 +29,7 @@ import {
   Pane,
   PlusIcon,
   TrashIcon,
+  Tooltip,
   Heading,
 } from 'evergreen-ui';
 
@@ -42,6 +43,7 @@ import ProjectCard from 'components/ProjectCard';
 import StudioNewFolderDialog from 'components/StudioNewFolderDialog';
 import StudioAddProjectSheet from 'components/StudioAddProjectSheet/Loadable';
 import StudioDeleteFoldersDialog from 'components/StudioDeleteFoldersDialog';
+import StudioDeleteProjectsDialog from 'components/StudioDeleteProjectsDialog';
 
 import ColorPallete from '../../colorPallete';
 
@@ -71,13 +73,22 @@ function StudioProjectView({
   const [expandedProjectList, setExpandedProjectList] = useState(true);
   const [deleteFolderMode, setDeleteFolderMode] = useState(false);
   const [selectedFolders, setSelectedFolders] = useState([]);
+  const [deleteProjectMode, setDeleteProjectMode] = useState(false);
+  const [selectedProjects, setSelectedProjects] = useState([]);
   // Dialog states
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showAddProjectSheet, setShowAddProjectSheet] = useState(false);
   const [showDeleteFoldersDialog, setShowDeleteFoldersDialog] = useState(false);
+  const [showDeleteProjectsDialog, setShowDeleteProjectsDialog] = useState(
+    false,
+  );
 
   function initAndResetSelectedFolders() {
     setSelectedFolders(selectedFolders.fill(false, 0, folderList.length));
+  }
+
+  function initAndResetSelectedProjects() {
+    setSelectedProjects(selectedProjects.fill(false, 0, projectList.length));
   }
 
   function resetFolderDeleteMode() {
@@ -85,8 +96,23 @@ function StudioProjectView({
     initAndResetSelectedFolders();
   }
 
+  function resetProjectDeleteMode() {
+    setDeleteProjectMode(false);
+    initAndResetSelectedProjects();
+  }
+
+  function addProjectToSelected(index) {
+    const currSelected = [...selectedProjects];
+    currSelected[index] = !currSelected[index];
+    setSelectedProjects(currSelected);
+  }
+
   function countSelectedFolders() {
     return selectedFolders.filter(val => val).length;
+  }
+
+  function countSelectedProjects() {
+    return selectedProjects.filter(val => val).length;
   }
 
   function shouldShowDeleteFolderIcon() {
@@ -98,7 +124,16 @@ function StudioProjectView({
     return shouldShow;
   }
 
-  function deleteFolderidsPayload() {
+  function shouldShowDeleteProjectIcon() {
+    const shouldShow =
+      expandedProjectList &&
+      projectList.length > 0 &&
+      (userRole === USER_ROLE.MANAGER ||
+        (userRole === USER_ROLE.MEMBER && permissions.member.addProject));
+    return shouldShow;
+  }
+
+  function deleteFolderPayload() {
     const foldersToDelete = [];
     folderList.forEach((folder, index) => {
       if (selectedFolders[index]) {
@@ -106,6 +141,16 @@ function StudioProjectView({
       }
     });
     return foldersToDelete;
+  }
+
+  function deleteProjectPayload() {
+    const projectsToDelete = [];
+    projectList.forEach((project, index) => {
+      if (selectedProjects[index]) {
+        projectsToDelete.push(project);
+      }
+    });
+    return projectsToDelete;
   }
 
   function switchFolder(folder) {
@@ -235,20 +280,22 @@ function StudioProjectView({
             </Button>
             <Pane flexGrow={1} />
             {shouldShowDeleteFolderIcon() && (
-              <IconButton
-                icon={TrashIcon}
-                appearance={deleteFolderMode ? 'primary' : 'default'}
-                intent={deleteFolderMode ? 'danger' : 'none'}
-                marginTop="1rem"
-                marginRight="0.5rem"
-                onClick={() => {
-                  if (deleteFolderMode) {
-                    // Currently unsetting delete mode
-                    initAndResetSelectedFolders();
-                  }
-                  setDeleteFolderMode(!deleteFolderMode);
-                }}
-              />
+              <Tooltip content="Select folder(s) to delete">
+                <IconButton
+                  icon={TrashIcon}
+                  appearance={deleteFolderMode ? 'primary' : 'default'}
+                  intent={deleteFolderMode ? 'danger' : 'none'}
+                  marginTop="1rem"
+                  marginRight="0.5rem"
+                  onClick={() => {
+                    if (deleteFolderMode) {
+                      // Currently unsetting delete mode
+                      initAndResetSelectedFolders();
+                    }
+                    setDeleteFolderMode(!deleteFolderMode);
+                  }}
+                />
+              </Tooltip>
             )}
           </Pane>
           {expandedFolderList && deleteFolderMode && (
@@ -300,6 +347,15 @@ function StudioProjectView({
                     alignItems="center"
                     marginRight="2rem"
                     marginTop="1rem"
+                    onClick={() => {
+                      if (!deleteFolderMode) {
+                        switchFolder(folder);
+                      } else {
+                        const currSelected = [...selectedFolders];
+                        currSelected[index] = !currSelected[index];
+                        setSelectedFolders(currSelected);
+                      }
+                    }}
                   >
                     {deleteFolderMode && !selectedFolders[index] && (
                       <CircleIcon
@@ -320,15 +376,6 @@ function StudioProjectView({
                       paddingY="0.5rem"
                       display="flex"
                       elevation={1}
-                      onClick={() => {
-                        if (!deleteFolderMode) {
-                          switchFolder(folder);
-                        } else {
-                          const currSelected = [...selectedFolders];
-                          currSelected[index] = !currSelected[index];
-                          setSelectedFolders(currSelected);
-                        }
-                      }}
                     >
                       <FolderCloseIcon
                         color={
@@ -358,27 +405,121 @@ function StudioProjectView({
         </Pane>
       )}
       <Pane aria-label="Project view">
-        <Button
-          iconBefore={expandedProjectList ? DocumentOpenIcon : DocumentIcon}
-          appearance="minimal"
-          marginTop="1rem"
-          marginLeft="1rem"
-          iconAfter={expandedProjectList ? ChevronUpIcon : ChevronDownIcon}
-          onClick={() => setExpandedProjectList(!expandedProjectList)}
-        >
-          {`Projects (${projectList.length})`}
-        </Button>
+        <Pane display="flex">
+          <Button
+            iconBefore={expandedProjectList ? DocumentOpenIcon : DocumentIcon}
+            appearance="minimal"
+            marginTop="1rem"
+            marginLeft="1rem"
+            iconAfter={expandedProjectList ? ChevronUpIcon : ChevronDownIcon}
+            onClick={() => {
+              setExpandedProjectList(!expandedProjectList);
+              resetProjectDeleteMode();
+            }}
+          >
+            {`Projects (${projectList.length})`}
+          </Button>
+          <Pane flexGrow={1} />
+          {shouldShowDeleteProjectIcon() && (
+            <Tooltip content="Select project(s) to remove">
+              <IconButton
+                icon={TrashIcon}
+                appearance={deleteProjectMode ? 'primary' : 'default'}
+                intent={deleteProjectMode ? 'danger' : 'none'}
+                marginTop="1rem"
+                marginRight="0.5rem"
+                onClick={() => {
+                  if (deleteProjectMode) {
+                    // Currently unsetting delete mode
+                    initAndResetSelectedProjects();
+                  }
+                  setDeleteProjectMode(!deleteProjectMode);
+                }}
+              />
+            </Tooltip>
+          )}
+        </Pane>
+        {expandedProjectList && deleteProjectMode && (
+          <Pane>
+            <Pane
+              display="flex"
+              alignItems="center"
+              marginLeft="2.5rem"
+              marginTop="1rem"
+            >
+              <Heading size={300} color={ColorPallete.danger}>
+                Select projects that you wish to remove:
+              </Heading>
+              {countSelectedProjects() > 0 && (
+                <Button
+                  intent="danger"
+                  appearance="primary"
+                  marginLeft="1rem"
+                  onClick={() => setShowDeleteProjectsDialog(true)}
+                >
+                  {`Save changes (${countSelectedProjects()})`}
+                </Button>
+              )}
+            </Pane>
+            <Pane
+              width="25%"
+              borderColor={ColorPallete.backgroundColor}
+              marginLeft="2.5rem"
+              marginTop="1rem"
+              borderWidth="0.2rem"
+              borderTopStyle="solid"
+              aria-label="Horizontal divider"
+            />
+          </Pane>
+        )}
         {expandedProjectList && (
           <Pane
             display="flex"
             flexWrap="wrap"
             marginLeft="2.5rem"
+            marginBottom="1rem"
             aria-label="List of projects"
           >
             {projectList
               .sort((a, b) => a.title.localeCompare(b.title))
-              .map(project => (
-                <ProjectCard project={project} key={project._id} />
+              .map((project, index) => (
+                <Pane
+                  key={project._id}
+                  display="flex"
+                  flexDirection="column"
+                  opacity={
+                    deleteProjectMode && project.author._id !== user.data.id
+                      ? 0.5
+                      : 1
+                  }
+                  alignItems="center"
+                  marginRight="2rem"
+                  marginTop="1rem"
+                  onClick={
+                    deleteProjectMode && project.author._id === user.data.id
+                      ? () => addProjectToSelected(index)
+                      : undefined
+                  }
+                >
+                  {deleteProjectMode && !selectedProjects[index] && (
+                    <CircleIcon
+                      color={ColorPallete.grey}
+                      size={12}
+                      marginBottom="0.5rem"
+                    />
+                  )}
+                  {deleteProjectMode && selectedProjects[index] && (
+                    <FullCircleIcon
+                      color={ColorPallete.danger}
+                      size={12}
+                      marginBottom="0.5rem"
+                    />
+                  )}
+                  <ProjectCard
+                    project={project}
+                    onClickCallback={deleteProjectMode ? () => {} : undefined}
+                  />
+                </Pane>
               ))}
           </Pane>
         )}
@@ -403,8 +544,18 @@ function StudioProjectView({
           setShowDeleteFoldersDialog(false);
           resetFolderDeleteMode();
         }}
-        constructPayload={() => deleteFolderidsPayload()}
+        constructPayload={() => deleteFolderPayload()}
         studioid={studioid}
+      />
+      <StudioDeleteProjectsDialog
+        isShown={showDeleteProjectsDialog}
+        resetCallback={() => {
+          setShowDeleteProjectsDialog(false);
+          resetProjectDeleteMode();
+        }}
+        constructPayload={() => deleteProjectPayload()}
+        studioid={studioid}
+        folderid={currentFolder.id}
       />
     </Pane>
   );

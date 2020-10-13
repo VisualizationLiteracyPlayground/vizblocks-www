@@ -25,7 +25,7 @@ function truncateString(stringValue, maxLength) {
   return trimmed;
 }
 
-function ProjectCard({ project }) {
+function ProjectCard({ project, onClickCallback }) {
   return (
     <Card
       key={project._id}
@@ -34,17 +34,21 @@ function ProjectCard({ project }) {
       minWidth="10rem"
       display="flex"
       flexDirection="column"
-      marginRight="2rem"
-      marginTop="1rem"
-      onClick={() =>
-        history.push({
-          pathname: `/project-gui`,
-          state: {
-            title: project.title,
-            projectid: project._id,
-          },
-        })
-      }
+      onClick={() => {
+        if (onClickCallback) {
+          // Custom callback supplied
+          onClickCallback();
+        } else {
+          // Default callback
+          history.push({
+            pathname: `/project-gui`,
+            state: {
+              title: project.title,
+              projectid: project._id,
+            },
+          });
+        }
+      }}
     >
       <img
         style={{

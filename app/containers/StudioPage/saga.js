@@ -17,6 +17,7 @@ import {
   ADD_PROJECTS,
   LOAD_SUBFOLDER_PROJECTS,
   DELETE_SUBFOLDERS,
+  DELETE_PROJECTS,
 } from './constants';
 import {
   createStudioFailure,
@@ -30,6 +31,7 @@ import {
   createSubfolderFailure,
   addProjectsFailure,
   deleteSubfoldersFailure,
+  deleteProjectsFailure,
   updateStudioSuccess,
   loadUserProjectsFailure,
   loadUserProjectsSuccess,
@@ -347,6 +349,34 @@ function* deleteSubfolders({ studioid, folderids }) {
   }
 }
 
+function* deleteProjects({ studioid, folderid, projectids }) {
+  const [success, response] = yield patch(
+    `/studio/remove-projects/${studioid}`,
+    {
+      folderid,
+      projectids,
+    },
+    response => response.data,
+    e => e.response,
+  );
+  if (success) {
+    const { studio } = response.data;
+    yield put(updateStudioSuccess(studio));
+    yield put(
+      setSuccess({
+        title: 'Project(s) removed from studio!',
+        description: '',
+      }),
+    );
+  } else {
+    let msg = 'Unable to reach the server, please try again later.';
+    if (response) {
+      msg = response.data.error;
+    }
+    yield put(deleteProjectsFailure(msg));
+  }
+}
+
 // Individual exports for testing
 export default function* studioPageSaga() {
   yield takeLatest(CREATE_STUDIO, createStudio);
@@ -361,4 +391,5 @@ export default function* studioPageSaga() {
   yield takeLatest(ADD_PROJECTS, addProjects);
   yield takeLatest(LOAD_SUBFOLDER_PROJECTS, loadSubfolderProjects);
   yield takeLatest(DELETE_SUBFOLDERS, deleteSubfolders);
+  yield takeLatest(DELETE_PROJECTS, deleteProjects);
 }

@@ -28,6 +28,8 @@ import {
   ADD_PROJECTS_FAILURE,
   DELETE_SUBFOLDERS,
   DELETE_SUBFOLDERS_FAILURE,
+  DELETE_PROJECTS,
+  DELETE_PROJECTS_FAILURE,
   UPDATE_STUDIO_SUCCESS,
   LOAD_USER_PROJECTS,
   LOAD_USER_PROJECTS_FAILURE,
@@ -200,6 +202,22 @@ export function deleteSubfolders(studioid, folderids) {
 export function deleteSubfoldersFailure(error) {
   return {
     type: DELETE_SUBFOLDERS_FAILURE,
+    error,
+  };
+}
+
+export function deleteProjects(studioid, folderid, projectids) {
+  return {
+    type: DELETE_PROJECTS,
+    studioid,
+    folderid,
+    projectids,
+  };
+}
+
+export function deleteProjectsFailure(error) {
+  return {
+    type: DELETE_PROJECTS_FAILURE,
     error,
   };
 }
