@@ -17,13 +17,19 @@ import {
   CaretRightIcon,
   ChevronDownIcon,
   ChevronUpIcon,
+  CircleIcon,
   DocumentIcon,
   DocumentOpenIcon,
+  EditIcon,
   FolderCloseIcon,
   FolderOpenIcon,
+  FullCircleIcon,
+  IconButton,
   Strong,
   Pane,
   PlusIcon,
+  TrashIcon,
+  Heading,
 } from 'evergreen-ui';
 
 import { USER_ROLE } from 'containers/StudioPage/constants';
@@ -35,6 +41,7 @@ import {
 import ProjectCard from 'components/ProjectCard';
 import StudioNewFolderDialog from 'components/StudioNewFolderDialog';
 import StudioAddProjectSheet from 'components/StudioAddProjectSheet/Loadable';
+import StudioDeleteFoldersDialog from 'components/StudioDeleteFoldersDialog';
 
 import ColorPallete from '../../colorPallete';
 
@@ -62,12 +69,48 @@ function StudioProjectView({
   const [folderList, setFolderList] = useState(subFolders);
   const [expandedFolderList, setExpandedFolderList] = useState(true);
   const [expandedProjectList, setExpandedProjectList] = useState(true);
+  const [deleteFolderMode, setDeleteFolderMode] = useState(false);
+  const [selectedFolders, setSelectedFolders] = useState([]);
   // Dialog states
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showAddProjectSheet, setShowAddProjectSheet] = useState(false);
+  const [showDeleteFoldersDialog, setShowDeleteFoldersDialog] = useState(false);
+
+  function initAndResetSelectedFolders() {
+    setSelectedFolders(selectedFolders.fill(false, 0, folderList.length));
+  }
+
+  function resetFolderDeleteMode() {
+    setDeleteFolderMode(false);
+    initAndResetSelectedFolders();
+  }
+
+  function countSelectedFolders() {
+    return selectedFolders.filter(val => val).length;
+  }
+
+  function shouldShowDeleteFolderIcon() {
+    const shouldShow =
+      expandedFolderList &&
+      folderList.length > 0 &&
+      (userRole === USER_ROLE.MANAGER ||
+        (userRole === USER_ROLE.MEMBER && permissions.member.addFolder));
+    return shouldShow;
+  }
+
+  function deleteFolderidsPayload() {
+    const foldersToDelete = [];
+    folderList.forEach((folder, index) => {
+      if (selectedFolders[index]) {
+        foldersToDelete.push(folder);
+      }
+    });
+    return foldersToDelete;
+  }
 
   function switchFolder(folder) {
     setIsAtRoot(false);
+    setExpandedProjectList(true);
     setCurrentFolder({
       name: folder.name,
       id: folder._id,
@@ -78,6 +121,7 @@ function StudioProjectView({
 
   function switchToMain() {
     setIsAtRoot(true);
+    setExpandedProjectList(true);
     setCurrentFolder({
       name: baseFolderString,
       id: 0,
@@ -87,7 +131,7 @@ function StudioProjectView({
   }
 
   useEffect(() => {
-    setFolderList(subFolders);
+    // Manage render data
     if (isAtRoot) {
       setProjectList(rootFolder);
     } else {
@@ -98,6 +142,9 @@ function StudioProjectView({
         switchFolder(updatedFolder);
       }
     }
+    setFolderList(subFolders);
+    // Manage delete mode
+    resetFolderDeleteMode();
   }, [studio]);
   useEffect(() => {
     if (!isAtRoot) {
@@ -132,6 +179,22 @@ function StudioProjectView({
             New Folder
           </Button>
         )}
+        {!isAtRoot && (
+          <Button
+            marginY={8}
+            marginRight="0.5rem"
+            iconBefore={EditIcon}
+            disabled={
+              !(
+                userRole === USER_ROLE.MANAGER ||
+                (userRole === USER_ROLE.MEMBER && permissions.member.addFolder)
+              )
+            }
+            onClick={() => {}}
+          >
+            Edit Folder Name
+          </Button>
+        )}
         <Button
           marginY={8}
           marginRight="0.5rem"
@@ -156,16 +219,71 @@ function StudioProjectView({
       />
       {isAtRoot && (
         <Pane aria-label="Folder view">
-          <Button
-            iconBefore={expandedFolderList ? FolderOpenIcon : FolderCloseIcon}
-            appearance="minimal"
-            marginTop="1rem"
-            marginLeft="1rem"
-            iconAfter={expandedFolderList ? ChevronUpIcon : ChevronDownIcon}
-            onClick={() => setExpandedFolderList(!expandedFolderList)}
-          >
-            {`Folders (${folderList.length})`}
-          </Button>
+          <Pane display="flex">
+            <Button
+              iconBefore={expandedFolderList ? FolderOpenIcon : FolderCloseIcon}
+              appearance="minimal"
+              marginTop="1rem"
+              marginLeft="1rem"
+              iconAfter={expandedFolderList ? ChevronUpIcon : ChevronDownIcon}
+              onClick={() => {
+                setExpandedFolderList(!expandedFolderList);
+                resetFolderDeleteMode();
+              }}
+            >
+              {`Folders (${folderList.length})`}
+            </Button>
+            <Pane flexGrow={1} />
+            {shouldShowDeleteFolderIcon() && (
+              <IconButton
+                icon={TrashIcon}
+                appearance={deleteFolderMode ? 'primary' : 'default'}
+                intent={deleteFolderMode ? 'danger' : 'none'}
+                marginTop="1rem"
+                marginRight="0.5rem"
+                onClick={() => {
+                  if (deleteFolderMode) {
+                    // Currently unsetting delete mode
+                    initAndResetSelectedFolders();
+                  }
+                  setDeleteFolderMode(!deleteFolderMode);
+                }}
+              />
+            )}
+          </Pane>
+          {expandedFolderList && deleteFolderMode && (
+            <Pane>
+              <Pane
+                display="flex"
+                alignItems="center"
+                marginLeft="2.5rem"
+                marginTop="1rem"
+              >
+                <Heading size={300} color={ColorPallete.danger}>
+                  Select folders that you wish to delete:
+                </Heading>
+                {countSelectedFolders() > 0 && (
+                  <Button
+                    intent="danger"
+                    appearance="primary"
+                    marginLeft="1rem"
+                    onClick={() => setShowDeleteFoldersDialog(true)}
+                  >
+                    {`Save changes (${countSelectedFolders()})`}
+                  </Button>
+                )}
+              </Pane>
+              <Pane
+                width="25%"
+                borderColor={ColorPallete.backgroundColor}
+                marginLeft="2.5rem"
+                marginTop="1rem"
+                borderWidth="0.2rem"
+                borderTopStyle="solid"
+                aria-label="Horizontal divider"
+              />
+            </Pane>
+          )}
           {expandedFolderList && (
             <Pane
               display="flex"
@@ -173,31 +291,68 @@ function StudioProjectView({
               marginLeft="2.5rem"
               aria-label="List of folders"
             >
-              {folderList.map(folder => (
-                <Card
-                  key={folder._id}
-                  paddingX="1rem"
-                  paddingY="0.5rem"
-                  display="flex"
-                  elevation={1}
-                  marginRight="2rem"
-                  marginTop="1rem"
-                  onClick={() => switchFolder(folder)}
-                >
-                  <FolderCloseIcon
-                    color={ColorPallete.grey}
-                    size={12}
-                    marginTop="0.1rem"
-                  />
-                  <Strong
-                    size={300}
-                    color={ColorPallete.grey}
-                    marginLeft="0.5rem"
+              {folderList
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((folder, index) => (
+                  <Pane
+                    key={folder._id}
+                    display="flex"
+                    alignItems="center"
+                    marginRight="2rem"
+                    marginTop="1rem"
                   >
-                    {folder.name}
-                  </Strong>
-                </Card>
-              ))}
+                    {deleteFolderMode && !selectedFolders[index] && (
+                      <CircleIcon
+                        color={ColorPallete.grey}
+                        size={12}
+                        marginRight="0.5rem"
+                      />
+                    )}
+                    {deleteFolderMode && selectedFolders[index] && (
+                      <FullCircleIcon
+                        color={ColorPallete.danger}
+                        size={12}
+                        marginRight="0.5rem"
+                      />
+                    )}
+                    <Card
+                      paddingX="1rem"
+                      paddingY="0.5rem"
+                      display="flex"
+                      elevation={1}
+                      onClick={() => {
+                        if (!deleteFolderMode) {
+                          switchFolder(folder);
+                        } else {
+                          const currSelected = [...selectedFolders];
+                          currSelected[index] = !currSelected[index];
+                          setSelectedFolders(currSelected);
+                        }
+                      }}
+                    >
+                      <FolderCloseIcon
+                        color={
+                          selectedFolders[index]
+                            ? ColorPallete.danger
+                            : ColorPallete.grey
+                        }
+                        size={12}
+                        marginTop="0.1rem"
+                      />
+                      <Strong
+                        size={300}
+                        color={
+                          selectedFolders[index]
+                            ? ColorPallete.danger
+                            : ColorPallete.grey
+                        }
+                        marginLeft="0.5rem"
+                      >
+                        {folder.name}
+                      </Strong>
+                    </Card>
+                  </Pane>
+                ))}
             </Pane>
           )}
         </Pane>
@@ -220,9 +375,11 @@ function StudioProjectView({
             marginLeft="2.5rem"
             aria-label="List of projects"
           >
-            {projectList.map(project => (
-              <ProjectCard project={project} key={project._id} />
-            ))}
+            {projectList
+              .sort((a, b) => a.title.localeCompare(b.title))
+              .map(project => (
+                <ProjectCard project={project} key={project._id} />
+              ))}
           </Pane>
         )}
       </Pane>
@@ -238,6 +395,15 @@ function StudioProjectView({
         isShown={showAddProjectSheet}
         setShown={setShowAddProjectSheet}
         folder={currentFolder}
+        studioid={studioid}
+      />
+      <StudioDeleteFoldersDialog
+        isShown={showDeleteFoldersDialog}
+        resetCallback={() => {
+          setShowDeleteFoldersDialog(false);
+          resetFolderDeleteMode();
+        }}
+        constructPayload={() => deleteFolderidsPayload()}
         studioid={studioid}
       />
     </Pane>

@@ -26,6 +26,8 @@ import {
   CREATE_SUBFOLDER_FAILURE,
   ADD_PROJECTS,
   ADD_PROJECTS_FAILURE,
+  DELETE_SUBFOLDERS,
+  DELETE_SUBFOLDERS_FAILURE,
   UPDATE_STUDIO_SUCCESS,
   LOAD_USER_PROJECTS,
   LOAD_USER_PROJECTS_FAILURE,
@@ -183,6 +185,21 @@ export function addProjects(studioid, folderid, projects) {
 export function addProjectsFailure(error) {
   return {
     type: ADD_PROJECTS_FAILURE,
+    error,
+  };
+}
+
+export function deleteSubfolders(studioid, folderids) {
+  return {
+    type: DELETE_SUBFOLDERS,
+    studioid,
+    folderids,
+  };
+}
+
+export function deleteSubfoldersFailure(error) {
+  return {
+    type: DELETE_SUBFOLDERS_FAILURE,
     error,
   };
 }

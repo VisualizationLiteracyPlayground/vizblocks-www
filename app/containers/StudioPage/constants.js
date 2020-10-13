@@ -32,6 +32,9 @@ export const CREATE_SUBFOLDER_FAILURE =
   'app/StudioPage/CREATE_SUBFOLDER_FAILURE';
 export const ADD_PROJECTS = 'app/StudioPage/ADD_PROJECTS';
 export const ADD_PROJECTS_FAILURE = 'app/StudioPage/ADD_PROJECTS_FAILURE';
+export const DELETE_SUBFOLDERS = 'app/StudioPage/DELETE_SUBFOLDERS';
+export const DELETE_SUBFOLDERS_FAILURE =
+  'app/StudioPage/DELETE_SUBFOLDERS_FAILURE';
 export const UPDATE_STUDIO_SUCCESS = 'app/StudioPage/UPDATE_STUDIO_SUCCESS';
 export const LOAD_USER_PROJECTS = 'app/StudioPage/LOAD_USER_PROJECTS';
 export const LOAD_USER_PROJECTS_FAILURE =

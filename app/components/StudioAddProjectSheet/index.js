@@ -122,8 +122,10 @@ function StudioAddProjectSheet({
             alignItems="center"
             justifyContent="center"
           >
-            <Heading>You have not authored any projects.</Heading>
-            <Heading>Go to My Stuff page and start creating!</Heading>
+            <Heading color="gray">You have not authored any projects.</Heading>
+            <Heading color="gray">
+              Go to My Stuff page and start creating!
+            </Heading>
           </Card>
         </Pane>
       )}
