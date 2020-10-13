@@ -1,4 +1,5 @@
 const ColorPallete = {
+  grey: '#66788A',
   backgroundColor: '#F5F6F7',
   primaryColor: '#6CDDAA',
   secondaryColor: '#DAF2E7',

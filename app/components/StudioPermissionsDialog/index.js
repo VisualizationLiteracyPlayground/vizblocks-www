@@ -53,7 +53,7 @@ function StudioPermissionsDialog({
       </Heading>
       <Pane>
         <Heading size={300} marginTop="0.5rem" color="gray">
-          Add new folder
+          Add/Delete folder
         </Heading>
         <Switch
           checked={permissionFields.member.addFolder}

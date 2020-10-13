@@ -57,6 +57,7 @@ import reducer from './reducer';
 import saga from './saga';
 import ColorPallete from '../../colorPallete';
 import NavigationBar from '../../components/NavigationBar';
+import StudioProjectView from '../../components/StudioProjectView';
 import CuratorListView from '../../components/CuratorListView';
 import StudioInformationDialog from '../../components/StudioInformationDialog';
 import StudioPermissionsDialog from '../../components/StudioPermissionsDialog';
@@ -333,7 +334,16 @@ export function StudioPage({
                   aria-hidden={index !== tabIndex}
                   display={index === tabIndex ? 'block' : 'none'}
                 >
-                  {index !== 2 && <Heading>{tab}</Heading>}
+                  {index === 0 && (
+                    <StudioProjectView
+                      userRole={userRole}
+                      user={user}
+                      studioid={studioid}
+                      studio={studio}
+                      setError={setError}
+                    />
+                  )}
+                  {index === 1 && <Heading>{tab}</Heading>}
                   {index === 2 && (
                     <CuratorListView
                       userRole={userRole}

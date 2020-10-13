@@ -16,12 +16,20 @@ import {
   ADD_FOLLOWER_FAILURE,
   REMOVE_FOLLOWER_FAILURE,
   UPDATE_CURATOR_ROLE_FAILURE,
+  CREATE_SUBFOLDER_FAILURE,
+  ADD_PROJECTS_FAILURE,
   UPDATE_STUDIO_SUCCESS,
+  LOAD_USER_PROJECTS_FAILURE,
+  LOAD_USER_PROJECTS_SUCCESS,
+  LOAD_SUBFOLDER_PROJECTS_FAILURE,
+  LOAD_SUBFOLDER_PROJECTS_SUCCESS,
 } from './constants';
 
 export const initialState = {
   error: false,
   studio: null,
+  userProjects: [],
+  subfolderProjects: [],
 };
 
 /* eslint-disable no-param-reassign */
@@ -38,12 +46,22 @@ const studioPageReducer = (state = initialState, action) =>
       case ADD_FOLLOWER_FAILURE:
       case REMOVE_FOLLOWER_FAILURE:
       case UPDATE_CURATOR_ROLE_FAILURE:
+      case CREATE_SUBFOLDER_FAILURE:
+      case LOAD_USER_PROJECTS_FAILURE:
+      case ADD_PROJECTS_FAILURE:
+      case LOAD_SUBFOLDER_PROJECTS_FAILURE:
         draft.error = action.error;
         break;
       case CREATE_STUDIO_SUCCESS:
       case LOAD_STUDIO_SUCCESS:
       case UPDATE_STUDIO_SUCCESS:
         draft.studio = action.studio;
+        break;
+      case LOAD_USER_PROJECTS_SUCCESS:
+        draft.userProjects = action.userProjects;
+        break;
+      case LOAD_SUBFOLDER_PROJECTS_SUCCESS:
+        draft.subfolderProjects = action.subfolderProjects;
         break;
       default:
         return draft;

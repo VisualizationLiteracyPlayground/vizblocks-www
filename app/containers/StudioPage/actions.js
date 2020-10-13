@@ -22,7 +22,17 @@ import {
   REMOVE_FOLLOWER_FAILURE,
   UPDATE_CURATOR_ROLE,
   UPDATE_CURATOR_ROLE_FAILURE,
+  CREATE_SUBFOLDER,
+  CREATE_SUBFOLDER_FAILURE,
+  ADD_PROJECTS,
+  ADD_PROJECTS_FAILURE,
   UPDATE_STUDIO_SUCCESS,
+  LOAD_USER_PROJECTS,
+  LOAD_USER_PROJECTS_FAILURE,
+  LOAD_USER_PROJECTS_SUCCESS,
+  LOAD_SUBFOLDER_PROJECTS,
+  LOAD_SUBFOLDER_PROJECTS_FAILURE,
+  LOAD_SUBFOLDER_PROJECTS_SUCCESS,
 } from './constants';
 
 export function defaultAction() {
@@ -146,9 +156,83 @@ export function updateCuratorRoleFailure(error) {
   };
 }
 
+export function createSubfolder(studioid, folderName) {
+  return {
+    type: CREATE_SUBFOLDER,
+    studioid,
+    folderName,
+  };
+}
+
+export function createSubfolderFailure(error) {
+  return {
+    type: CREATE_SUBFOLDER_FAILURE,
+    error,
+  };
+}
+
+export function addProjects(studioid, folderid, projects) {
+  return {
+    type: ADD_PROJECTS,
+    studioid,
+    folderid,
+    projects,
+  };
+}
+
+export function addProjectsFailure(error) {
+  return {
+    type: ADD_PROJECTS_FAILURE,
+    error,
+  };
+}
+
 export function updateStudioSuccess(studio) {
   return {
     type: UPDATE_STUDIO_SUCCESS,
     studio,
+  };
+}
+
+export function loadUserProjects(userid, filterList) {
+  return {
+    type: LOAD_USER_PROJECTS,
+    userid,
+    filterList,
+  };
+}
+
+export function loadUserProjectsFailure(error) {
+  return {
+    type: LOAD_USER_PROJECTS_FAILURE,
+    error,
+  };
+}
+
+export function loadUserProjectsSuccess(userProjects) {
+  return {
+    type: LOAD_USER_PROJECTS_SUCCESS,
+    userProjects,
+  };
+}
+
+export function loadSubfolderProjects(projectids) {
+  return {
+    type: LOAD_SUBFOLDER_PROJECTS,
+    projectids,
+  };
+}
+
+export function loadSubfolderProjectsFailure(error) {
+  return {
+    type: LOAD_SUBFOLDER_PROJECTS_FAILURE,
+    error,
+  };
+}
+
+export function loadSubfolderProjectsSuccess(subfolderProjects) {
+  return {
+    type: LOAD_SUBFOLDER_PROJECTS_SUCCESS,
+    subfolderProjects,
   };
 }

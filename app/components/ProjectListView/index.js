@@ -34,6 +34,8 @@ import {
   makeSelectDeletedProjects,
 } from 'containers/MyStuff/selectors';
 import { deleteProject, undeleteProject } from 'containers/MyStuff/actions';
+import DeleteProjectConfirmation from 'components/DeleteProjectConfirmation';
+import UndeleteProjectConfirmation from 'components/UndeleteProjectConfirmation';
 
 import ColorPallete from '../../colorPallete';
 
@@ -45,6 +47,14 @@ function ProjectListView({
   undeleteProject,
 }) {
   const [data, setData] = useState([]);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [showUndeleteConfirmation, setShowUndeleteConfirmation] = useState(
+    false,
+  );
+  const [currentProject, setCurrentProject] = useState({
+    id: 0,
+    title: '',
+  });
 
   useEffect(() => {
     if (showDeleted) {
@@ -137,7 +147,11 @@ function ProjectListView({
                       size={24}
                       onClickCapture={event => {
                         event.stopPropagation();
-                        deleteProject(project._id, projects, deletedProjects);
+                        setCurrentProject({
+                          id: project._id,
+                          title: project.title,
+                        });
+                        setShowDeleteConfirmation(true);
                       }}
                     />
                   )}
@@ -147,7 +161,11 @@ function ProjectListView({
                       size={24}
                       onClickCapture={event => {
                         event.stopPropagation();
-                        undeleteProject(project._id, projects, deletedProjects);
+                        setCurrentProject({
+                          id: project._id,
+                          title: project.title,
+                        });
+                        setShowUndeleteConfirmation(true);
                       }}
                     />
                   )}
@@ -156,6 +174,24 @@ function ProjectListView({
             ))}
         </Table.Body>
       </Table>
+      <DeleteProjectConfirmation
+        currentProject={currentProject}
+        isShown={showDeleteConfirmation}
+        closeCallback={() => setShowDeleteConfirmation(false)}
+        confirmCallback={projectid => {
+          setShowDeleteConfirmation(false);
+          deleteProject(projectid, projects, deletedProjects);
+        }}
+      />
+      <UndeleteProjectConfirmation
+        currentProject={currentProject}
+        isShown={showUndeleteConfirmation}
+        closeCallback={() => setShowUndeleteConfirmation(false)}
+        confirmCallback={projectid => {
+          setShowUndeleteConfirmation(false);
+          undeleteProject(projectid, projects, deletedProjects);
+        }}
+      />
     </Pane>
   );
 }

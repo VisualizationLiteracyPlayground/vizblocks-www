@@ -12,6 +12,10 @@ import {
   ADD_FOLLOWER,
   REMOVE_FOLLOWER,
   UPDATE_CURATOR_ROLE,
+  CREATE_SUBFOLDER,
+  LOAD_USER_PROJECTS,
+  ADD_PROJECTS,
+  LOAD_SUBFOLDER_PROJECTS,
 } from './constants';
 import {
   createStudioFailure,
@@ -22,7 +26,13 @@ import {
   addFollowerFailure,
   removeFollowerFailure,
   updateCuratorRoleFailure,
+  createSubfolderFailure,
+  addProjectsFailure,
   updateStudioSuccess,
+  loadUserProjectsFailure,
+  loadUserProjectsSuccess,
+  loadSubfolderProjectsFailure,
+  loadSubfolderProjectsSuccess,
 } from './actions';
 import { setSuccess, setError } from '../App/actions';
 
@@ -199,6 +209,115 @@ function* updateCuratorRole({ studioid, curatorid, curatorRole }) {
   }
 }
 
+function* createSubfolder({ studioid, folderName }) {
+  const [success, response] = yield patch(
+    `/studio/create-folder/${studioid}`,
+    {
+      folderName,
+    },
+    response => response.data,
+    e => e.response,
+  );
+  if (success) {
+    const { studio } = response.data;
+    yield put(updateStudioSuccess(studio));
+    yield put(
+      setSuccess({
+        title: 'New folder created!',
+        description: folderName,
+      }),
+    );
+  } else {
+    let msg = 'Unable to reach the server, please try again later.';
+    if (response) {
+      msg = response.data.error;
+    }
+    yield put(createSubfolderFailure(msg));
+  }
+}
+
+function* loadUserProjects({ userid, filterList }) {
+  const [success, response] = yield get(
+    `/user/projects/${userid}`,
+    response => response.data,
+    e => e.response,
+  );
+  if (success) {
+    const { projects } = response.data;
+    const projectDetails = [];
+    // Check each project for deleted flag
+    projects.forEach(project => {
+      // eslint-disable-next-line no-underscore-dangle
+      if (!project.deleted && !filterList.includes(project._id)) {
+        projectDetails.push(project);
+      }
+    });
+    yield put(loadUserProjectsSuccess(projectDetails));
+  } else {
+    let msg = 'Unable to reach the server, please try again later.';
+    if (response) {
+      msg = response.data.error;
+    }
+    yield put(loadUserProjectsFailure(msg));
+  }
+}
+
+function* addProjects({ studioid, folderid, projects }) {
+  const [success, response] = yield patch(
+    `/studio/add-projects/${studioid}`,
+    {
+      folderid,
+      projects,
+    },
+    response => response.data,
+    e => e.response,
+  );
+  if (success) {
+    const { studio } = response.data;
+    yield put(updateStudioSuccess(studio));
+    yield put(
+      setSuccess({
+        title: 'Project(s) added into studio!',
+        description: '',
+      }),
+    );
+  } else {
+    let msg = 'Unable to reach the server, please try again later.';
+    if (response) {
+      msg = response.data.error;
+    }
+    yield put(addProjectsFailure(msg));
+  }
+}
+
+function* loadSubfolderProjects({ projectids }) {
+  const [success, response] = yield post(
+    `/project/multiple-details`,
+    {
+      projectids,
+    },
+    response => response.data,
+    e => e.response,
+  );
+  if (success) {
+    const { projects } = response.data;
+    const projectDetails = [];
+    // Check each project for deleted flag
+    projects.forEach(project => {
+      if (!project.deleted) {
+        projectDetails.push(project);
+      }
+    });
+    yield put(loadSubfolderProjectsSuccess(projectDetails));
+  } else {
+    let msg = 'Unable to reach the server, please try again later.';
+    if (response) {
+      msg = response.data.error;
+    }
+    yield put(loadSubfolderProjectsFailure(msg));
+  }
+}
+
 // Individual exports for testing
 export default function* studioPageSaga() {
   yield takeLatest(CREATE_STUDIO, createStudio);
@@ -208,4 +327,8 @@ export default function* studioPageSaga() {
   yield takeLatest(ADD_FOLLOWER, addFollower);
   yield takeLatest(REMOVE_FOLLOWER, removeFollower);
   yield takeLatest(UPDATE_CURATOR_ROLE, updateCuratorRole);
+  yield takeLatest(CREATE_SUBFOLDER, createSubfolder);
+  yield takeLatest(LOAD_USER_PROJECTS, loadUserProjects);
+  yield takeLatest(ADD_PROJECTS, addProjects);
+  yield takeLatest(LOAD_SUBFOLDER_PROJECTS, loadSubfolderProjects);
 }

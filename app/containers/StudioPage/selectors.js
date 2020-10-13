@@ -24,6 +24,18 @@ const makeSelectStudio = () =>
     substate => substate.studio,
   );
 
+const makeSelectUserProjects = () =>
+  createSelector(
+    selectStudioPageDomain,
+    substate => substate.userProjects,
+  );
+
+const makeSelectSubfolderProjects = () =>
+  createSelector(
+    selectStudioPageDomain,
+    substate => substate.subfolderProjects,
+  );
+
 const makeSelectError = () =>
   createSelector(
     selectStudioPageDomain,
@@ -34,5 +46,7 @@ export {
   makeSelectStudioPage,
   selectStudioPageDomain,
   makeSelectStudio,
+  makeSelectUserProjects,
+  makeSelectSubfolderProjects,
   makeSelectError,
 };
