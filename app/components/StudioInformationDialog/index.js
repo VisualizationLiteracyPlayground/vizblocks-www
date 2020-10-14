@@ -5,7 +5,7 @@
  *
  */
 
-import React, { memo, useState } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { Dialog, TextInputField } from 'evergreen-ui';
 
 function StudioInformationDialog({
@@ -61,6 +61,10 @@ function StudioInformationDialog({
       );
     }
   }
+
+  useEffect(() => {
+    resetInformation();
+  }, [studio]);
 
   return (
     <Dialog

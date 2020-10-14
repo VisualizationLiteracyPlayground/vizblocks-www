@@ -30,6 +30,9 @@ export const UPDATE_CURATOR_ROLE_FAILURE =
 export const CREATE_SUBFOLDER = 'app/StudioPage/CREATE_SUBFOLDER';
 export const CREATE_SUBFOLDER_FAILURE =
   'app/StudioPage/CREATE_SUBFOLDER_FAILURE';
+export const UPDATE_SUBFOLDER_NAME = 'app/StudioPage/UPDATE_SUBFOLDER_NAME';
+export const UPDATE_SUBFOLDER_NAME_FAILURE =
+  'app/StudioPage/UPDATE_SUBFOLDER_NAME_FAILURE';
 export const ADD_PROJECTS = 'app/StudioPage/ADD_PROJECTS';
 export const ADD_PROJECTS_FAILURE = 'app/StudioPage/ADD_PROJECTS_FAILURE';
 export const DELETE_SUBFOLDERS = 'app/StudioPage/DELETE_SUBFOLDERS';

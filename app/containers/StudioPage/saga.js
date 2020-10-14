@@ -13,6 +13,7 @@ import {
   REMOVE_FOLLOWER,
   UPDATE_CURATOR_ROLE,
   CREATE_SUBFOLDER,
+  UPDATE_SUBFOLDER_NAME,
   LOAD_USER_PROJECTS,
   ADD_PROJECTS,
   LOAD_SUBFOLDER_PROJECTS,
@@ -29,6 +30,7 @@ import {
   removeFollowerFailure,
   updateCuratorRoleFailure,
   createSubfolderFailure,
+  updateSubfolderNameFailure,
   addProjectsFailure,
   deleteSubfoldersFailure,
   deleteProjectsFailure,
@@ -240,6 +242,34 @@ function* createSubfolder({ studioid, folderName }) {
   }
 }
 
+function* updateSubfolderName({ studioid, folderid, folderName }) {
+  const [success, response] = yield patch(
+    `/studio/update-folder-name/${studioid}`,
+    {
+      folderid,
+      folderName,
+    },
+    response => response.data,
+    e => e.response,
+  );
+  if (success) {
+    const { studio } = response.data;
+    yield put(updateStudioSuccess(studio));
+    yield put(
+      setSuccess({
+        title: 'Folder name updated!',
+        description: folderName,
+      }),
+    );
+  } else {
+    let msg = 'Unable to reach the server, please try again later.';
+    if (response) {
+      msg = response.data.error;
+    }
+    yield put(updateSubfolderNameFailure(msg));
+  }
+}
+
 function* loadUserProjects({ userid, filterList }) {
   const [success, response] = yield get(
     `/user/projects/${userid}`,
@@ -387,6 +417,7 @@ export default function* studioPageSaga() {
   yield takeLatest(REMOVE_FOLLOWER, removeFollower);
   yield takeLatest(UPDATE_CURATOR_ROLE, updateCuratorRole);
   yield takeLatest(CREATE_SUBFOLDER, createSubfolder);
+  yield takeLatest(UPDATE_SUBFOLDER_NAME, updateSubfolderName);
   yield takeLatest(LOAD_USER_PROJECTS, loadUserProjects);
   yield takeLatest(ADD_PROJECTS, addProjects);
   yield takeLatest(LOAD_SUBFOLDER_PROJECTS, loadSubfolderProjects);

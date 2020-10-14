@@ -5,7 +5,7 @@
  *
  */
 
-import React, { memo, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { Dialog, TextInputField } from 'evergreen-ui';
 
 function validateFolderName(title) {
@@ -24,22 +24,37 @@ function StudioNewFolderDialog({
   setShown,
   updateCallback,
   validationErrorCallback,
+  originalTitle,
 }) {
   // Turn this flag off if uniqueness for folder names is not required
   const ensureFolderNameUnique = true;
   const [folderName, setFolderName] = useState('');
+  const [isUpdateMode, setIsUpdateMode] = useState(false);
 
   function resetState() {
     setFolderName('');
   }
 
+  useEffect(() => {
+    if (originalTitle) {
+      setIsUpdateMode(true);
+    } else {
+      setIsUpdateMode(false);
+    }
+  }, [originalTitle]);
+
   function ensureUniqueness(title) {
     let msg = null;
-    if (
-      ensureFolderNameUnique &&
-      folderList.find(folder => folder.name === title)
-    ) {
-      msg = 'Folder name should be unique';
+    if (ensureFolderNameUnique) {
+      // Remove original title from list if update mode
+      let folders = folderList;
+      if (isUpdateMode) {
+        folders = folderList.filter(folder => folder.name !== originalTitle);
+      }
+      // Check if new title is not unque
+      if (folders.find(folder => folder.name === title)) {
+        msg = 'Folder name should be unique';
+      }
     }
     return msg;
   }
@@ -62,7 +77,7 @@ function StudioNewFolderDialog({
   return (
     <Dialog
       isShown={isShown}
-      title="Create new folder"
+      title={isUpdateMode ? 'Update folder name' : 'Create new folder'}
       intent="success"
       onCloseComplete={() => {
         resetState();

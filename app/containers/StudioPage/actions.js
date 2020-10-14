@@ -24,6 +24,8 @@ import {
   UPDATE_CURATOR_ROLE_FAILURE,
   CREATE_SUBFOLDER,
   CREATE_SUBFOLDER_FAILURE,
+  UPDATE_SUBFOLDER_NAME,
+  UPDATE_SUBFOLDER_NAME_FAILURE,
   ADD_PROJECTS,
   ADD_PROJECTS_FAILURE,
   DELETE_SUBFOLDERS,
@@ -171,6 +173,22 @@ export function createSubfolder(studioid, folderName) {
 export function createSubfolderFailure(error) {
   return {
     type: CREATE_SUBFOLDER_FAILURE,
+    error,
+  };
+}
+
+export function updateSubfolderName(studioid, folderid, folderName) {
+  return {
+    type: UPDATE_SUBFOLDER_NAME,
+    studioid,
+    folderid,
+    folderName,
+  };
+}
+
+export function updateSubfolderNameFailure(error) {
+  return {
+    type: UPDATE_SUBFOLDER_NAME_FAILURE,
     error,
   };
 }

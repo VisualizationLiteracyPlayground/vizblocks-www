@@ -37,6 +37,7 @@ import { USER_ROLE } from 'containers/StudioPage/constants';
 import { makeSelectSubfolderProjects } from 'containers/StudioPage/selectors';
 import {
   createSubfolder,
+  updateSubfolderName,
   loadSubfolderProjects,
 } from 'containers/StudioPage/actions';
 import ProjectCard from 'components/ProjectCard';
@@ -54,6 +55,7 @@ function StudioProjectView({
   studio,
   setError,
   createSubfolder,
+  updateSubfolderName,
   subFolderProjects,
   loadSubfolderProjects,
 }) {
@@ -235,7 +237,7 @@ function StudioProjectView({
                 (userRole === USER_ROLE.MEMBER && permissions.member.addFolder)
               )
             }
-            onClick={() => {}}
+            onClick={() => setShowCreateDialog(true)}
           >
             Edit Folder Name
           </Button>
@@ -528,8 +530,15 @@ function StudioProjectView({
         folderList={folderList}
         isShown={showCreateDialog}
         setShown={setShowCreateDialog}
-        updateCallback={folderName => createSubfolder(studioid, folderName)}
+        updateCallback={folderName => {
+          if (isAtRoot) {
+            createSubfolder(studioid, folderName);
+          } else {
+            updateSubfolderName(studioid, currentFolder.id, folderName);
+          }
+        }}
         validationErrorCallback={error => setError(error)}
+        originalTitle={isAtRoot ? undefined : currentFolder.name}
       />
       <StudioAddProjectSheet
         user={user}
@@ -572,6 +581,8 @@ function mapDispatchToProps(dispatch) {
     dispatch,
     createSubfolder: (studioid, folderName) =>
       dispatch(createSubfolder(studioid, folderName)),
+    updateSubfolderName: (studioid, folderid, folderName) =>
+      dispatch(updateSubfolderName(studioid, folderid, folderName)),
     loadSubfolderProjects: projectids =>
       dispatch(loadSubfolderProjects(projectids)),
   };
