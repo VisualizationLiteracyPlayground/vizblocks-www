@@ -45,6 +45,7 @@ function ProjectCard({ project, onClickCallback }) {
             state: {
               title: project.title,
               projectid: project._id,
+              authorid: project.author,
             },
           });
         }

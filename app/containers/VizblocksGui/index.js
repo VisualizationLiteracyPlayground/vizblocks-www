@@ -38,6 +38,7 @@ export function VizblocksGui({ user }) {
   const location = useLocation();
   const title = location.state ? location.state.title : '';
   const projectid = location.state ? location.state.projectid : 0;
+  const authorid = location.state ? location.state.authorid : null;
 
   const locale = window._locale || 'en';
   const messages = {};
@@ -72,6 +73,7 @@ export function VizblocksGui({ user }) {
           projectid={projectid}
           title={title}
           history={history}
+          authorid={authorid}
         />
       </IntlProvider>
     </Provider>

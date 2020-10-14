@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-return-assign */
 /* eslint-disable consistent-return */
 /* eslint-disable no-prototype-builtins */
@@ -21,7 +22,8 @@ class Preview extends React.Component {
     super(props);
     this.state = {
       projectId: this.props.projectid ? this.props.projectid : 0,
-      authorId: this.props.user ? this.props.user.data.id : null,
+      userId: this.props.user ? this.props.user.data.id : null,
+      authorId: this.props.authorid ? this.props.authorid : null,
       authorUsername: this.props.user ? this.props.user.data.username : null,
       projectTitle: this.props.title ? this.props.title : '',
     };
@@ -30,6 +32,7 @@ class Preview extends React.Component {
       'handleClickLogo',
       'handleUpdateProjectData',
       'handleUpdateProjectTitle',
+      'loadProjectDetails',
     ]);
   }
   
@@ -96,6 +99,18 @@ class Preview extends React.Component {
     });
   }
 
+  loadProjectDetails (projectId) {
+    return new Promise((resolve, reject) => {
+      api.get(
+        `project/details/${projectId}`,
+        response => {
+          resolve(response.data);
+        },
+        e => reject(e.response),
+      );
+    });
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -104,13 +119,13 @@ class Preview extends React.Component {
           projectHost={process.env.PROJECT_HOST}
           projectTitle={this.state.projectTitle}
           assetHost={process.env.ASSET_HOST}
-          authorId={this.state.authorId}
+          authorId={this.state.userId}
           authorUsername={this.state.authorUsername}
           backpackVisible={false}
           basePath="/"
           canCreateNew
           canEditTitle
-          canSave
+          canSave={this.state.authorId ? this.state.authorId === this.state.userId : true}
           onClickLogo={this.handleClickLogo}
           onUpdateProjectData={this.handleUpdateProjectData}
           onUpdateProjectTitle={this.handleUpdateProjectTitle}
