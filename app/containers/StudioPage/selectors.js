@@ -36,6 +36,12 @@ const makeSelectSubfolderProjects = () =>
     substate => substate.subfolderProjects,
   );
 
+const makeSelectComments = () =>
+  createSelector(
+    selectStudioPageDomain,
+    substate => substate.comments,
+  );
+
 const makeSelectError = () =>
   createSelector(
     selectStudioPageDomain,
@@ -48,5 +54,6 @@ export {
   makeSelectStudio,
   makeSelectUserProjects,
   makeSelectSubfolderProjects,
+  makeSelectComments,
   makeSelectError,
 };

@@ -26,6 +26,9 @@ import {
   LOAD_USER_PROJECTS_SUCCESS,
   LOAD_SUBFOLDER_PROJECTS_FAILURE,
   LOAD_SUBFOLDER_PROJECTS_SUCCESS,
+  ADD_COMMENT_FAILURE,
+  LOAD_COMMENTS_FAILURE,
+  LOAD_COMMENTS_SUCCESS,
 } from './constants';
 
 export const initialState = {
@@ -33,6 +36,7 @@ export const initialState = {
   studio: null,
   userProjects: [],
   subfolderProjects: [],
+  comments: [],
 };
 
 /* eslint-disable no-param-reassign */
@@ -56,6 +60,8 @@ const studioPageReducer = (state = initialState, action) =>
       case DELETE_SUBFOLDERS_FAILURE:
       case DELETE_PROJECTS_FAILURE:
       case UPDATE_SUBFOLDER_NAME_FAILURE:
+      case ADD_COMMENT_FAILURE:
+      case LOAD_COMMENTS_FAILURE:
         draft.error = action.error;
         break;
       case CREATE_STUDIO_SUCCESS:
@@ -68,6 +74,9 @@ const studioPageReducer = (state = initialState, action) =>
         break;
       case LOAD_SUBFOLDER_PROJECTS_SUCCESS:
         draft.subfolderProjects = action.subfolderProjects;
+        break;
+      case LOAD_COMMENTS_SUCCESS:
+        draft.comments = action.comments;
         break;
       default:
         return draft;

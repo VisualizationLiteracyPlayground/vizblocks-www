@@ -39,6 +39,11 @@ import {
   LOAD_SUBFOLDER_PROJECTS,
   LOAD_SUBFOLDER_PROJECTS_FAILURE,
   LOAD_SUBFOLDER_PROJECTS_SUCCESS,
+  ADD_COMMENT,
+  ADD_COMMENT_FAILURE,
+  LOAD_COMMENTS,
+  LOAD_COMMENTS_FAILURE,
+  LOAD_COMMENTS_SUCCESS,
 } from './constants';
 
 export function defaultAction() {
@@ -287,5 +292,43 @@ export function loadSubfolderProjectsSuccess(subfolderProjects) {
   return {
     type: LOAD_SUBFOLDER_PROJECTS_SUCCESS,
     subfolderProjects,
+  };
+}
+
+export function addComment(studioid, comment) {
+  return {
+    type: ADD_COMMENT,
+    studioid,
+    comment,
+  };
+}
+
+export function addCommentFailure(error) {
+  return {
+    type: ADD_COMMENT_FAILURE,
+    error,
+  };
+}
+
+export function loadComments(studioid, pageIndex, loadedComments) {
+  return {
+    type: LOAD_COMMENTS,
+    studioid,
+    pageIndex,
+    loadedComments,
+  };
+}
+
+export function loadCommentsFailure(error) {
+  return {
+    type: LOAD_COMMENTS_FAILURE,
+    error,
+  };
+}
+
+export function loadCommentsSuccess(comments) {
+  return {
+    type: LOAD_COMMENTS_SUCCESS,
+    comments,
   };
 }

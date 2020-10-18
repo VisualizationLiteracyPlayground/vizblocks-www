@@ -51,6 +51,11 @@ export const LOAD_SUBFOLDER_PROJECTS_FAILURE =
   'app/StudioPage/LOAD_SUBFOLDER_PROJECTS_FAILURE';
 export const LOAD_SUBFOLDER_PROJECTS_SUCCESS =
   'app/StudioPage/LOAD_SUBFOLDER_PROJECTS_SUCCESS';
+export const ADD_COMMENT = 'app/StudioPage/ADD_COMMENT';
+export const ADD_COMMENT_FAILURE = 'app/StudioPage/ADD_COMMENT_FAILURE';
+export const LOAD_COMMENTS = 'app/StudioPage/LOAD_COMMENTS';
+export const LOAD_COMMENTS_FAILURE = 'app/StudioPage/LOAD_COMMENTS_FAILURE';
+export const LOAD_COMMENTS_SUCCESS = 'app/StudioPage/LOAD_COMMENTS_SUCCESS';
 
 export const USER_ROLE = {
   MANAGER: 'Manager',

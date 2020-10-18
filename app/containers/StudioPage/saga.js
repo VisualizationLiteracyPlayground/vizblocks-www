@@ -19,6 +19,8 @@ import {
   LOAD_SUBFOLDER_PROJECTS,
   DELETE_SUBFOLDERS,
   DELETE_PROJECTS,
+  ADD_COMMENT,
+  LOAD_COMMENTS,
 } from './constants';
 import {
   createStudioFailure,
@@ -39,6 +41,9 @@ import {
   loadUserProjectsSuccess,
   loadSubfolderProjectsFailure,
   loadSubfolderProjectsSuccess,
+  addCommentFailure,
+  loadCommentsFailure,
+  loadCommentsSuccess,
 } from './actions';
 import { setSuccess, setError } from '../App/actions';
 
@@ -407,6 +412,54 @@ function* deleteProjects({ studioid, folderid, projectids }) {
   }
 }
 
+function* addComment({ studioid, comment }) {
+  const [success, response] = yield patch(
+    `/studio/add-comment/${studioid}`,
+    {
+      comment,
+    },
+    response => response.data,
+    e => e.response,
+  );
+  if (success) {
+    const { comments } = response.data;
+    yield put(loadCommentsSuccess(comments));
+  } else {
+    let msg = 'Unable to reach the server, please try again later.';
+    if (response) {
+      msg = response.data.error;
+    }
+    yield put(addCommentFailure(msg));
+  }
+}
+
+function* loadComments({ studioid, pageIndex, loadedComments }) {
+  const [success, response] = yield post(
+    `/studio/comments/${studioid}`,
+    {
+      pageIndex,
+    },
+    response => response.data,
+    e => e.response,
+  );
+  if (success) {
+    let { comments } = response.data;
+    let currentIndex = Math.trunc(loadedComments.length / 50);
+    currentIndex =
+      loadedComments.length % 50 === 0 ? currentIndex - 1 : currentIndex;
+    if (pageIndex !== 0 && currentIndex !== pageIndex) {
+      comments = loadedComments.concat(comments);
+    }
+    yield put(loadCommentsSuccess(comments));
+  } else {
+    let msg = 'Unable to reach the server, please try again later.';
+    if (response) {
+      msg = response.data.error;
+    }
+    yield put(loadCommentsFailure(msg));
+  }
+}
+
 // Individual exports for testing
 export default function* studioPageSaga() {
   yield takeLatest(CREATE_STUDIO, createStudio);
@@ -423,4 +476,6 @@ export default function* studioPageSaga() {
   yield takeLatest(LOAD_SUBFOLDER_PROJECTS, loadSubfolderProjects);
   yield takeLatest(DELETE_SUBFOLDERS, deleteSubfolders);
   yield takeLatest(DELETE_PROJECTS, deleteProjects);
+  yield takeLatest(ADD_COMMENT, addComment);
+  yield takeLatest(LOAD_COMMENTS, loadComments);
 }

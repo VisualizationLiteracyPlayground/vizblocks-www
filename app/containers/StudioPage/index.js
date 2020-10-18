@@ -58,6 +58,7 @@ import saga from './saga';
 import ColorPallete from '../../colorPallete';
 import NavigationBar from '../../components/NavigationBar';
 import StudioProjectView from '../../components/StudioProjectView';
+import StudioCommentView from '../../components/StudioCommentView';
 import CuratorListView from '../../components/CuratorListView';
 import StudioInformationDialog from '../../components/StudioInformationDialog';
 import StudioPermissionsDialog from '../../components/StudioPermissionsDialog';
@@ -106,6 +107,7 @@ export function StudioPage({
   );
   // Text area that contains studio share url
   const copyAreaRef = useRef(null);
+  const commentsListRef = useRef(null);
 
   const tabsList = ['Projects', 'Comments', 'Curators'];
 
@@ -116,6 +118,20 @@ export function StudioPage({
       title: 'Copied link to clipboard!',
       description: '',
     });
+  }
+
+  function resetCommentsScroll() {
+    if (commentsListRef) {
+      commentsListRef.current.scrollTop = 0;
+    }
+  }
+
+  function switchTab(index) {
+    if (index === 1) {
+      // Comments view
+      resetCommentsScroll();
+    }
+    setTabIndex(index);
   }
 
   function setUserInformation() {
@@ -229,7 +245,9 @@ export function StudioPage({
               <Heading size={300} marginTop="0.5rem" color="gray">
                 {getStudioHeaderInfo(studio)}
               </Heading>
-              <Paragraph marginTop="0.5rem">{studio.description}</Paragraph>
+              <Pane maxHeight="4.5rem" overflowY="auto">
+                <Paragraph marginTop="0.5rem">{studio.description}</Paragraph>
+              </Pane>
             </Pane>
             <Pane
               height="8rem"
@@ -308,7 +326,7 @@ export function StudioPage({
                 <SidebarTab
                   key={tab}
                   id={tab}
-                  onSelect={() => setTabIndex(index)}
+                  onSelect={() => switchTab(index)}
                   isSelected={index === tabIndex}
                   aria-controls={`panel-${tab}`}
                 >
@@ -343,7 +361,13 @@ export function StudioPage({
                       setError={setError}
                     />
                   )}
-                  {index === 1 && <Heading>{tab}</Heading>}
+                  {index === 1 && (
+                    <StudioCommentView
+                      user={user}
+                      studioid={studioid}
+                      commentsListRef={commentsListRef}
+                    />
+                  )}
                   {index === 2 && (
                     <CuratorListView
                       userRole={userRole}
