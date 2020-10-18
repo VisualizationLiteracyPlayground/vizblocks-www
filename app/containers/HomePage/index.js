@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /*
  * HomePage
  *
@@ -6,15 +7,26 @@
  */
 
 import React from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
+import { createStructuredSelector } from 'reselect';
 
 import LandingMast from '../../components/LandingMast';
 import NavigationBar from '../../components/NavigationBar';
+import { makeSelectCurrentUser } from '../App/selectors';
 
-export default function HomePage() {
+export function HomePage({ user }) {
   return (
     <div>
-      <NavigationBar />
+      <NavigationBar user={user} />
       <LandingMast />
     </div>
   );
 }
+const mapStateToProps = createStructuredSelector({
+  user: makeSelectCurrentUser(),
+});
+
+const withConnect = connect(mapStateToProps);
+
+export default compose(withConnect)(HomePage);

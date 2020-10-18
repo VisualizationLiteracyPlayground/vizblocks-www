@@ -38,7 +38,10 @@ function LandingMast() {
             <b>Share with others around the world!</b>
           </Strong>
         </div>
-        <Link to="/TODO" style={{ marginTop: '1rem', textDecoration: 'none' }}>
+        <Link
+          to="/project-gui"
+          style={{ marginTop: '1rem', textDecoration: 'none' }}
+        >
           <Button width="7rem">Start Creating</Button>
         </Link>
       </Pane>
