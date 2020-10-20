@@ -412,7 +412,7 @@ function* deleteProjects({ studioid, folderid, projectids }) {
   }
 }
 
-function* addComment({ studioid, comment }) {
+function* addComment({ studioid, comment, loadedComments }) {
   const [success, response] = yield patch(
     `/studio/add-comment/${studioid}`,
     {
@@ -422,7 +422,9 @@ function* addComment({ studioid, comment }) {
     e => e.response,
   );
   if (success) {
-    const { comments } = response.data;
+    const { comment } = response.data;
+    let comments = [comment];
+    comments = comments.concat(loadedComments);
     yield put(loadCommentsSuccess(comments));
   } else {
     let msg = 'Unable to reach the server, please try again later.';
@@ -433,6 +435,7 @@ function* addComment({ studioid, comment }) {
   }
 }
 
+// eslint-disable-next-line no-unused-vars
 function* loadComments({ studioid, pageIndex, loadedComments }) {
   const [success, response] = yield post(
     `/studio/comments/${studioid}`,
@@ -443,13 +446,21 @@ function* loadComments({ studioid, pageIndex, loadedComments }) {
     e => e.response,
   );
   if (success) {
-    let { comments } = response.data;
-    let currentIndex = Math.trunc(loadedComments.length / 50);
-    currentIndex =
-      loadedComments.length % 50 === 0 ? currentIndex - 1 : currentIndex;
-    if (pageIndex !== 0 && currentIndex !== pageIndex) {
+    const { comments } = response.data;
+    /* 
+     * Pagination should only serve a page at a time
+     * The original idea is to concat the new page with the loadedComments
+     * However, an issue is that when user is not on page 0.
+     * The loadComments call that is firing in the background is not fetching new comments
+     * 
+     * Current quick solution is to not fetch all comments from page 0 to the current pageIndex
+     * 2 Solutions:
+     * - Add a date field in the backend call, to control loading of comments
+     * - Subscription based model
+    if (pageIndex !== 0) {
       comments = loadedComments.concat(comments);
     }
+    */
     yield put(loadCommentsSuccess(comments));
   } else {
     let msg = 'Unable to reach the server, please try again later.';
