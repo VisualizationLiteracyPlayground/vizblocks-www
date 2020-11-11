@@ -55,6 +55,7 @@ function* loadStudio({ studioid }) {
   );
   if (success) {
     const { studio } = response.data;
+    studio.rootFolder = studio.rootFolder.filter(project => !project.deleted);
     yield put(loadStudioSuccess(studio));
   } else {
     const msg = {
@@ -437,6 +438,10 @@ function* addComment({ studioid, comment, loadedComments }) {
 
 // eslint-disable-next-line no-unused-vars
 function* loadComments({ studioid, pageIndex, loadedComments }) {
+  if (studioid === 0) {
+    yield put(loadCommentsSuccess([]));
+    return;
+  }
   const [success, response] = yield post(
     `/studio/comments/${studioid}`,
     {

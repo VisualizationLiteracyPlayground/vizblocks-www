@@ -180,7 +180,7 @@ function StudioProjectView({
   useEffect(() => {
     // Manage render data
     if (isAtRoot) {
-      setProjectList(rootFolder);
+      switchToMain();
     } else {
       const updatedFolder = subFolders.find(
         folder => folder._id === currentFolder.id,
