@@ -26,6 +26,8 @@ class Preview extends React.Component {
       authorId: this.props.authorid ? this.props.authorid : null,
       authorUsername: this.props.user ? this.props.user.data.username : null,
       projectTitle: this.props.title ? this.props.title : '',
+      history: this.props.history,
+      location: this.props.location,
     };
     bindAll(this, [
       'setProjectId',
@@ -33,9 +35,11 @@ class Preview extends React.Component {
       'handleUpdateProjectData',
       'handleUpdateProjectTitle',
       'loadProjectDetails',
+      'handleUpdateProjectId',
+      'handleGreenFlag',
     ]);
   }
-  
+
   setProjectId(newId) {
     this.state.projectId = newId;
   }
@@ -45,7 +49,7 @@ class Preview extends React.Component {
   }
 
   handleClickLogo () {
-    this.props.history.push('/');
+    this.state.history.push('/my-stuff');
   }
 
   handleUpdateProjectData (projectId, vmState, params) {
@@ -54,7 +58,8 @@ class Preview extends React.Component {
     if (params.hasOwnProperty('originalId')) queryParams.original_id = params.originalId;
     if (params.hasOwnProperty('isCopy')) queryParams.is_copy = params.isCopy;
     if (params.hasOwnProperty('isRemix')) queryParams.is_remix = params.isRemix;
-    if (params.hasOwnProperty('title')) queryParams.title = params.title;
+    // if (params.hasOwnProperty('title')) queryParams.title = params.title;
+    if (!creatingProject && this.state.projectTitle !== '') queryParams.title = this.state.projectTitle;
     let qs = queryString.stringify(queryParams);
     if (qs) qs = `?${qs}`;
     return new Promise((resolve, reject) => {
@@ -66,6 +71,7 @@ class Preview extends React.Component {
           },
           response => {
             this.setProjectId(response.data.id);
+            this.setProjectTitle(response.data["content-title"]);
             resolve(response.data);
           },
           e => reject(e.response),
@@ -92,6 +98,14 @@ class Preview extends React.Component {
         },
         response => {
           this.setProjectTitle(title);
+          // Update title in location state
+          this.state.history.replace(
+            this.state.location.pathname,
+            {
+              projectid: this.state.projectId,
+              title,
+            },
+          );
           resolve(response.data);
         },
         e => reject(e.response),
@@ -111,6 +125,30 @@ class Preview extends React.Component {
     });
   }
 
+  handleUpdateProjectId (projectId, callback) {
+    this.state.projectId = projectId;
+    this.state.history.replace(
+      this.state.location.pathname,
+      {
+        projectid: projectId,
+        title: this.state.projectTitle,
+      },
+    );
+    if (callback) callback();
+  }
+
+  handleGreenFlag () {
+    // Bug: 
+    // When navigating to project view after first visit
+    // There is a green flag overlay present. It does not dissapear even upon clicking
+    // The scratch project can still run, just the overlay remains.
+    // This is a quick fix to hide the overlay upon clicking it.
+    const flagOverlay = document.getElementsByClassName("stage_green-flag-overlay-wrapper_2hUi_ box_box_2jjDp");
+    if (flagOverlay.length > 0) {
+      flagOverlay[0].style.display="none";
+    }
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -127,8 +165,10 @@ class Preview extends React.Component {
           canEditTitle
           canSave={this.state.authorId ? this.state.authorId === this.state.userId : true}
           onClickLogo={this.handleClickLogo}
+          onGreenFlag={this.handleGreenFlag}
           onUpdateProjectData={this.handleUpdateProjectData}
           onUpdateProjectTitle={this.handleUpdateProjectTitle}
+          onUpdateProjectId={this.handleUpdateProjectId}
         />
       </React.Fragment>
     );

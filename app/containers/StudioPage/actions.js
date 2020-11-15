@@ -295,11 +295,12 @@ export function loadSubfolderProjectsSuccess(subfolderProjects) {
   };
 }
 
-export function addComment(studioid, comment) {
+export function addComment(studioid, comment, loadedComments) {
   return {
     type: ADD_COMMENT,
     studioid,
     comment,
+    loadedComments,
   };
 }
 

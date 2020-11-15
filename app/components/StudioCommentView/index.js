@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-shadow */
 /* eslint-disable react/prop-types */
@@ -7,7 +8,7 @@
  *
  */
 
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useEffect, useState, useRef } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
@@ -26,6 +27,10 @@ import { addComment, loadComments } from 'containers/StudioPage/actions';
 import CommentsBackground from 'images/comments-background.jpg';
 import CommentBubble from 'components/CommentBubble';
 
+const debugIntervalFlag = false;
+const pageCount = 50;
+const intervalWindow = 5000;
+
 function StudioCommentView({
   user,
   studioid,
@@ -39,7 +44,9 @@ function StudioCommentView({
   const [fullyLoaded, setFullyLoaded] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
+  const [addCommentTriggered, setAddCommentTriggered] = useState(false);
   const [refreshComment, setRefreshComment] = useState(null);
+  const lastInterval = useRef();
 
   function showLoadMoreButton() {
     return (
@@ -54,34 +61,63 @@ function StudioCommentView({
     return comments && (comments.length % 50 !== 0 || fullyLoaded);
   }
 
-  function resetState() {
-    setFullyLoaded(false);
-    setLoadMoreNumber(0);
-    setPageIndex(0);
+  function cleanupInterval() {
     if (refreshComment) {
+      if (debugIntervalFlag) {
+        console.log(`Interval cleared up, PageIndex:${pageIndex}`);
+      }
       clearInterval(refreshComment);
+      setRefreshComment(null);
     }
-    setRefreshComment(setInterval(() => loadComments(studioid, 0, []), 5000));
   }
+
   useEffect(() => {
     if (!loaded) {
       // Initial loading of comments
       loadComments(studioid, pageIndex, comments);
+      if (debugIntervalFlag) {
+        console.log(`Initiated first interval, PageIndex:${pageIndex}`);
+        console.log(comments);
+      }
       setRefreshComment(
-        setInterval(() => loadComments(studioid, pageIndex, comments), 5000),
+        setInterval(
+          () => loadComments(studioid, pageIndex, []),
+          intervalWindow,
+        ),
       );
     }
+    return () => {
+      if (lastInterval.current) {
+        if (debugIntervalFlag) {
+          console.log(`Cleaned up interval`);
+        }
+        clearInterval(lastInterval.current);
+      }
+    };
   }, []);
 
   useEffect(() => {
-    if (refreshComment) {
-      clearInterval(refreshComment);
-      setRefreshComment(null);
+    lastInterval.current = refreshComment;
+  }, [refreshComment]);
+
+  useEffect(() => {
+    if (debugIntervalFlag) {
+      console.log(`Clearup interval initiated in [pageIndex]`);
     }
+    cleanupInterval();
     loadComments(studioid, pageIndex, comments);
     if (pageIndex !== 0) {
+      if (debugIntervalFlag) {
+        console.log(
+          `Initiated new interval in [pageIndex], PageIndex:${pageIndex}`,
+        );
+        console.log(comments);
+      }
       setRefreshComment(
-        setInterval(() => loadComments(studioid, pageIndex, comments), 5000),
+        setInterval(
+          () => loadComments(studioid, pageIndex, comments),
+          intervalWindow,
+        ),
       );
     }
   }, [pageIndex]);
@@ -91,6 +127,27 @@ function StudioCommentView({
     if (loadMoreNumber !== 0 && loadMoreNumber === comments.length) {
       // Load more doesn't modify the comments loaded
       setFullyLoaded(true);
+    }
+    if (addCommentTriggered) {
+      let commentPayload = [...comments];
+      if (pageIndex * pageCount < comments.length) {
+        // Update page index and trigger interval call
+        if (debugIntervalFlag) {
+          console.log('Comments spliced');
+        }
+        commentPayload = commentPayload.splice(0, pageIndex * pageCount);
+      }
+      if (debugIntervalFlag) {
+        console.log(`Initiated interval in [comments], PageIndex:${pageIndex}`);
+        console.log(commentPayload);
+      }
+      setRefreshComment(
+        setInterval(
+          () => loadComments(studioid, pageIndex, commentPayload),
+          intervalWindow,
+        ),
+      );
+      setAddCommentTriggered(false);
     }
   }, [comments]);
 
@@ -126,8 +183,12 @@ function StudioCommentView({
           intent="success"
           onClick={() => {
             if (commentValue !== '') {
-              addComment(studioid, commentValue);
-              resetState();
+              if (debugIntervalFlag) {
+                console.log(`Clearup interval initiated in add comment button`);
+              }
+              cleanupInterval();
+              addComment(studioid, commentValue, comments);
+              setAddCommentTriggered(true);
             }
             setCommentValue('');
           }}
@@ -190,7 +251,8 @@ const mapStateToProps = createStructuredSelector({
 function mapDispatchToProps(dispatch) {
   return {
     dispatch,
-    addComment: (studioid, comment) => dispatch(addComment(studioid, comment)),
+    addComment: (studioid, comment, loadedComments) =>
+      dispatch(addComment(studioid, comment, loadedComments)),
     loadComments: (studioid, pageIndex, loadedComments) =>
       dispatch(loadComments(studioid, pageIndex, loadedComments)),
   };

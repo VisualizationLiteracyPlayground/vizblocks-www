@@ -20,6 +20,7 @@ import {
   Popover,
   SettingsIcon,
   Strong,
+  Tooltip,
   UserIcon,
 } from 'evergreen-ui';
 import { Link } from 'react-router-dom';
@@ -55,21 +56,27 @@ function NavigationBar({ user, userSignedOut }) {
         <Link to="/">
           <LogoWord />
         </Link>
-        <Link to="/" style={{ textDecoration: 'none' }}>
+        {/* <Link to="/" style={{ textDecoration: 'none' }}> */}
+        <Tooltip content="Coming soon">
           <Strong color="white" marginLeft="2rem" size={500}>
             <b>Ideas</b>
           </Strong>
-        </Link>
-        <Link to="/" style={{ textDecoration: 'none' }}>
+        </Tooltip>
+        {/* </Link> */}
+        {/* <Link to="/" style={{ textDecoration: 'none' }}> */}
+        <Tooltip content="Coming soon">
           <Strong color="white" marginLeft="3rem" size={500}>
             <b>About</b>
           </Strong>
-        </Link>
-        <Link to="/" style={{ textDecoration: 'none' }}>
+        </Tooltip>
+        {/* </Link> */}
+        {/* <Link to="/" style={{ textDecoration: 'none' }}> */}
+        <Tooltip content="Coming soon">
           <Strong color="white" marginLeft="3rem" size={500}>
             <b>Explore</b>
           </Strong>
-        </Link>
+        </Tooltip>
+        {/* </Link> */}
         {user && (
           <Link to="/my-stuff" style={{ textDecoration: 'none' }}>
             <Strong color="white" marginLeft="3rem" size={500}>
@@ -119,6 +126,7 @@ function NavigationBar({ user, userSignedOut }) {
                   iconBefore={UserIcon}
                   appearance="minimal"
                   onClick={() => {}}
+                  disabled
                 >
                   Profile
                 </Button>
@@ -126,6 +134,7 @@ function NavigationBar({ user, userSignedOut }) {
                   iconBefore={SettingsIcon}
                   appearance="minimal"
                   onClick={() => {}}
+                  disabled
                 >
                   Account Setting
                 </Button>

@@ -64,6 +64,7 @@ import StudioInformationDialog from '../../components/StudioInformationDialog';
 import StudioPermissionsDialog from '../../components/StudioPermissionsDialog';
 import StudioUnfollowConfirmation from '../../components/StudioUnfollowConfirmation';
 import { makeSelectCurrentUser } from '../App/selectors';
+import history from '../../utils/history';
 
 function getStudioHeaderInfo(studio) {
   return studio
@@ -157,6 +158,13 @@ export function StudioPage({
     }
   }
 
+  function updateStudioid(id) {
+    setStudioid(id);
+    if (isStateful) {
+      history.replace(location.pathname, { studioid: id });
+    }
+  }
+
   useEffect(() => {
     if (!loaded && isStateful) {
       if (studioid === 0) {
@@ -171,7 +179,7 @@ export function StudioPage({
   }, []);
   useEffect(() => {
     if (studio) {
-      setStudioid(studio._id);
+      updateStudioid(studio._id);
       setUserInformation();
     }
   }, [studio]);
