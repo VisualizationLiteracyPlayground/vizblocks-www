@@ -161,7 +161,6 @@ export function StudioPage({
   function updateStudioid(id) {
     setStudioid(id);
     if (isStateful) {
-      location.state.studioid = id;
       history.replace(location.pathname, { studioid: id });
     }
   }

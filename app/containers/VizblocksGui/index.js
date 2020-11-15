@@ -61,7 +61,6 @@ export function VizblocksGui({ user }) {
       redux.applyMiddleware(thunk),
       ProjectView.guiMiddleware,
     );
-
     return redux.createStore(reducers, initState, enhancers);
   }
 
@@ -73,6 +72,7 @@ export function VizblocksGui({ user }) {
           projectid={projectid}
           title={title}
           history={history}
+          location={location}
           authorid={authorid}
         />
       </IntlProvider>
