@@ -125,9 +125,9 @@ module.exports = options => ({
     ]),
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'development',
-      API_HOST: 'http://vizblocks-i.comp.nus.edu.sg/api/', // 'http://127.0.0.1:8080/api/',
+      API_HOST: 'https://vizblocks.comp.nus.edu.sg/api/', // 'http://127.0.0.1:8080/api/',
       ASSET_HOST: 'https://assets.scratch.mit.edu',
-      PROJECT_HOST: 'http://vizblocks-i.comp.nus.edu.sg/api/project', // 'http://127.0.0.1:8080/api/project',
+      PROJECT_HOST: 'https://vizblocks.comp.nus.edu.sg/api/project', // 'http://127.0.0.1:8080/api/project',
     }),
   ]),
   resolve: {
