@@ -26,6 +26,8 @@ import RegisterUser from 'containers/RegisterUser/Loadable';
 import SignInPage from 'containers/SignInPage/Loadable';
 import StudioPage from 'containers/StudioPage/Loadable';
 import VizblocksGui from 'containers/VizblocksGui';
+import EditUserPage from 'containers/EditUserPage/Loadable';
+import UserPage from 'containers/UserPage/Loadable';
 
 import {
   makeSelectCurrentUser,
@@ -114,6 +116,12 @@ export function App({
             isAuthenticated={user}
             component={VizblocksGui}
           />
+          <PrivateRoute
+            path="/edit-profile"
+            isAuthenticated={user}
+            component={EditUserPage}
+          />
+          <Route exact path="/user-profile/:profileid" component={UserPage} />
           <Route exact path="/studio" component={StudioPage} />
           <Route
             exact

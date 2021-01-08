@@ -44,6 +44,10 @@ function NavigationBar({ user, userSignedOut }) {
     history.push('/');
   }
 
+  function redirectToProfile() {
+    history.push('/edit-profile');
+  }
+
   return (
     <Pane
       background={ColorPallete.primaryColor}
@@ -125,8 +129,7 @@ function NavigationBar({ user, userSignedOut }) {
                 <Button
                   iconBefore={UserIcon}
                   appearance="minimal"
-                  onClick={() => {}}
-                  disabled
+                  onClick={() => redirectToProfile()}
                 >
                   Profile
                 </Button>

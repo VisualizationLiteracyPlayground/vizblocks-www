@@ -25,6 +25,7 @@ import { USER_ROLE } from 'containers/StudioPage/constants';
 import { updateCuratorRole } from 'containers/StudioPage/actions';
 
 import StudioCuratorRoleDialog from '../StudioCuratorRoleDialog';
+import history from '../../utils/history';
 
 function CuratorListView({
   userRole,
@@ -75,7 +76,9 @@ function CuratorListView({
                 height="auto"
                 paddingY={12}
                 isSelectable
-                onSelect={() => console.log(curator.user.username)}
+                onSelect={() =>
+                  history.push(`/user-profile/${curator.user._id}`)
+                }
               >
                 <Table.Cell flexGrow={2}>
                   <Avatar isSolid name={curator.user.username} size={24} />
