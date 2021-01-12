@@ -103,6 +103,15 @@ export function SignInPage({ error, setError, userSignIn }) {
             validationMessage={password === '' ? 'Password is required' : null}
             value={password}
             onChange={e => setPassword(e.target.value)}
+            onKeyPress={event => {
+              if (event.key === 'Enter') {
+                if (validateInputs()) {
+                  requestSignIn();
+                } else {
+                  toaster.danger('Invalid email/password');
+                }
+              }
+            }}
           />
           <Button
             onClick={() =>

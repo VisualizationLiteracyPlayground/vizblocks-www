@@ -175,6 +175,21 @@ function StudioCommentView({
           placeholder="Leave a comment..."
           value={commentValue}
           onChange={e => setCommentValue(e.target.value)}
+          onKeyPress={event => {
+            if (event.key === 'Enter') {
+              if (commentValue !== '') {
+                if (debugIntervalFlag) {
+                  console.log(
+                    `Clearup interval initiated in add comment button`,
+                  );
+                }
+                cleanupInterval();
+                addComment(studioid, commentValue, comments);
+                setAddCommentTriggered(true);
+              }
+              setCommentValue('');
+            }
+          }}
         />
         <IconButton
           icon={DirectionRightIcon}

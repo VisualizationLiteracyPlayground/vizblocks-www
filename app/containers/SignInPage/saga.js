@@ -3,7 +3,7 @@ import { put, takeLatest } from 'redux-saga/effects';
 
 import { post } from '../../utils/api';
 import history from '../../utils/history';
-import { userSignedIn } from '../App/actions';
+import { userSignedIn, setSuccess } from '../App/actions';
 import { userSignInFailure, userSignInSuccess } from './actions';
 import { USER_SIGNIN } from './constants';
 
@@ -23,6 +23,12 @@ function* userSignIn({ email, password }) {
   if (success) {
     yield put(userSignInSuccess());
     yield put(userSignedIn(response.data));
+    yield put(
+      setSuccess({
+        title: 'Signed in!',
+        description: '',
+      }),
+    );
     yield history.push('/my-stuff');
   } else {
     let msg = 'Unable to reach the server, please try again later.';
