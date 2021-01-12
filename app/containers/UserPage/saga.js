@@ -29,6 +29,11 @@ function* loadProfileInfo({ profileid }) {
   );
   if (success) {
     const profileinfo = response.data;
+    if (profileinfo.projects) {
+      profileinfo.projects = profileinfo.projects.filter(
+        project => !project.deleted,
+      );
+    }
     yield put(loadProfileInfoSuccess(profileinfo));
   } else {
     let msg = 'Unable to reach the server, please try again later.';

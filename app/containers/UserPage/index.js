@@ -17,6 +17,8 @@ import { compose } from 'redux';
 import {
   Avatar,
   Button,
+  CircleArrowLeftIcon,
+  CircleArrowRightIcon,
   EditIcon,
   Heading,
   IconButton,
@@ -30,7 +32,7 @@ import {
 
 import { useInjectSaga } from 'utils/injectSaga';
 import { useInjectReducer } from 'utils/injectReducer';
-import { prettyDateFormat } from 'utils/dateUtil';
+import { sortDateDesc, prettyDateFormat } from 'utils/dateUtil';
 
 import {
   loadProfileInfo,
@@ -51,6 +53,7 @@ import ColorPallete from '../../colorPallete';
 import { makeSelectCurrentUser } from '../App/selectors';
 import NavigationBar from '../../components/NavigationBar';
 import history from '../../utils/history';
+import ProjectCard from '../../components/ProjectCard';
 
 function getProfileJoinDate(profileinfo) {
   return `Joined: ${prettyDateFormat(profileinfo.joinDate)}`;
@@ -60,12 +63,20 @@ function getProfileFriendsNumber(profileinfo) {
   return `| ${profileinfo.following.length}`;
 }
 
+function getProfileProjectsNumber(profileinfo) {
+  return `| ${profileinfo.projects.length}`;
+}
+
 function getProfileAbout(about) {
   return about === '' ? 'Wow! Much empty :)' : about;
 }
 
 function getProfileDetails(details) {
   return details === '' ? 'Wow! Much empty :)' : details;
+}
+
+function getProjectCardTotalPages(profileinfo) {
+  return (profileinfo.projects.length % 7) + 1;
 }
 
 function redirectToEditPage() {
@@ -97,6 +108,8 @@ function shouldShowFollowButton(user, profileinfo, userFollowing) {
   );
 }
 
+const PROJECT_CARD_PER_PAGE = 7;
+
 export function UserPage({
   user,
   profileinfo,
@@ -115,6 +128,7 @@ export function UserPage({
 
   // State
   const [loaded, setLoaded] = useState(false);
+  const [currentProjectPage, setCurrentProjectPage] = useState(1);
 
   useEffect(() => {
     if (!loaded) {
@@ -315,6 +329,84 @@ export function UserPage({
                     ))}
                 </Table.Body>
               </Table>
+            </Pane>
+          </Pane>
+          <Pane aria-label="User Projects" marginTop="1rem">
+            <Pane
+              aria-label="project header"
+              display="flex"
+              flexDirection="row"
+            >
+              <Heading size={500} marginTop="0.5rem" marginLeft="1rem">
+                Projects
+              </Heading>
+              <Heading
+                size={400}
+                marginTop="0.5rem"
+                marginLeft="0.5rem"
+                color="gray"
+              >
+                {getProfileProjectsNumber(profileinfo)}
+              </Heading>
+            </Pane>
+            <Pane
+              aria-label="project cards"
+              display="flex"
+              flexDirection="row"
+              height="32vh"
+            >
+              <IconButton
+                icon={CircleArrowLeftIcon}
+                alignSelf="center"
+                appearance="minimal"
+                intent="success"
+                height={40}
+                disabled={currentProjectPage === 1}
+                onClick={() => setCurrentProjectPage(currentProjectPage - 1)}
+              />
+              <Pane display="flex" alignItems="center">
+                {profileinfo.projects
+                  .slice(
+                    (currentProjectPage - 1) * PROJECT_CARD_PER_PAGE,
+                    currentProjectPage * PROJECT_CARD_PER_PAGE,
+                  )
+                  .sort((a, b) => {
+                    const aCreated = Date.parse(a.history.created);
+                    const bCreated = Date.parse(b.history.created);
+                    return sortDateDesc(aCreated, bCreated);
+                  })
+                  .map(project => (
+                    <Pane marginX="1rem">
+                      <ProjectCard project={project} />
+                    </Pane>
+                  ))}
+              </Pane>
+              <Pane display="flex" flexGrow={1} />
+              <IconButton
+                icon={CircleArrowRightIcon}
+                alignSelf="center"
+                appearance="minimal"
+                intent="success"
+                height={40}
+                disabled={
+                  currentProjectPage >= getProjectCardTotalPages(profileinfo)
+                }
+                onClick={() => setCurrentProjectPage(currentProjectPage + 1)}
+              />
+            </Pane>
+            <Pane aria-label="project card page number" display="flex">
+              <Pane display="flex" flexGrow={1} />
+              <Heading
+                size={400}
+                color="gray"
+                alignSelf="center"
+                justifySelf="center"
+              >
+                {`${currentProjectPage} / ${getProjectCardTotalPages(
+                  profileinfo,
+                )}`}
+              </Heading>
+              <Pane display="flex" flexGrow={1} />
             </Pane>
           </Pane>
         </Pane>
