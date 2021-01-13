@@ -49,7 +49,7 @@ class Preview extends React.Component {
   }
 
   handleClickLogo () {
-    this.state.history.push('/my-stuff');
+    this.state.history.goBack();
   }
 
   handleUpdateProjectData (projectId, vmState, params) {
