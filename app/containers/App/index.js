@@ -28,6 +28,9 @@ import StudioPage from 'containers/StudioPage/Loadable';
 import VizblocksGui from 'containers/VizblocksGui';
 import EditUserPage from 'containers/EditUserPage/Loadable';
 import UserPage from 'containers/UserPage/Loadable';
+import IdeasPage from 'containers/IdeasPage/Loadable';
+import VideoTutorialPage from 'containers/VideoTutorialPage/Loadable';
+import InteractiveTutorialPage from 'containers/InteractiveTutorialPage/Loadable';
 
 import {
   makeSelectCurrentUser,
@@ -108,6 +111,17 @@ export function App({
             path="/my-stuff"
             isAuthenticated={user}
             component={MyStuff}
+          />
+          <Route exact path="/ideas" component={IdeasPage} />
+          <Route
+            exact
+            path="/ideas/video-tutorials"
+            component={VideoTutorialPage}
+          />
+          <Route
+            exact
+            path="/ideas/interactive-tutorials"
+            component={InteractiveTutorialPage}
           />
           <Route exact path="/register-user" component={RegisterUser} />
           <Route exact path="/sign-in" component={SignInPage} />

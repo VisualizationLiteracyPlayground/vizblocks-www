@@ -60,13 +60,11 @@ function NavigationBar({ user, userSignedOut }) {
         <Link to="/">
           <LogoWord />
         </Link>
-        {/* <Link to="/" style={{ textDecoration: 'none' }}> */}
-        <Tooltip content="Coming soon">
+        <Link to="/ideas" style={{ textDecoration: 'none' }}>
           <Strong color="white" marginLeft="2rem" size={500}>
             <b>Ideas</b>
           </Strong>
-        </Tooltip>
-        {/* </Link> */}
+        </Link>
         {/* <Link to="/" style={{ textDecoration: 'none' }}> */}
         <Tooltip content="Coming soon">
           <Strong color="white" marginLeft="3rem" size={500}>
