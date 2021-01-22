@@ -12,7 +12,14 @@ import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
-import { Button, Card, Heading, TextInputField, toaster } from 'evergreen-ui';
+import {
+  Button,
+  Card,
+  Heading,
+  Paragraph,
+  TextInputField,
+  toaster,
+} from 'evergreen-ui';
 
 import { useInjectSaga } from 'utils/injectSaga';
 import { useInjectReducer } from 'utils/injectReducer';
@@ -124,6 +131,15 @@ export function SignInPage({ error, setError, userSignIn }) {
           >
             Sign in
           </Button>
+          <Link to="/register-user" style={{ textDecoration: 'none' }}>
+            <Paragraph
+              color={ColorPallete.accentColor}
+              marginTop="1rem"
+              size={300}
+            >
+              <b>Create an account instead?</b>
+            </Paragraph>
+          </Link>
         </Card>
       </div>
     </div>

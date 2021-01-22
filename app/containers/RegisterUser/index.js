@@ -18,6 +18,7 @@ import {
   Card,
   Checkbox,
   Heading,
+  Paragraph,
   Strong,
   TextInputField,
   toaster,
@@ -229,6 +230,15 @@ export function RegisterUser({ error, setError, registerUser }) {
           >
             Create
           </Button>
+          <Link to="/sign-in" style={{ textDecoration: 'none' }}>
+            <Paragraph
+              color={ColorPallete.accentColor}
+              marginTop="1rem"
+              size={300}
+            >
+              <b>Already have account? Sign in instead</b>
+            </Paragraph>
+          </Link>
         </Card>
         <RegistrationConfirmationDialog
           isShown={confirmationIsShown}
