@@ -194,7 +194,6 @@ export function UserPage({
                 padding="1rem"
               >
                 <Avatar isSolid name={profileinfo.username} size={52} />
-                {/* To be replaced with user retrieved w/ id */}
                 <Pane
                   aria-label="user name"
                   display="flex"

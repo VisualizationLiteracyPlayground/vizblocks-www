@@ -26,6 +26,7 @@ class Preview extends React.Component {
       authorId: this.props.authorid ? this.props.authorid : null,
       authorUsername: this.props.user ? this.props.user.data.username : null,
       projectTitle: this.props.title ? this.props.title : '',
+      isPlayerOnly: this.props.isPlayerOnly,
       history: this.props.history,
       location: this.props.location,
     };
@@ -153,6 +154,7 @@ class Preview extends React.Component {
     return (
       <React.Fragment>
         <IntlGUI
+          isPlayerOnly={this.state.isPlayerOnly}
           projectId={this.state.projectId}
           projectHost={process.env.PROJECT_HOST}
           projectTitle={this.state.projectTitle}

@@ -27,12 +27,16 @@ import { addComment, loadComments } from 'containers/StudioPage/actions';
 import CommentsBackground from 'images/comments-background.jpg';
 import CommentBubble from 'components/CommentBubble';
 
+import { USER_ROLE } from '../../containers/StudioPage/constants';
+
 const debugIntervalFlag = false;
 const pageCount = 50;
 const intervalWindow = 5000;
 
 function StudioCommentView({
+  memberCommentPermission,
   user,
+  userRole,
   studioid,
   commentsListRef,
   comments,
@@ -47,6 +51,20 @@ function StudioCommentView({
   const [addCommentTriggered, setAddCommentTriggered] = useState(false);
   const [refreshComment, setRefreshComment] = useState(null);
   const lastInterval = useRef();
+
+  function isCommentingDisabled() {
+    switch (userRole) {
+      case USER_ROLE.GUEST:
+        // Commenting is disabled for non-signed in users
+        return true;
+      case USER_ROLE.MANAGER:
+        // Manager of studio can always comment
+        return false;
+      default:
+        // Member and unlisted share the same permission
+        return !memberCommentPermission;
+    }
+  }
 
   function showLoadMoreButton() {
     return (
@@ -166,7 +184,7 @@ function StudioCommentView({
       >
         <Avatar
           isSolid
-          name={user.data.username}
+          name={user ? user.data.username : 'Guest'}
           size={32}
           marginRight="1rem"
         />
@@ -190,11 +208,12 @@ function StudioCommentView({
               setCommentValue('');
             }
           }}
+          disabled={isCommentingDisabled()}
         />
         <IconButton
           icon={DirectionRightIcon}
           marginLeft="0.5rem"
-          borderRadius={50}
+          borderRadius={40}
           intent="success"
           onClick={() => {
             if (commentValue !== '') {
@@ -207,6 +226,7 @@ function StudioCommentView({
             }
             setCommentValue('');
           }}
+          disabled={isCommentingDisabled()}
         />
       </Pane>
       <Pane

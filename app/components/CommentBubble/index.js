@@ -14,7 +14,7 @@ import ColorPallete from '../../colorPallete';
 
 function CommentBubble({ user, comment }) {
   // eslint-disable-next-line no-underscore-dangle
-  const isCurrentUser = user.data.id === comment.author._id;
+  const isCurrentUser = user ? user.data.id === comment.author._id : false;
 
   return (
     <Pane>

@@ -39,6 +39,7 @@ import UndeleteProjectConfirmation from 'components/UndeleteProjectConfirmation'
 
 import ColorPallete from '../../colorPallete';
 
+/*
 function redirectToProjectGui(project) {
   history.push({
     pathname: `/project-gui`,
@@ -46,6 +47,16 @@ function redirectToProjectGui(project) {
       title: project.title,
       projectid: project._id,
       authorid: project.author,
+    },
+  });
+}
+*/
+
+function redirectToProjectPreview(project) {
+  history.push({
+    pathname: `/project-preview`,
+    state: {
+      projectid: project._id,
     },
   });
 }
@@ -98,7 +109,9 @@ function ProjectListView({
                 paddingY={12}
                 isSelectable
                 onSelect={
-                  showDeleted ? () => {} : () => redirectToProjectGui(project)
+                  showDeleted
+                    ? () => {}
+                    : () => redirectToProjectPreview(project)
                 }
               >
                 <Table.Cell>

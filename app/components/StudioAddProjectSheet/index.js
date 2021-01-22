@@ -66,7 +66,9 @@ function StudioAddProjectSheet({
     }
   }, []);
   useEffect(() => {
-    loadUserProjects(user.data.id, folder.projects);
+    if (user) {
+      loadUserProjects(user.data.id, folder.projects);
+    }
   }, [folder]);
   useEffect(() => {
     setLoaded(true);

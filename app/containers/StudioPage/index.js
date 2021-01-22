@@ -139,14 +139,15 @@ export function StudioPage({
     if (!user) {
       // Not logged in
       setUserRole(USER_ROLE.GUEST);
-    }
-    const userCuratorProfile = studio.curators.find(
-      curator => curator.user._id === user.data.id,
-    );
-    if (userCuratorProfile) {
-      setUserRole(userCuratorProfile.role);
     } else {
-      setUserRole(USER_ROLE.UNLISTED);
+      const userCuratorProfile = studio.curators.find(
+        curator => curator.user._id === user.data.id,
+      );
+      if (userCuratorProfile) {
+        setUserRole(userCuratorProfile.role);
+      } else {
+        setUserRole(USER_ROLE.UNLISTED);
+      }
     }
   }
 
@@ -312,11 +313,17 @@ export function StudioPage({
                   disabled={userRole === USER_ROLE.GUEST}
                   appearance="primary"
                   intent={
-                    userRole === USER_ROLE.UNLISTED ? 'success' : 'warning'
+                    userRole === USER_ROLE.UNLISTED ||
+                    userRole === USER_ROLE.GUEST
+                      ? 'success'
+                      : 'warning'
                   }
                   onClick={() => triggerFollowUnfollow()}
                 >
-                  {userRole === USER_ROLE.UNLISTED ? 'Follow' : 'Unfollow'}
+                  {userRole === USER_ROLE.UNLISTED ||
+                  userRole === USER_ROLE.GUEST
+                    ? 'Follow'
+                    : 'Unfollow'}
                 </Button>
               </Pane>
             </Pane>
@@ -371,7 +378,11 @@ export function StudioPage({
                   )}
                   {index === 1 && (
                     <StudioCommentView
+                      memberCommentPermission={
+                        studio.settings.member.commenting
+                      }
                       user={user}
+                      userRole={userRole}
                       studioid={studioid}
                       commentsListRef={commentsListRef}
                     />

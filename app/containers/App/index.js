@@ -31,6 +31,7 @@ import UserPage from 'containers/UserPage/Loadable';
 import IdeasPage from 'containers/IdeasPage/Loadable';
 import VideoTutorialPage from 'containers/VideoTutorialPage/Loadable';
 import InteractiveTutorialPage from 'containers/InteractiveTutorialPage/Loadable';
+import ProjectPreview from 'containers/ProjectPreview/Loadable';
 
 import {
   makeSelectCurrentUser,
@@ -129,6 +130,19 @@ export function App({
             path="/project-gui"
             isAuthenticated={user}
             component={VizblocksGui}
+          />
+          <Route exact path="/project-preview" component={ProjectPreview} />
+          <Route
+            exact
+            path="/share-project/:projectid"
+            render={props => (
+              <Redirect
+                to={{
+                  pathname: '/project-preview',
+                  state: { projectid: props.match.params.projectid },
+                }}
+              />
+            )}
           />
           <PrivateRoute
             path="/edit-profile"
