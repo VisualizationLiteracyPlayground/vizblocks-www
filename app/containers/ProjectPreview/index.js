@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable no-shadow */
 /* eslint-disable react/prop-types */
 /* eslint-disable react/no-unused-prop-types */
@@ -29,10 +30,17 @@ import { useInjectReducer } from 'utils/injectReducer';
 import history from 'utils/history';
 import { WEBSITE_BASE_URL } from 'utils/constants';
 
-import { loadProjectDetails, loadProjectDetailsFailure } from './actions';
+import {
+  loadProjectDetails,
+  loadUserInfo,
+  loadProjectDetailsFailure,
+  userToggleLike,
+  userToggleBookmark,
+} from './actions';
 import {
   makeSelectProjectPreview,
   makeSelectProject,
+  makeSelectUserinfo,
   makeSelectError,
 } from './selectors';
 import reducer from './reducer';
@@ -44,8 +52,12 @@ import ProjectInfo from '../../components/ProjectInfo';
 
 export function ProjectPreview({
   project,
-  loadProjectDetails,
   user,
+  userinfo,
+  loadProjectDetails,
+  loadUserInfo,
+  userToggleLike,
+  userToggleBookmark,
   error,
   setError,
 }) {
@@ -92,6 +104,9 @@ export function ProjectPreview({
   useEffect(() => {
     if (!loaded) {
       loadProjectDetails(projectid);
+      if (user) {
+        loadUserInfo();
+      }
       setLoaded(true);
     }
   }, []);
@@ -154,10 +169,13 @@ export function ProjectPreview({
       {currentTab === 0 && project && (
         <ProjectInfo
           user={user}
+          userinfo={userinfo}
           project={project}
           history={history}
           location={location}
           onClickShare={() => setShowShareURL(true)}
+          likeCallback={userToggleLike}
+          bookmarkCallback={userToggleBookmark}
         />
       )}
       <Dialog
@@ -200,6 +218,7 @@ const mapStateToProps = createStructuredSelector({
   projectPreview: makeSelectProjectPreview(),
   user: makeSelectCurrentUser(),
   project: makeSelectProject(),
+  userinfo: makeSelectUserinfo(),
   error: makeSelectError(),
 });
 
@@ -207,6 +226,11 @@ function mapDispatchToProps(dispatch) {
   return {
     dispatch,
     loadProjectDetails: projectid => dispatch(loadProjectDetails(projectid)),
+    loadUserInfo: () => dispatch(loadUserInfo()),
+    userToggleLike: (projectid, likesProject) =>
+      dispatch(userToggleLike(projectid, likesProject)),
+    userToggleBookmark: (projectid, bookmarksProject) =>
+      dispatch(userToggleBookmark(projectid, bookmarksProject)),
     setError: error => dispatch(loadProjectDetailsFailure(error)),
   };
 }

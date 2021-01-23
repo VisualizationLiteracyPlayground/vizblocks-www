@@ -42,7 +42,7 @@ function LandingMast() {
           to="/project-gui"
           style={{ marginTop: '1rem', textDecoration: 'none' }}
         >
-          <Button width="7rem">Start Creating</Button>
+          <Button>Start Creating</Button>
         </Link>
       </Pane>
       <Pane display="flex" alignItems="flex-end">

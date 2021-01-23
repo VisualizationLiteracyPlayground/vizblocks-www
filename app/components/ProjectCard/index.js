@@ -41,11 +41,9 @@ function ProjectCard({ project, onClickCallback }) {
         } else {
           // Default callback
           history.push({
-            pathname: `/project-gui`,
+            pathname: `/project-preview`,
             state: {
-              title: project.title,
               projectid: project._id,
-              authorid: project.author,
             },
           });
         }

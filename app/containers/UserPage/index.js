@@ -76,7 +76,10 @@ function getProfileDetails(details) {
 }
 
 function getProjectCardTotalPages(profileinfo) {
-  return (profileinfo.projects.length % 7) + 1;
+  const pageNumber = Math.ceil(
+    profileinfo.projects.length / PROJECT_CARD_PER_PAGE,
+  );
+  return pageNumber === 0 ? 1 : pageNumber;
 }
 
 function redirectToEditPage() {

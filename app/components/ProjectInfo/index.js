@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable react/prop-types */
 /**
@@ -6,20 +7,27 @@
  *
  */
 
-import React, { memo } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import {
   Avatar,
   BookmarkIcon,
   Button,
   CommentIcon,
+  ConfirmIcon,
+  Dialog,
+  EditIcon,
   EyeOpenIcon,
   ForkIcon,
   Heading,
   HeartIcon,
   Icon,
+  IconButton,
   LinkIcon,
   Pane,
+  Paragraph,
+  RefreshIcon,
   TextareaField,
+  TextInputField,
   Tooltip,
 } from 'evergreen-ui';
 
@@ -27,7 +35,59 @@ import { prettyDateFormat } from 'utils/dateUtil';
 
 const ProjectView = require('containers/VizblocksGui/project-view.jsx');
 
-function ProjectInfo({ user, project, history, location, onClickShare }) {
+function ProjectInfo({
+  user,
+  userinfo,
+  project,
+  history,
+  location,
+  onClickShare,
+  likeCallback,
+  bookmarkCallback,
+}) {
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [userLikedProject, setUserLikedProject] = useState(false);
+  const [userBookmarkedProject, setUserBookmarkedProject] = useState(false);
+  // Edit fields
+  const [projectTitleField, setProjectTitleField] = useState('');
+  const [projectInstructionField, setProjectInstructionField] = useState('');
+  const [projectDescriptionField, setProjectDescriptionField] = useState('');
+  // Dialog state
+  const [showUpdateConfirmation, setShowUpdateConfirmation] = useState(false);
+
+  function redirectToProjectGui() {
+    history.push({
+      pathname: `/project-gui`,
+      state: {
+        title: project.title,
+        projectid: project._id,
+        authorid: project.author._id,
+      },
+    });
+  }
+
+  function userIsAuthor() {
+    if (!user) {
+      // User not logged in
+      return false;
+    }
+    return project ? project.author._id === user.data.id : false;
+  }
+
+  useEffect(() => {
+    setProjectTitleField(project.title);
+    setProjectInstructionField(project.instructions);
+    setProjectDescriptionField(project.description);
+  }, [project]);
+  useEffect(() => {
+    if (userinfo && project) {
+      setUserLikedProject(userinfo.likedProjects.includes(project._id));
+      setUserBookmarkedProject(
+        userinfo.bookmarkedProjects.includes(project._id),
+      );
+    }
+  }, [userinfo]);
+
   return (
     <Pane
       height="80vh"
@@ -45,9 +105,22 @@ function ProjectInfo({ user, project, history, location, onClickShare }) {
           flexDirection="column"
           marginLeft="1rem"
         >
-          <Heading size={600} marginLeft="1rem">
-            {project.title}
-          </Heading>
+          {!isEditMode && (
+            <Heading size={600} marginLeft="1rem">
+              {project.title}
+            </Heading>
+          )}
+          {isEditMode && (
+            <TextInputField
+              width="400px"
+              id="title"
+              label=""
+              marginLeft="0.5rem"
+              marginBottom="0rem"
+              value={projectTitleField}
+              onChange={e => setProjectTitleField(e.target.value)}
+            />
+          )}
           <Heading size={400} marginLeft="1rem">
             {`by ${project.author.username}`}
           </Heading>
@@ -55,10 +128,45 @@ function ProjectInfo({ user, project, history, location, onClickShare }) {
             {prettyDateFormat(project.history.created)}
           </Heading>
         </Pane>
+        <Pane flexGrow={1} />
+        <Pane aria-label="header-buttons" display="flex">
+          {userIsAuthor() && (
+            <IconButton
+              icon={EditIcon}
+              intent="success"
+              appearance={isEditMode ? 'primary' : 'default'}
+              onClick={() => setIsEditMode(!isEditMode)}
+              alignSelf="flex-end"
+              marginRight="1rem"
+            />
+          )}
+          {user && (
+            <Button
+              iconBefore={ForkIcon}
+              intent="success"
+              appearance="primary"
+              onClick={onClickShare}
+              alignSelf="flex-end"
+              marginRight="1rem"
+            >
+              Remix
+            </Button>
+          )}
+          <Button
+            iconBefore={RefreshIcon}
+            intent="success"
+            appearance="primary"
+            onClick={redirectToProjectGui}
+            alignSelf="flex-end"
+          >
+            See Inside
+          </Button>
+        </Pane>
       </Pane>
       <Pane display="flex" flexDirection="row">
         <Pane aria-label="left column">
           <Pane aria-label="project-player" width="481px" height="auto">
+            {/* Key is needed to trigger rerendering */}
             <ProjectView.View
               user={user}
               projectid={project._id}
@@ -67,6 +175,7 @@ function ProjectInfo({ user, project, history, location, onClickShare }) {
               location={location}
               authorid={project.author._id}
               isPlayerOnly
+              key={project._id}
             />
           </Pane>
           <Pane
@@ -144,16 +253,28 @@ function ProjectInfo({ user, project, history, location, onClickShare }) {
                 id="instructions"
                 label="Instructions"
                 width="100%"
-                value={project.instructions}
-                readOnly
+                value={projectInstructionField}
+                onChange={e => setProjectInstructionField(e.target.value)}
+                readOnly={!isEditMode}
               />
               <TextareaField
                 id="description"
                 label="Description"
                 width="100%"
-                value={project.description}
-                readOnly
+                value={projectDescriptionField}
+                onChange={e => setProjectDescriptionField(e.target.value)}
+                readOnly={!isEditMode}
               />
+              {isEditMode && (
+                <Button
+                  iconBefore={ConfirmIcon}
+                  intent="success"
+                  appearance="primary"
+                  onClick={() => setShowUpdateConfirmation(true)}
+                >
+                  Update Project
+                </Button>
+              )}
             </Pane>
             <Pane flexGrow={2} />
             <Pane
@@ -171,21 +292,33 @@ function ProjectInfo({ user, project, history, location, onClickShare }) {
               </Button>
               <Button
                 iconBefore={BookmarkIcon}
-                intent="success"
+                intent={userBookmarkedProject ? 'success' : 'default'}
                 appearance="default"
                 marginRight="1rem"
-                onClick={() => {}}
+                onClick={() => {
+                  // callback to server
+                  bookmarkCallback(project._id, !userBookmarkedProject);
+                  // update state
+                  setUserBookmarkedProject(!userBookmarkedProject);
+                }}
+                disabled={!user || userIsAuthor()}
               >
-                Bookmarked
+                {userBookmarkedProject ? 'Bookmarked' : 'Bookmark'}
               </Button>
               <Button
                 iconBefore={HeartIcon}
-                intent="danger"
+                intent={userLikedProject ? 'danger' : 'default'}
                 appearance="default"
                 marginRight="1rem"
-                onClick={() => {}}
+                onClick={() => {
+                  // callback to server
+                  likeCallback(project._id, !userLikedProject);
+                  // update state
+                  setUserLikedProject(!userLikedProject);
+                }}
+                disabled={!user || userIsAuthor()}
               >
-                Liked
+                {userLikedProject ? 'Liked' : 'Like'}
               </Button>
             </Pane>
           </Pane>
@@ -199,6 +332,40 @@ function ProjectInfo({ user, project, history, location, onClickShare }) {
         marginTop="1rem"
         aria-label="Horizontal divider"
       />
+      <Dialog
+        isShown={showUpdateConfirmation}
+        hasHeader={false}
+        intent="success"
+        width="40vw"
+        onCloseComplete={() => {
+          setShowUpdateConfirmation(false);
+        }}
+        onConfirm={() => {
+          setShowUpdateConfirmation(false);
+        }}
+        confirmLabel="Confirm"
+      >
+        <Pane>
+          <Heading size={600}>
+            <b>Project Information</b>
+          </Heading>
+          <Heading size={400} marginTop="0.5rem">
+            will be updated as follows
+          </Heading>
+          <Heading size={400} marginTop="1rem">
+            Title:
+          </Heading>
+          <Paragraph>{projectTitleField}</Paragraph>
+          <Heading size={400} marginTop="1rem">
+            Instructions:
+          </Heading>
+          <Paragraph>{projectInstructionField}</Paragraph>
+          <Heading size={400} marginTop="1rem">
+            Description:
+          </Heading>
+          <Paragraph>{projectDescriptionField}</Paragraph>
+        </Pane>
+      </Dialog>
     </Pane>
   );
 }

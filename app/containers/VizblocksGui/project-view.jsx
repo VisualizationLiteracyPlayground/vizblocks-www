@@ -32,6 +32,7 @@ class Preview extends React.Component {
     };
     bindAll(this, [
       'setProjectId',
+      'setProjectTitle',
       'handleClickLogo',
       'handleUpdateProjectData',
       'handleUpdateProjectTitle',
@@ -127,14 +128,16 @@ class Preview extends React.Component {
   }
 
   handleUpdateProjectId (projectId, callback) {
-    this.state.projectId = projectId;
-    this.state.history.replace(
-      this.state.location.pathname,
-      {
-        projectid: projectId,
-        title: this.state.projectTitle,
-      },
-    );
+    this.setProjectId(projectId);
+    if (!this.state.isPlayerOnly) {
+      this.state.history.replace(
+        this.state.location.pathname,
+        {
+          projectid: projectId,
+          title: this.state.projectTitle,
+        },
+      );
+    }
     if (callback) callback();
   }
 

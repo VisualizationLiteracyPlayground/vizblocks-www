@@ -20,9 +20,11 @@ import {
   HeartIcon,
   Pane,
   Paragraph,
+  RefreshIcon,
   Table,
   Text,
   TrashIcon,
+  Tooltip,
   UndoIcon,
 } from 'evergreen-ui';
 
@@ -39,7 +41,6 @@ import UndeleteProjectConfirmation from 'components/UndeleteProjectConfirmation'
 
 import ColorPallete from '../../colorPallete';
 
-/*
 function redirectToProjectGui(project) {
   history.push({
     pathname: `/project-gui`,
@@ -50,7 +51,6 @@ function redirectToProjectGui(project) {
     },
   });
 }
-*/
 
 function redirectToProjectPreview(project) {
   history.push({
@@ -160,32 +160,46 @@ function ProjectListView({
                     </Pane>
                   </Pane>
                   {!showDeleted && (
-                    <TrashIcon
-                      marginRight="1rem"
-                      size={24}
-                      onClickCapture={event => {
-                        event.stopPropagation();
-                        setCurrentProject({
-                          id: project._id,
-                          title: project.title,
-                        });
-                        setShowDeleteConfirmation(true);
-                      }}
-                    />
+                    <Pane>
+                      <Tooltip content="See Inside">
+                        <RefreshIcon
+                          marginRight="1.5rem"
+                          size={24}
+                          onClickCapture={event => {
+                            event.stopPropagation();
+                            redirectToProjectGui(project);
+                          }}
+                        />
+                      </Tooltip>
+                      <TrashIcon
+                        marginRight="2rem"
+                        size={24}
+                        onClickCapture={event => {
+                          event.stopPropagation();
+                          setCurrentProject({
+                            id: project._id,
+                            title: project.title,
+                          });
+                          setShowDeleteConfirmation(true);
+                        }}
+                      />
+                    </Pane>
                   )}
                   {showDeleted && (
-                    <UndoIcon
-                      marginRight="1rem"
-                      size={24}
-                      onClickCapture={event => {
-                        event.stopPropagation();
-                        setCurrentProject({
-                          id: project._id,
-                          title: project.title,
-                        });
-                        setShowUndeleteConfirmation(true);
-                      }}
-                    />
+                    <Tooltip content="Undo">
+                      <UndoIcon
+                        marginRight="1rem"
+                        size={24}
+                        onClickCapture={event => {
+                          event.stopPropagation();
+                          setCurrentProject({
+                            id: project._id,
+                            title: project.title,
+                          });
+                          setShowUndeleteConfirmation(true);
+                        }}
+                      />
+                    </Tooltip>
                   )}
                 </Table.Cell>
               </Table.Row>

@@ -21,6 +21,12 @@ const makeSelectProject = () =>
     substate => substate.project,
   );
 
+const makeSelectUserinfo = () =>
+  createSelector(
+    selectProjectPreviewDomain,
+    substate => substate.userinfo,
+  );
+
 const makeSelectError = () =>
   createSelector(
     selectProjectPreviewDomain,
@@ -31,5 +37,6 @@ export {
   makeSelectProjectPreview,
   selectProjectPreviewDomain,
   makeSelectProject,
+  makeSelectUserinfo,
   makeSelectError,
 };
