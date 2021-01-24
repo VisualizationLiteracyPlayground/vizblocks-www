@@ -13,22 +13,21 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
-import {
-  Pane,
-  Paragraph,
-  SidebarTab,
-  Spinner,
-  Tablist,
-  toaster,
-} from 'evergreen-ui';
+import { Pane, SidebarTab, Spinner, Tablist, toaster } from 'evergreen-ui';
 
 import { useInjectSaga } from 'utils/injectSaga';
 import { useInjectReducer } from 'utils/injectReducer';
 
-import { loadProjects, loadStudios, loadProjectsFailure } from './actions';
+import {
+  loadProjects,
+  loadBookmarkedProjects,
+  loadStudios,
+  loadProjectsFailure,
+} from './actions';
 import {
   makeSelectMyStuff,
   makeSelectProjects,
+  makeSelectBookmarkedProjects,
   makeSelectError,
   makeSelectDeletedProjects,
   makeSelectStudios,
@@ -44,12 +43,10 @@ import { makeSelectCurrentUser } from '../App/selectors';
 
 export function MyStuff({
   user,
-  projects,
-  deletedProjects,
-  studios,
   error,
   setError,
   loadProjects,
+  loadBookmarkedProjects,
   loadStudios,
 }) {
   useInjectReducer({ key: 'myStuff', reducer });
@@ -63,12 +60,11 @@ export function MyStuff({
   useEffect(() => {
     if (user && !loaded) {
       loadProjects(user.data.id);
+      loadBookmarkedProjects(user.data.id);
       loadStudios(user.data.id);
+      setLoaded(true);
     }
   }, []);
-  useEffect(() => {
-    setLoaded(true);
-  }, [projects, deletedProjects, studios]);
   useEffect(() => {
     // Catch and alert error messages
     if (error) {
@@ -122,9 +118,11 @@ export function MyStuff({
                 display={index === tabIndex ? 'block' : 'none'}
               >
                 {!loaded && <Spinner />}
-                {index === 2 && <Paragraph>Coming soon!</Paragraph>}
-                {loaded && (index === 0 || index === 3) && (
-                  <ProjectListView showDeleted={index === 3} />
+                {loaded && index !== 1 && (
+                  <ProjectListView
+                    showDeleted={index === 3}
+                    showBookmark={index === 2}
+                  />
                 )}
                 {loaded && index === 1 && <StudioListView />}
               </Pane>
@@ -144,6 +142,7 @@ const mapStateToProps = createStructuredSelector({
   myStuff: makeSelectMyStuff(),
   projects: makeSelectProjects(),
   deletedProjects: makeSelectDeletedProjects(),
+  bookmarkedProjects: makeSelectBookmarkedProjects(),
   studios: makeSelectStudios(),
   error: makeSelectError(),
   user: makeSelectCurrentUser(),
@@ -153,6 +152,7 @@ function mapDispatchToProps(dispatch) {
   return {
     dispatch,
     loadProjects: userid => dispatch(loadProjects(userid)),
+    loadBookmarkedProjects: userid => dispatch(loadBookmarkedProjects(userid)),
     loadStudios: userid => dispatch(loadStudios(userid)),
     setError: error => dispatch(loadProjectsFailure(error)),
   };

@@ -12,8 +12,10 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import {
+  Avatar,
   BookmarkIcon,
   CommentIcon,
+  Dialog,
   EyeOpenIcon,
   ForkIcon,
   Heading,
@@ -33,9 +35,14 @@ import { sortDateDesc, prettyDateFormat } from 'utils/dateUtil';
 import DefaultThumbnail from 'images/default-project-thumbnail.png';
 import {
   makeSelectProjects,
+  makeSelectBookmarkedProjects,
   makeSelectDeletedProjects,
 } from 'containers/MyStuff/selectors';
-import { deleteProject, undeleteProject } from 'containers/MyStuff/actions';
+import {
+  deleteProject,
+  unbookmarkProject,
+  undeleteProject,
+} from 'containers/MyStuff/actions';
 import DeleteProjectConfirmation from 'components/DeleteProjectConfirmation';
 import UndeleteProjectConfirmation from 'components/UndeleteProjectConfirmation';
 
@@ -63,14 +70,20 @@ function redirectToProjectPreview(project) {
 
 function ProjectListView({
   showDeleted,
+  showBookmark,
   projects,
+  bookmarkedProjects,
   deletedProjects,
   deleteProject,
+  unbookmarkProject,
   undeleteProject,
 }) {
   const [data, setData] = useState([]);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showUndeleteConfirmation, setShowUndeleteConfirmation] = useState(
+    false,
+  );
+  const [showUnbookmarkConfirmation, setShowUnbookmarkConfirmation] = useState(
     false,
   );
   const [currentProject, setCurrentProject] = useState({
@@ -81,18 +94,23 @@ function ProjectListView({
   useEffect(() => {
     if (showDeleted) {
       setData(deletedProjects);
+    } else if (showBookmark) {
+      setData(bookmarkedProjects);
     } else {
       setData(projects);
     }
-  }, [projects, deletedProjects]);
+  }, [projects, bookmarkedProjects, deletedProjects]);
 
   return (
     <Pane>
       {showDeleted && deletedProjects.length === 0 && (
         <Paragraph>You have not deleted any projects!</Paragraph>
       )}
-      {!showDeleted && projects.length === 0 && (
+      {!showDeleted && !showBookmark && projects.length === 0 && (
         <Paragraph>Start creating projects now!</Paragraph>
+      )}
+      {showBookmark && bookmarkedProjects.length === 0 && (
+        <Paragraph>You have not bookmarked any projects!</Paragraph>
       )}
       <Table display="flex" height="62vh">
         <Table.Body>
@@ -135,15 +153,44 @@ function ProjectListView({
                     alignItems="left"
                     padding="0.5rem"
                   >
-                    <Pane display="flex" flexDirection="column" flexGrow={1}>
-                      <Heading size={600}>
-                        {project.title ? project.title : 'Untitled'}
-                      </Heading>
-                      <Heading size={300} marginTop="0.2rem" color="dark-gray">
-                        Last modified:{' '}
-                        {prettyDateFormat(project.history.modified)}
-                      </Heading>
+                    <Pane display="flex">
+                      {showBookmark && (
+                        <Pane display="flex" alignItems="center">
+                          <Avatar
+                            isSolid
+                            name={project.author.username}
+                            size={32}
+                          />
+                          <Heading size={500} marginX="0.5rem">
+                            {project.author.username}
+                          </Heading>
+                          <Pane
+                            height="100%"
+                            borderColor={ColorPallete.grey}
+                            borderWidth="0.1rem"
+                            borderLeftStyle="solid"
+                            justifySelf="center"
+                            alignSelf="center"
+                            marginRight="1rem"
+                            aria-label="Vertical divider"
+                          />
+                        </Pane>
+                      )}
+                      <Pane display="flex" flexDirection="column">
+                        <Heading size={600}>
+                          {project.title ? project.title : 'Untitled'}
+                        </Heading>
+                        <Heading
+                          size={300}
+                          marginTop="0.2rem"
+                          color="dark-gray"
+                        >
+                          Last modified:{' '}
+                          {prettyDateFormat(project.history.modified)}
+                        </Heading>
+                      </Pane>
                     </Pane>
+                    <Pane display="flex" flexGrow={1} />
                     <Pane display="flex" alignItems="flex-end">
                       <EyeOpenIcon color="info" marginRight="0.5rem" />
                       <Text marginRight="0.5rem">{project.stats.views}</Text>
@@ -159,7 +206,7 @@ function ProjectListView({
                       <Text marginRight="0.5rem">{project.stats.remixes}</Text>
                     </Pane>
                   </Pane>
-                  {!showDeleted && (
+                  {!showDeleted && !showBookmark && (
                     <Pane>
                       <Tooltip content="See Inside">
                         <RefreshIcon
@@ -184,6 +231,23 @@ function ProjectListView({
                         }}
                       />
                     </Pane>
+                  )}
+                  {showBookmark && (
+                    <Tooltip content="Unbookmark">
+                      <BookmarkIcon
+                        marginRight="1rem"
+                        color="success"
+                        size={24}
+                        onClickCapture={event => {
+                          event.stopPropagation();
+                          setCurrentProject({
+                            id: project._id,
+                            title: project.title,
+                          });
+                          setShowUnbookmarkConfirmation(true);
+                        }}
+                      />
+                    </Tooltip>
                   )}
                   {showDeleted && (
                     <Tooltip content="Undo">
@@ -224,6 +288,26 @@ function ProjectListView({
           undeleteProject(projectid, projects, deletedProjects);
         }}
       />
+      <Dialog
+        aria-label="Unbookmark-confirmation"
+        isShown={showUnbookmarkConfirmation}
+        title={`Confirm unbookmark '${currentProject.title || 'project'}'?`}
+        intent="warning"
+        width="30vw"
+        onCloseComplete={() => setShowUnbookmarkConfirmation(false)}
+        onConfirm={() => {
+          setShowUnbookmarkConfirmation(false);
+          unbookmarkProject(currentProject.id, bookmarkedProjects);
+        }}
+        confirmLabel="Confirm"
+      >
+        <Paragraph size={400} color="gray">
+          <b>Note:</b>
+        </Paragraph>
+        <Paragraph size={400} color="gray">
+          You can bookmark the project again, by searching for it.
+        </Paragraph>
+      </Dialog>
     </Pane>
   );
 }
@@ -232,6 +316,7 @@ ProjectListView.propTypes = {};
 
 const mapStateToProps = createStructuredSelector({
   projects: makeSelectProjects(),
+  bookmarkedProjects: makeSelectBookmarkedProjects(),
   deletedProjects: makeSelectDeletedProjects(),
 });
 
@@ -240,6 +325,8 @@ function mapDispatchToProps(dispatch) {
     dispatch,
     deleteProject: (projectid, projects, deletedProjects) =>
       dispatch(deleteProject(projectid, projects, deletedProjects)),
+    unbookmarkProject: (projectid, bookmarkedProjects) =>
+      dispatch(unbookmarkProject(projectid, bookmarkedProjects)),
     undeleteProject: (projectid, projects, deletedProjects) =>
       dispatch(undeleteProject(projectid, projects, deletedProjects)),
   };

@@ -30,6 +30,7 @@ import {
   TextInputField,
   Tooltip,
 } from 'evergreen-ui';
+import { Link } from 'react-router-dom';
 
 import { prettyDateFormat } from 'utils/dateUtil';
 
@@ -158,7 +159,9 @@ function ProjectInfo({
       flexDirection="column"
     >
       <Pane aria-label="project-header" display="flex" marginBottom="1rem">
-        <Avatar isSolid name={project.author.username} size={52} />
+        <Link to={`/user-profile/${project.author._id}`}>
+          <Avatar isSolid name={project.author.username} size={52} />
+        </Link>
         <Pane
           aria-label="project-header-info"
           display="flex"
