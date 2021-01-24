@@ -18,6 +18,9 @@ import {
   USER_TOGGLE_BOOKMARK,
   USER_TOGGLE_BOOKMARK_FAILURE,
   USER_TOGGLE_BOOKMARK_SUCCESS,
+  UPDATE_PROJECT_INFORMATION,
+  UPDATE_PROJECT_INFORMATION_FAILURE,
+  UPDATE_PROJECT_INFORMATION_SUCCESS,
 } from './constants';
 
 export function defaultAction() {
@@ -107,6 +110,35 @@ export function userToggleBookmarkFailure(error) {
 export function userToggleBookmarkSuccess(project) {
   return {
     type: USER_TOGGLE_BOOKMARK_SUCCESS,
+    project,
+  };
+}
+
+export function updateProjectInformation(
+  projectid,
+  title,
+  instructions,
+  description,
+) {
+  return {
+    type: UPDATE_PROJECT_INFORMATION,
+    projectid,
+    title,
+    instructions,
+    description,
+  };
+}
+
+export function updateProjectInformationFailure(error) {
+  return {
+    type: UPDATE_PROJECT_INFORMATION_FAILURE,
+    error,
+  };
+}
+
+export function updateProjectInformationSuccess(project) {
+  return {
+    type: UPDATE_PROJECT_INFORMATION_SUCCESS,
     project,
   };
 }

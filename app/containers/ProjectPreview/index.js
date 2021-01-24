@@ -36,6 +36,7 @@ import {
   loadProjectDetailsFailure,
   userToggleLike,
   userToggleBookmark,
+  updateProjectInformation,
 } from './actions';
 import {
   makeSelectProjectPreview,
@@ -58,6 +59,7 @@ export function ProjectPreview({
   loadUserInfo,
   userToggleLike,
   userToggleBookmark,
+  updateProjectInformation,
   error,
   setError,
 }) {
@@ -176,6 +178,8 @@ export function ProjectPreview({
           onClickShare={() => setShowShareURL(true)}
           likeCallback={userToggleLike}
           bookmarkCallback={userToggleBookmark}
+          errorCallback={setError}
+          submitUpdateCallback={updateProjectInformation}
         />
       )}
       <Dialog
@@ -231,6 +235,10 @@ function mapDispatchToProps(dispatch) {
       dispatch(userToggleLike(projectid, likesProject)),
     userToggleBookmark: (projectid, bookmarksProject) =>
       dispatch(userToggleBookmark(projectid, bookmarksProject)),
+    updateProjectInformation: (projectid, title, instructions, description) =>
+      dispatch(
+        updateProjectInformation(projectid, title, instructions, description),
+      ),
     setError: error => dispatch(loadProjectDetailsFailure(error)),
   };
 }

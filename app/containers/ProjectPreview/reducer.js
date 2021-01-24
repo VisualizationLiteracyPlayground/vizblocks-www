@@ -16,6 +16,8 @@ import {
   USER_TOGGLE_LIKE_SUCCESS,
   USER_TOGGLE_BOOKMARK_FAILURE,
   USER_TOGGLE_BOOKMARK_SUCCESS,
+  UPDATE_PROJECT_INFORMATION_FAILURE,
+  UPDATE_PROJECT_INFORMATION_SUCCESS,
 } from './constants';
 
 export const initialState = {
@@ -35,11 +37,13 @@ const projectPreviewReducer = (state = initialState, action) =>
       case LOAD_USER_INFO_FAILURE:
       case USER_TOGGLE_LIKE_FAILURE:
       case USER_TOGGLE_BOOKMARK_FAILURE:
+      case UPDATE_PROJECT_INFORMATION_FAILURE:
         draft.error = action.error;
         break;
       case LOAD_PROJECT_DETAILS_SUCCESS:
       case USER_TOGGLE_LIKE_SUCCESS:
       case USER_TOGGLE_BOOKMARK_SUCCESS:
+      case UPDATE_PROJECT_INFORMATION_SUCCESS:
         draft.project = action.project;
         break;
       case LOAD_USER_INFO_SUCCESS:

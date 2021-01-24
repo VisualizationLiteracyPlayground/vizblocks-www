@@ -8,6 +8,7 @@ import {
   LOAD_USER_INFO,
   USER_TOGGLE_LIKE,
   USER_TOGGLE_BOOKMARK,
+  UPDATE_PROJECT_INFORMATION,
 } from './constants';
 import {
   loadProjectDetailsSuccess,
@@ -18,6 +19,8 @@ import {
   userToggleLikeFailure,
   userToggleBookmarkSuccess,
   userToggleBookmarkFailure,
+  updateProjectInformationSuccess,
+  updateProjectInformationFailure,
 } from './actions';
 import { setSuccess } from '../App/actions';
 
@@ -120,10 +123,44 @@ function* userToggleBookmark({ projectid, bookmarksProject }) {
   }
 }
 
+function* updateProjectInformation({
+  projectid,
+  title,
+  instructions,
+  description,
+}) {
+  const [success, response] = yield patch(
+    `/project/information/${projectid}`,
+    {
+      title,
+      instructions,
+      description,
+    },
+    response => response.data,
+    e => e.response,
+  );
+  if (success) {
+    yield put(updateProjectInformationSuccess(response));
+    yield put(
+      setSuccess({
+        title: 'Updated project information!',
+        description: '',
+      }),
+    );
+  } else {
+    let msg = 'Unable to reach the server, please try again later.';
+    if (response) {
+      msg = response.data.error;
+    }
+    yield put(updateProjectInformationFailure(msg));
+  }
+}
+
 // Individual exports for testing
 export default function* projectPreviewSaga() {
   yield takeLatest(LOAD_PROJECT_DETAILS, loadProjectDetails);
   yield takeLatest(LOAD_USER_INFO, loadUserInfo);
   yield takeLatest(USER_TOGGLE_LIKE, userToggleLike);
   yield takeLatest(USER_TOGGLE_BOOKMARK, userToggleBookmark);
+  yield takeLatest(UPDATE_PROJECT_INFORMATION, updateProjectInformation);
 }

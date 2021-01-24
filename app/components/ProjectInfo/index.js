@@ -35,6 +35,32 @@ import { prettyDateFormat } from 'utils/dateUtil';
 
 const ProjectView = require('containers/VizblocksGui/project-view.jsx');
 
+function validateProjectTitle(title) {
+  let msg = null;
+  if (title === '') {
+    msg = 'Title is required';
+  } else if (title.length > 50) {
+    msg = `${title.length}/50 characters`;
+  }
+  return msg;
+}
+
+function validateProjectInstructions(instructions) {
+  let msg = null;
+  if (instructions.length > 500) {
+    msg = `${instructions.length}/500 characters`;
+  }
+  return msg;
+}
+
+function validateProjectDescription(description) {
+  let msg = null;
+  if (description.length > 255) {
+    msg = `${description.length}/255 characters`;
+  }
+  return msg;
+}
+
 function ProjectInfo({
   user,
   userinfo,
@@ -44,6 +70,8 @@ function ProjectInfo({
   onClickShare,
   likeCallback,
   bookmarkCallback,
+  errorCallback,
+  submitUpdateCallback,
 }) {
   const [isEditMode, setIsEditMode] = useState(false);
   const [userLikedProject, setUserLikedProject] = useState(false);
@@ -66,6 +94,40 @@ function ProjectInfo({
     });
   }
 
+  function resetProjectInformationFields() {
+    setProjectTitleField(project.title);
+    setProjectInstructionField(project.instructions);
+    setProjectDescriptionField(project.description);
+  }
+
+  function submitInformationChange() {
+    const checkTitle = validateProjectTitle(projectTitleField);
+    const checkInstruction = validateProjectInstructions(
+      projectInstructionField,
+    );
+    const checkDescription = validateProjectDescription(
+      projectDescriptionField,
+    );
+
+    if (!checkTitle && !checkInstruction && !checkDescription) {
+      submitUpdateCallback(
+        project._id,
+        projectTitleField,
+        projectInstructionField,
+        projectDescriptionField,
+      );
+      setIsEditMode(false);
+    } else {
+      errorCallback(
+        checkTitle ||
+          checkInstruction ||
+          checkDescription ||
+          'There are fields with error',
+      );
+    }
+    setShowUpdateConfirmation(false);
+  }
+
   function userIsAuthor() {
     if (!user) {
       // User not logged in
@@ -75,9 +137,7 @@ function ProjectInfo({
   }
 
   useEffect(() => {
-    setProjectTitleField(project.title);
-    setProjectInstructionField(project.instructions);
-    setProjectDescriptionField(project.description);
+    resetProjectInformationFields();
   }, [project]);
   useEffect(() => {
     if (userinfo && project) {
@@ -119,6 +179,7 @@ function ProjectInfo({
               marginBottom="0rem"
               value={projectTitleField}
               onChange={e => setProjectTitleField(e.target.value)}
+              validationMessage={validateProjectTitle(projectTitleField)}
             />
           )}
           <Heading size={400} marginLeft="1rem">
@@ -131,14 +192,28 @@ function ProjectInfo({
         <Pane flexGrow={1} />
         <Pane aria-label="header-buttons" display="flex">
           {userIsAuthor() && (
-            <IconButton
-              icon={EditIcon}
-              intent="success"
-              appearance={isEditMode ? 'primary' : 'default'}
-              onClick={() => setIsEditMode(!isEditMode)}
-              alignSelf="flex-end"
-              marginRight="1rem"
-            />
+            <Pane display="flex" alignSelf="flex-end">
+              {isEditMode && (
+                <Heading
+                  size={300}
+                  marginRight="1rem"
+                  color="gray"
+                  alignSelf="center"
+                >
+                  Edit mode
+                </Heading>
+              )}
+              <IconButton
+                icon={EditIcon}
+                intent="success"
+                appearance={isEditMode ? 'primary' : 'default'}
+                onClick={() => {
+                  resetProjectInformationFields();
+                  setIsEditMode(!isEditMode);
+                }}
+                marginRight="1rem"
+              />
+            </Pane>
           )}
           {user && (
             <Button
@@ -255,6 +330,9 @@ function ProjectInfo({
                 width="100%"
                 value={projectInstructionField}
                 onChange={e => setProjectInstructionField(e.target.value)}
+                validationMessage={validateProjectInstructions(
+                  projectInstructionField,
+                )}
                 readOnly={!isEditMode}
               />
               <TextareaField
@@ -263,6 +341,9 @@ function ProjectInfo({
                 width="100%"
                 value={projectDescriptionField}
                 onChange={e => setProjectDescriptionField(e.target.value)}
+                validationMessage={validateProjectDescription(
+                  projectDescriptionField,
+                )}
                 readOnly={!isEditMode}
               />
               {isEditMode && (
@@ -341,7 +422,7 @@ function ProjectInfo({
           setShowUpdateConfirmation(false);
         }}
         onConfirm={() => {
-          setShowUpdateConfirmation(false);
+          submitInformationChange();
         }}
         confirmLabel="Confirm"
       >
