@@ -69,6 +69,15 @@ export function App({
   const [loaded, setLoaded] = useState(false);
   const storedUser = localStorage.getItem('user');
 
+  // Evergreen-ui toaster has zIndex of 30
+  // Scratch-gui components have custom zIndex up to the 1000 range
+  function overwriteToasterZIndex() {
+    const toasterOverlay = document.getElementsByClassName('css-1sugtjn');
+    if (toasterOverlay[0]) {
+      toasterOverlay[0].style.zIndex = '9000';
+    }
+  }
+
   useEffect(() => {
     if (!user && storedUser) {
       const temp = JSON.parse(storedUser);
@@ -84,6 +93,9 @@ export function App({
       toaster.danger(error.title, {
         description: error.description,
       });
+      if (error.overwriteZIndex) {
+        overwriteToasterZIndex();
+      }
       setError(false);
     }
   }, [error]);
@@ -92,6 +104,9 @@ export function App({
       toaster.success(success.title, {
         description: success.description,
       });
+      if (success.overwriteZIndex) {
+        overwriteToasterZIndex();
+      }
       setSuccess(false);
     }
   }, [success]);

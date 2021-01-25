@@ -29,6 +29,8 @@ class Preview extends React.Component {
       isPlayerOnly: this.props.isPlayerOnly,
       history: this.props.history,
       location: this.props.location,
+      setSuccess: this.props.setSuccess,
+      setError: this.props.setError,
     };
     bindAll(this, [
       'setProjectId',
@@ -64,55 +66,82 @@ class Preview extends React.Component {
     if (!creatingProject && this.state.projectTitle !== '') queryParams.title = this.state.projectTitle;
     let qs = queryString.stringify(queryParams);
     if (qs) qs = `?${qs}`;
-    return new Promise((resolve, reject) => {
-      if (creatingProject) {
-        api.post(
-          `/project${qs}`,
-          {
-            vmState
-          },
-          response => {
-            this.setProjectId(response.data.id);
-            this.setProjectTitle(response.data["content-title"]);
-            resolve(response.data);
-          },
-          e => reject(e.response),
-        );
-      } else {
-        api.put(
-          `/project/${projectId}${qs}`,
-          {
-            vmState
-          },
-          response => resolve(response.data),
-          e => reject(e.response),
-        );
-      }
-    });
+    const canSave = this.state.authorId ? this.state.authorId === this.state.userId : true;
+    if (canSave) {
+      return new Promise((resolve, reject) => {
+        if (creatingProject) {
+          api.post(
+            `/project${qs}`,
+            {
+              vmState
+            },
+            response => {
+              this.setProjectId(response.data.id);
+              this.setProjectTitle(response.data["content-title"]);
+              resolve(response.data);
+              this.state.setSuccess('Created project!', '');
+            },
+            e => {
+              reject(e.response);
+              this.state.setError('Failed to create project', '');
+            }
+          );
+        } else {
+          api.put(
+            `/project/${projectId}${qs}`,
+            {
+              vmState
+            },
+            response => {
+              resolve(response.data);
+              this.state.setSuccess('Updated project!', '');
+            },
+            e => {
+              reject(e.response);
+              this.state.setError('Failed to update project', '');
+            }
+          );
+        }
+      });
+    }
   }
 
   handleUpdateProjectTitle (title) {
-    return new Promise((resolve, reject) => {
-      api.put(
-        `/project/title/${this.state.projectId}`,
-        {
-          title
-        },
-        response => {
-          this.setProjectTitle(title);
-          // Update title in location state
-          this.state.history.replace(
-            this.state.location.pathname,
-            {
-              projectid: this.state.projectId,
-              title,
-            },
-          );
-          resolve(response.data);
-        },
-        e => reject(e.response),
-      );
-    });
+    // Scratch-gui inits project title to be "Scratch Project"
+    // when creating new project
+    if (this.state.projectId === 0) {
+      // ignore this request
+      return;
+    }
+    const canSave = this.state.authorId ? this.state.authorId === this.state.userId : true;
+    if (canSave) {
+      if (title.length > 50) {
+        this.state.setError('Failed to Update Title', `Exceeded character limit: ${title.length}/50`);
+        return;
+      }
+      return new Promise((resolve, reject) => {
+        api.put(
+          `/project/title/${this.state.projectId}`,
+          {
+            title
+          },
+          response => {
+            this.setProjectTitle(title);
+            // Update title in location state
+            this.state.history.replace(
+              this.state.location.pathname,
+              {
+                projectid: this.state.projectId,
+                title,
+              },
+            );
+            resolve(response.data);
+            this.state.setSuccess('Updated Title', `New Title: ${title}`);
+          },
+          e => reject(e.response),
+        );
+      });
+    } 
   }
 
   loadProjectDetails (projectId) {

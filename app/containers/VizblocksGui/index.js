@@ -23,6 +23,7 @@ import { makeSelectVizblocksGui } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
 import { makeSelectCurrentUser } from '../App/selectors';
+import { setSuccess, setError } from '../App/actions';
 
 const redux = require('redux');
 const thunk = require('redux-thunk').default;
@@ -31,7 +32,7 @@ const { IntlProvider } = require('react-intl');
 
 const ProjectView = require('./project-view.jsx');
 
-export function VizblocksGui({ user }) {
+export function VizblocksGui({ user, setSuccess, setError }) {
   useInjectReducer({ key: 'vizblocksGui', reducer });
   useInjectSaga({ key: 'vizblocksGui', saga });
 
@@ -74,6 +75,8 @@ export function VizblocksGui({ user }) {
           history={history}
           location={location}
           authorid={authorid}
+          setSuccess={setSuccess}
+          setError={setError}
         />
       </IntlProvider>
     </Provider>
@@ -92,6 +95,10 @@ const mapStateToProps = createStructuredSelector({
 function mapDispatchToProps(dispatch) {
   return {
     dispatch,
+    setSuccess: (title, description) =>
+      dispatch(setSuccess({ title, description, overwriteZIndex: true })),
+    setError: (title, description) =>
+      dispatch(setError({ title, description, overwriteZIndex: true })),
   };
 }
 
