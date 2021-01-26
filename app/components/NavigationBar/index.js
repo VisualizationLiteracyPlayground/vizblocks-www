@@ -44,8 +44,8 @@ function NavigationBar({ user, userSignedOut }) {
     history.push('/');
   }
 
-  function redirectToProfile() {
-    history.push('/edit-profile');
+  function redirectToProfile(userid) {
+    history.push(`/user-profile/${userid}`);
   }
 
   return (
@@ -127,7 +127,7 @@ function NavigationBar({ user, userSignedOut }) {
                 <Button
                   iconBefore={UserIcon}
                   appearance="minimal"
-                  onClick={() => redirectToProfile()}
+                  onClick={() => redirectToProfile(user.data.id)}
                 >
                   Profile
                 </Button>
