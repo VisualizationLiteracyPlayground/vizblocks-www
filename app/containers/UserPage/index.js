@@ -378,7 +378,7 @@ export function UserPage({
                     return sortDateDesc(aCreated, bCreated);
                   })
                   .map(project => (
-                    <Pane marginX="1rem">
+                    <Pane marginX="1rem" key={project._id}>
                       <ProjectCard project={project} />
                     </Pane>
                   ))}

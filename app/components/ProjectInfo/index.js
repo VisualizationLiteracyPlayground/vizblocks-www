@@ -26,6 +26,7 @@ import {
   Pane,
   Paragraph,
   RefreshIcon,
+  Text,
   TextareaField,
   TextInputField,
   Tooltip,
@@ -33,6 +34,8 @@ import {
 import { Link } from 'react-router-dom';
 
 import { prettyDateFormat } from 'utils/dateUtil';
+
+import ColorPallete from '../../colorPallete';
 
 const ProjectView = require('containers/VizblocksGui/project-view.jsx');
 
@@ -77,6 +80,7 @@ function ProjectInfo({
   const [isEditMode, setIsEditMode] = useState(false);
   const [userLikedProject, setUserLikedProject] = useState(false);
   const [userBookmarkedProject, setUserBookmarkedProject] = useState(false);
+  const [userToggledButtons, setUserToggledButtons] = useState(false);
   // Edit fields
   const [projectTitleField, setProjectTitleField] = useState('');
   const [projectInstructionField, setProjectInstructionField] = useState('');
@@ -84,13 +88,14 @@ function ProjectInfo({
   // Dialog state
   const [showUpdateConfirmation, setShowUpdateConfirmation] = useState(false);
 
-  function redirectToProjectGui() {
+  function redirectToProjectGui(isRemixing) {
     history.push({
       pathname: `/project-gui`,
       state: {
         title: project.title,
         projectid: project._id,
         authorid: project.author._id,
+        isRemixing,
       },
     });
   }
@@ -99,6 +104,12 @@ function ProjectInfo({
     setProjectTitleField(project.title);
     setProjectInstructionField(project.instructions);
     setProjectDescriptionField(project.description);
+    if (userinfo && !userToggledButtons) {
+      setUserLikedProject(userinfo.likedProjects.includes(project._id));
+      setUserBookmarkedProject(
+        userinfo.bookmarkedProjects.includes(project._id),
+      );
+    }
   }
 
   function submitInformationChange() {
@@ -137,17 +148,16 @@ function ProjectInfo({
     return project ? project.author._id === user.data.id : false;
   }
 
+  function remixParentIsRoot() {
+    if (project && project.remix) {
+      return project.remix.parent._id === project.remix.root._id;
+    }
+    return false;
+  }
+
   useEffect(() => {
     resetProjectInformationFields();
   }, [project]);
-  useEffect(() => {
-    if (userinfo && project) {
-      setUserLikedProject(userinfo.likedProjects.includes(project._id));
-      setUserBookmarkedProject(
-        userinfo.bookmarkedProjects.includes(project._id),
-      );
-    }
-  }, [userinfo]);
 
   return (
     <Pane
@@ -218,12 +228,12 @@ function ProjectInfo({
               />
             </Pane>
           )}
-          {user && (
+          {user && !userIsAuthor() && (
             <Button
               iconBefore={ForkIcon}
               intent="success"
               appearance="primary"
-              onClick={onClickShare}
+              onClick={() => redirectToProjectGui(true)}
               alignSelf="flex-end"
               marginRight="1rem"
             >
@@ -234,7 +244,7 @@ function ProjectInfo({
             iconBefore={RefreshIcon}
             intent="success"
             appearance="primary"
-            onClick={redirectToProjectGui}
+            onClick={() => redirectToProjectGui(false)}
             alignSelf="flex-end"
           >
             See Inside
@@ -326,7 +336,91 @@ function ProjectInfo({
         </Pane>
         <Pane aria-label="right-column" marginLeft="1.5rem" flexGrow={1}>
           <Pane display="flex" flexDirection="column" height="100%">
-            <Pane aria-label="Project description" marginTop="2.5rem">
+            {project.remix && (
+              <Pane aria-label="Remix credits">
+                <Heading size={400}>Credits</Heading>
+                {project.remix.parent && (
+                  <Pane
+                    aria-label="Credit parents"
+                    marginTop="0.5rem"
+                    display="flex"
+                  >
+                    <Avatar
+                      isSolid
+                      name={project.remix.parent.author.username}
+                      size={36}
+                    />
+                    <Text size={400} marginLeft="1rem" alignSelf="center">
+                      Thanks to{' '}
+                      <Link
+                        to={`/user-profile/${project.remix.parent.author._id}`}
+                        style={{
+                          color: ColorPallete.primaryColor,
+                          textDecoration: 'none',
+                        }}
+                      >
+                        <b>{project.remix.parent.author.username}</b>
+                      </Link>{' '}
+                      for the parent project{' '}
+                      <Link
+                        to={{
+                          pathname: '/project-preview',
+                          state: { projectid: project.remix.parent._id },
+                        }}
+                        style={{
+                          color: ColorPallete.primaryColor,
+                          textDecoration: 'none',
+                        }}
+                      >
+                        <b>{project.remix.parent.title}</b>
+                      </Link>
+                    </Text>
+                  </Pane>
+                )}
+                {project.remix.root && !remixParentIsRoot() && (
+                  <Pane
+                    aria-label="Credit root"
+                    marginTop="0.5rem"
+                    display="flex"
+                  >
+                    <Avatar
+                      isSolid
+                      name={project.remix.root.author.username}
+                      size={36}
+                    />
+                    <Text size={400} marginLeft="1rem" alignSelf="center">
+                      Thanks to{' '}
+                      <Link
+                        to={`/user-profile/${project.remix.root.author._id}`}
+                        style={{
+                          color: ColorPallete.primaryColor,
+                          textDecoration: 'none',
+                        }}
+                      >
+                        <b>{project.remix.root.author.username}</b>
+                      </Link>{' '}
+                      for the original project{' '}
+                      <Link
+                        to={{
+                          pathname: '/project-preview',
+                          state: { projectid: project.remix.root._id },
+                        }}
+                        style={{
+                          color: ColorPallete.primaryColor,
+                          textDecoration: 'none',
+                        }}
+                      >
+                        <b>{project.remix.root.title}</b>
+                      </Link>
+                    </Text>
+                  </Pane>
+                )}
+              </Pane>
+            )}
+            <Pane
+              aria-label="Project description"
+              marginTop={project.remix ? '1rem' : '2.5rem'}
+            >
               <TextareaField
                 id="instructions"
                 label="Instructions"
@@ -376,7 +470,7 @@ function ProjectInfo({
               </Button>
               <Button
                 iconBefore={BookmarkIcon}
-                intent={userBookmarkedProject ? 'success' : 'default'}
+                intent={userBookmarkedProject ? 'success' : 'none'}
                 appearance="default"
                 marginRight="1rem"
                 onClick={() => {
@@ -384,6 +478,7 @@ function ProjectInfo({
                   bookmarkCallback(project._id, !userBookmarkedProject);
                   // update state
                   setUserBookmarkedProject(!userBookmarkedProject);
+                  setUserToggledButtons(true);
                 }}
                 disabled={!user || userIsAuthor()}
               >
@@ -391,7 +486,7 @@ function ProjectInfo({
               </Button>
               <Button
                 iconBefore={HeartIcon}
-                intent={userLikedProject ? 'danger' : 'default'}
+                intent={userLikedProject ? 'danger' : 'none'}
                 appearance="default"
                 marginRight="1rem"
                 onClick={() => {
@@ -399,6 +494,7 @@ function ProjectInfo({
                   likeCallback(project._id, !userLikedProject);
                   // update state
                   setUserLikedProject(!userLikedProject);
+                  setUserToggledButtons(true);
                 }}
                 disabled={!user || userIsAuthor()}
               >

@@ -71,7 +71,6 @@ export function ProjectPreview({
   const projectid = location.state ? location.state.projectid : 0;
 
   const [currentTab, setCurrentTab] = useState(0);
-  const [loaded, setLoaded] = useState(false);
   const [success, setSuccess] = useState(false);
   const [showShareURL, setShowShareURL] = useState(false);
   // Text area that contains project share url
@@ -104,14 +103,13 @@ export function ProjectPreview({
     }
   }, [success]);
   useEffect(() => {
-    if (!loaded) {
+    if (projectid !== 0) {
       loadProjectDetails(projectid);
       if (user) {
         loadUserInfo();
       }
-      setLoaded(true);
     }
-  }, []);
+  }, [projectid]);
   return (
     <Pane height="100vh" background={ColorPallete.backgroundColor}>
       <NavigationBar user={user} />
