@@ -22,7 +22,6 @@ import {
   HeartIcon,
   Pane,
   Paragraph,
-  RefreshIcon,
   Table,
   Text,
   TrashIcon,
@@ -209,7 +208,7 @@ function ProjectListView({
                   {!showDeleted && !showBookmark && (
                     <Pane>
                       <Tooltip content="See Inside">
-                        <RefreshIcon
+                        <EyeOpenIcon
                           marginRight="1.5rem"
                           size={24}
                           onClickCapture={event => {
