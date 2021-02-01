@@ -22,6 +22,7 @@ import {
   Pane,
   Strong,
   TextareaField,
+  Tooltip,
   toaster,
 } from 'evergreen-ui';
 
@@ -147,11 +148,13 @@ export function ProjectPreview({
             flexDirection="column"
             justifyItems="center"
             alignItems="center"
-            onClick={() => setCurrentTab(1)}
+            onClick={() => {} /* setCurrentTab(1) */}
           >
-            <Strong size={500} color={currentTab === 1 ? 'black' : 'grey'}>
-              Comments
-            </Strong>
+            <Tooltip content="Coming soon">
+              <Strong size={500} color={currentTab === 1 ? 'black' : 'grey'}>
+                Comments
+              </Strong>
+            </Tooltip>
             <Pane
               width="10vw"
               borderColor={
