@@ -12,6 +12,7 @@ import { compose } from 'redux';
 import {
   Avatar,
   Button,
+  ChartIcon,
   ChevronDownIcon,
   HandIcon,
   LogInIcon,
@@ -48,10 +49,14 @@ function NavigationBar({ user, userSignedOut }) {
     history.push(`/user-profile/${userid}`);
   }
 
+  function redirectToVlatStats() {
+    history.push('/vlat-stats');
+  }
+
   return (
     <Pane
       background={ColorPallete.primaryColor}
-      height="3.5rem"
+      height="7vh"
       display="flex"
       alignItems="center"
       border="default"
@@ -139,6 +144,15 @@ function NavigationBar({ user, userSignedOut }) {
                 >
                   Account Setting
                 </Button>
+                {user.data.isAdmin && (
+                  <Button
+                    iconBefore={ChartIcon}
+                    appearance="minimal"
+                    onClick={() => redirectToVlatStats()}
+                  >
+                    VLAT Stats
+                  </Button>
+                )}
                 <Button
                   iconBefore={LogOutIcon}
                   appearance="minimal"

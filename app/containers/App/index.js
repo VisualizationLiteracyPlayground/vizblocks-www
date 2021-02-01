@@ -32,6 +32,10 @@ import IdeasPage from 'containers/IdeasPage/Loadable';
 import VideoTutorialPage from 'containers/VideoTutorialPage/Loadable';
 import InteractiveTutorialPage from 'containers/InteractiveTutorialPage/Loadable';
 import ProjectPreview from 'containers/ProjectPreview/Loadable';
+import VlatLandingPage from 'containers/VlatLandingPage/Loadable';
+import VlatCategoryPage from 'containers/VlatCategoryPage/Loadable';
+import VlatQuizPage from 'containers/VlatQuizPage/Loadable';
+import VlatStats from 'containers/VlatStats/Loadable';
 
 import {
   makeSelectCurrentUser,
@@ -138,6 +142,22 @@ export function App({
             exact
             path="/ideas/interactive-tutorials"
             component={InteractiveTutorialPage}
+          />
+          <Route exact path="/ideas/vlat" component={VlatLandingPage} />
+          <Route
+            exact
+            path="/ideas/vlat/:testType"
+            component={VlatCategoryPage}
+          />
+          <Route
+            exact
+            path="/vlat-quiz/:testType/:visualizationType"
+            component={VlatQuizPage}
+          />
+          <PrivateRoute
+            path="/vlat-stats"
+            isAuthenticated={user}
+            component={VlatStats}
           />
           <Route exact path="/register-user" component={RegisterUser} />
           <Route exact path="/sign-in" component={SignInPage} />

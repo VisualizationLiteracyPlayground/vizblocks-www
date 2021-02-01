@@ -1,0 +1,13 @@
+/*
+ *
+ * VlatStats constants
+ *
+ */
+
+export const DEFAULT_ACTION = 'app/VlatStats/DEFAULT_ACTION';
+
+export const LOAD_ASSESSMENT_STATS = 'app/VlatStats/LOAD_ASSESSMENT_STATS';
+export const LOAD_INITIAL_ASSESSMENT_STATS_SUCCESS =
+  'app/VlatStats/LOAD_INITIAL_ASSESSMENT_STATS_SUCCESS';
+export const LOAD_POST_ASSESSMENT_STATS_SUCCESS =
+  'app/VlatStats/LOAD_POST_ASSESSMENT_STATS_SUCCESS';
