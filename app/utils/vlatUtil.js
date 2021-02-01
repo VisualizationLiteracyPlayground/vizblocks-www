@@ -53,12 +53,12 @@ export function getBackgroundColorForTestType(testTypeEnum) {
 
 // Visualization Types
 export const VISUALIZATION_TYPE = {
-  BAR_CHART: 'bar-chart',
-  LINE_CHART: 'line-chart',
   PIE_CHART: 'pie-chart',
+  BAR_CHART: 'bar-chart',
   HISTOGRAM: 'histogram',
   PICTOGRAPH: 'pictograph',
   DOT_PLOT: 'dot-plot',
+  LINE_CHART: 'line-chart',
   SCATTER_PLOT: 'scatter-plot',
   HEATMAP: 'heatmap',
 };
