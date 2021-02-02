@@ -1,14 +1,15 @@
 /* eslint-disable no-shadow */
-import { put, takeEvery } from 'redux-saga/effects';
+import { put, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import { get } from 'utils/api';
 import { VLAT_TEST_TYPE } from 'utils/vlatUtil';
 import { setError } from 'containers/App/actions';
 
-import { LOAD_ASSESSMENT_STATS } from './constants';
+import { LOAD_ASSESSMENT_STATS, LOAD_TABLE_STATS } from './constants';
 import {
   loadInitialAssessmentStatsSuccess,
   loadPostAssessmentStatsSuccess,
+  loadTableStatsSuccess,
 } from './actions';
 
 function* loadAssessmentStats({ testType }) {
@@ -29,7 +30,21 @@ function* loadAssessmentStats({ testType }) {
   }
 }
 
+function* loadTableStats() {
+  const [success, response] = yield get(
+    `/vlat/all-user/stats`,
+    response => response.data,
+    e => e.response,
+  );
+  if (success) {
+    yield put(loadTableStatsSuccess(response.data));
+  } else {
+    const msg = 'Unable to reach the server, please try again later.';
+    yield put(setError({ title: msg }));
+  }
+}
 // Individual exports for testing
 export default function* vlatStatsSaga() {
   yield takeEvery(LOAD_ASSESSMENT_STATS, loadAssessmentStats);
+  yield takeLatest(LOAD_TABLE_STATS, loadTableStats);
 }

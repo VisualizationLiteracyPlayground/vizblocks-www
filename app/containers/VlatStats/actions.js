@@ -9,6 +9,8 @@ import {
   LOAD_ASSESSMENT_STATS,
   LOAD_INITIAL_ASSESSMENT_STATS_SUCCESS,
   LOAD_POST_ASSESSMENT_STATS_SUCCESS,
+  LOAD_TABLE_STATS,
+  LOAD_TABLE_STATS_SUCCESS,
 } from './constants';
 
 export function defaultAction() {
@@ -35,5 +37,18 @@ export function loadPostAssessmentStatsSuccess(postAssessmentStats) {
   return {
     type: LOAD_POST_ASSESSMENT_STATS_SUCCESS,
     postAssessmentStats,
+  };
+}
+
+export function loadTableStats() {
+  return {
+    type: LOAD_TABLE_STATS,
+  };
+}
+
+export function loadTableStatsSuccess(allUserStats) {
+  return {
+    type: LOAD_TABLE_STATS_SUCCESS,
+    allUserStats,
   };
 }

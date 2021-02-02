@@ -30,9 +30,16 @@ const makeSelectPostAssessmentStats = () =>
     substate => substate.postAssessmentStats,
   );
 
+const makeSelectAllUserStats = () =>
+  createSelector(
+    selectVlatStatsDomain,
+    substate => substate.allUserStats,
+  );
+
 export {
   makeSelectVlatStats,
   selectVlatStatsDomain,
   makeSelectInitialAssessmentStats,
   makeSelectPostAssessmentStats,
+  makeSelectAllUserStats,
 };

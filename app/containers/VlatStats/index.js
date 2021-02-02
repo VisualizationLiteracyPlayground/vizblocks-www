@@ -13,8 +13,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
-import { Pane, Strong, Tooltip } from 'evergreen-ui';
-import { Bar } from 'react-chartjs-2';
+import { Pane, Strong } from 'evergreen-ui';
 
 import { useInjectSaga } from 'utils/injectSaga';
 import { useInjectReducer } from 'utils/injectReducer';
@@ -29,21 +28,28 @@ import {
   makeSelectVlatStats,
   makeSelectInitialAssessmentStats,
   makeSelectPostAssessmentStats,
+  makeSelectAllUserStats,
 } from './selectors';
-import { loadAssessmentStats } from './actions';
+import { loadAssessmentStats, loadTableStats } from './actions';
 import reducer from './reducer';
 import saga from './saga';
 import ColorPallete from '../../colorPallete';
 import { makeSelectCurrentUser } from '../App/selectors';
 import { setError } from '../App/actions';
 import NavigationBar from '../../components/NavigationBar';
+import VlatStatsGraphTab from '../../components/VlatStatsGraphTab';
+import VlatStatsTableTab from '../../components/VlatStatsTableTab';
+
+const xLabels = Object.values(VISUALIZATION_TYPE);
 
 export function VlatStats({
   user,
   initialAssessmentStats,
   postAssessmentStats,
+  allUserStats,
   setError,
   loadAssessmentStats,
+  loadTableStats,
 }) {
   useInjectReducer({ key: 'vlatStats', reducer });
   useInjectSaga({ key: 'vlatStats', saga });
@@ -53,55 +59,10 @@ export function VlatStats({
   const [initialAssessmentData, setInitialAssessmentData] = useState({});
   const [postAssessmentData, setPostAssessmentData] = useState({});
 
-  // Visualization variables
-  const xLabels = Object.values(VISUALIZATION_TYPE);
-  const options = {
-    title: {
-      display: true,
-      text: 'VLAT Score Statistics',
-    },
-    tooltips: {
-      callbacks: {
-        label: (tooltipItem, data) => {
-          let label = data.datasets[tooltipItem.datasetIndex].label || '';
-          if (label) {
-            label += `: ${tooltipItem.yLabel}`;
-            // Display number of users that took the test
-            label += ` | ${
-              data.datasets[tooltipItem.datasetIndex].count[
-                xLabels.findIndex(type => tooltipItem.xLabel === type)
-              ]
-            } user(s)`;
-          }
-          return label;
-        },
-      },
-    },
-    scales: {
-      yAxes: [
-        {
-          scaleLabel: {
-            display: true,
-            labelString: 'Avg Score',
-          },
-          stacked: true,
-          ticks: {
-            beginAtZero: true,
-          },
-        },
-      ],
-      xAxes: [
-        {
-          stacked: true,
-        },
-      ],
-    },
-  };
-
   function fillInInitialAssessmentData() {
     if (initialAssessmentStats) {
-      const dataPoints = new Array(xLabels).fill(0);
-      const countPoints = new Array(xLabels).fill(0);
+      const dataPoints = new Array(xLabels.length).fill(0);
+      const countPoints = new Array(xLabels.length).fill(0);
       initialAssessmentStats.forEach(data => {
         const idx = xLabels.findIndex(type => data._id === type);
         dataPoints[idx] = data.avgScore;
@@ -119,8 +80,8 @@ export function VlatStats({
 
   function fillInPostAssessmentData() {
     if (postAssessmentStats) {
-      const dataPoints = new Array(xLabels).fill(0);
-      const countPoints = new Array(xLabels).fill(0);
+      const dataPoints = new Array(xLabels.length).fill(0);
+      const countPoints = new Array(xLabels.length).fill(0);
       postAssessmentStats.forEach(data => {
         const idx = xLabels.findIndex(type => data._id === type);
         dataPoints[idx] = data.avgScore;
@@ -159,12 +120,10 @@ export function VlatStats({
     if (!loaded || !postAssessmentStats) {
       loadAssessmentStats(VLAT_TEST_TYPE.POST_ASSESSMENT);
     }
-    if (Object.keys(initialAssessmentData).length === 0) {
-      fillInInitialAssessmentData();
+    if (!loaded || !allUserStats) {
+      loadTableStats();
     }
-    if (Object.keys(postAssessmentData).length === 0) {
-      fillInPostAssessmentData();
-    }
+    // Loaded is required because selectors state won't reset on refresh page
     setLoaded(true);
   }, []);
   return (
@@ -202,13 +161,11 @@ export function VlatStats({
             flexDirection="column"
             justifyItems="center"
             alignItems="center"
-            onClick={() => {} /* setTab(1) */}
+            onClick={() => setTab(1)}
           >
-            <Tooltip content="Coming soon">
-              <Strong size={500} color={tab === 1 ? 'black' : 'grey'}>
-                Table
-              </Strong>
-            </Tooltip>
+            <Strong size={500} color={tab === 1 ? 'black' : 'grey'}>
+              Table
+            </Strong>
             <Pane
               width="10vw"
               borderColor={tab === 1 ? ColorPallete.accentColor : 'white'}
@@ -222,29 +179,13 @@ export function VlatStats({
         <Pane display="flex" flexGrow={1} />
       </Pane>
       {tab === 0 && (
-        <Pane display="flex" height="85vh" flexDirection="column">
-          <Pane display="flex" flex={1} />
-          <Pane
-            display="flex"
-            flex={1}
-            background="white"
-            marginX="2rem"
-            marginY="1.5rem"
-            padding="1rem"
-            elevation={1}
-          >
-            <Bar
-              data={{
-                labels: xLabels,
-                datasets: [initialAssessmentData, postAssessmentData],
-              }}
-              options={options}
-              height="100%"
-            />
-          </Pane>
-          <Pane display="flex" flex={1} />
-        </Pane>
+        <VlatStatsGraphTab
+          initialAssessmentData={initialAssessmentData}
+          postAssessmentData={postAssessmentData}
+          xLabels={xLabels}
+        />
       )}
+      {tab === 1 && <VlatStatsTableTab data={allUserStats} />}
     </Pane>
   );
 }
@@ -258,6 +199,7 @@ const mapStateToProps = createStructuredSelector({
   user: makeSelectCurrentUser(),
   initialAssessmentStats: makeSelectInitialAssessmentStats(),
   postAssessmentStats: makeSelectPostAssessmentStats(),
+  allUserStats: makeSelectAllUserStats(),
 });
 
 function mapDispatchToProps(dispatch) {
@@ -265,6 +207,7 @@ function mapDispatchToProps(dispatch) {
     dispatch,
     setError: error => dispatch(setError(error)),
     loadAssessmentStats: testType => dispatch(loadAssessmentStats(testType)),
+    loadTableStats: () => dispatch(loadTableStats()),
   };
 }
 

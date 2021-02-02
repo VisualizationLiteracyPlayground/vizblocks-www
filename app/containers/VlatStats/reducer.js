@@ -10,11 +10,13 @@ import {
   DEFAULT_ACTION,
   LOAD_INITIAL_ASSESSMENT_STATS_SUCCESS,
   LOAD_POST_ASSESSMENT_STATS_SUCCESS,
+  LOAD_TABLE_STATS_SUCCESS,
 } from './constants';
 
 export const initialState = {
   initialAssessmentStats: null,
   postAssessmentStats: null,
+  allUserStats: null,
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -28,6 +30,9 @@ const vlatStatsReducer = (state = initialState, action) =>
         break;
       case LOAD_POST_ASSESSMENT_STATS_SUCCESS:
         draft.postAssessmentStats = action.postAssessmentStats;
+        break;
+      case LOAD_TABLE_STATS_SUCCESS:
+        draft.allUserStats = action.allUserStats;
         break;
       default:
         return draft;
