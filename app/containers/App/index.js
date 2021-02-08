@@ -29,6 +29,7 @@ import VizblocksGui from 'containers/VizblocksGui';
 import EditUserPage from 'containers/EditUserPage/Loadable';
 import UserPage from 'containers/UserPage/Loadable';
 import IdeasPage from 'containers/IdeasPage/Loadable';
+import ExplorePage from 'containers/ExplorePage/Loadable';
 import VideoTutorialPage from 'containers/VideoTutorialPage/Loadable';
 import InteractiveTutorialPage from 'containers/InteractiveTutorialPage/Loadable';
 import ProjectPreview from 'containers/ProjectPreview/Loadable';
@@ -133,6 +134,7 @@ export function App({
             component={MyStuff}
           />
           <Route exact path="/ideas" component={IdeasPage} />
+          <Route exact path="/explore" component={ExplorePage} />
           <Route
             exact
             path="/ideas/video-tutorials"

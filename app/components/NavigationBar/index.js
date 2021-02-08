@@ -77,13 +77,11 @@ function NavigationBar({ user, userSignedOut }) {
           </Strong>
         </Tooltip>
         {/* </Link> */}
-        {/* <Link to="/" style={{ textDecoration: 'none' }}> */}
-        <Tooltip content="Coming soon">
+        <Link to="/explore" style={{ textDecoration: 'none' }}>
           <Strong color="white" marginLeft="3rem" size={500}>
             <b>Explore</b>
           </Strong>
-        </Tooltip>
-        {/* </Link> */}
+        </Link>
         {user && (
           <Link to="/my-stuff" style={{ textDecoration: 'none' }}>
             <Strong color="white" marginLeft="3rem" size={500}>

@@ -29,7 +29,7 @@ export function InteractiveTutorialPage({ user }) {
   useInjectSaga({ key: 'interactiveTutorialPage', saga });
 
   return (
-    <Pane height="100vh" background={ColorPallete.backgroundColor}>
+    <Pane height="100vh" background={ColorPallete.secondaryColor}>
       <NavigationBar user={user} />
       <Pane display="flex" aria-label="header" background="white">
         <Pane display="flex" flexGrow={1} />
