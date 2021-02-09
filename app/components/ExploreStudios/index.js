@@ -1,9 +1,8 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable react/prop-types */
-/* eslint-disable no-shadow */
 /**
  *
- * ExploreProjects
+ * ExploreStudios
  *
  */
 
@@ -11,44 +10,57 @@ import React, { memo, useState } from 'react';
 import {
   Badge,
   Button,
-  Checkbox,
   CircleArrowLeftIcon,
   CircleArrowRightIcon,
   Heading,
   IconButton,
+  Menu,
   Pane,
   Popover,
   Position,
   SearchInput,
   Strong,
-  TagIcon,
+  SortIcon,
 } from 'evergreen-ui';
 
-import {
-  VISUALIZATION_TYPE,
-  getVisualizationTypeTitle,
-} from '../../utils/vlatUtil';
 import ColorPallete from '../../colorPallete';
-import ProjectCard from '../ProjectCard';
+import StudioCard from '../StudioCard';
 
 const tagList = ['all', 'friends'];
-const visualizationTagList = Object.values(VISUALIZATION_TYPE);
-const IMPLEMENTED_PROJECT_TAGGING = false;
+const SORTING_ENUMS = {
+  MODIFIED_DESC: 'modified-desc',
+  MODIFIED_ASC: 'modified-asc',
+  TITLE_ASC: 'title-asc',
+  TITLE_DSC: 'title-dsc',
+};
 
-function ExploreProjects({ projects, setQueryPacket, pageLimit, user }) {
+function getSortingDisplayString(sortingEnum) {
+  switch (sortingEnum) {
+    case 'modified-desc':
+      return 'Updated Recently';
+    case 'modified-asc':
+      return 'Least Recently Updated';
+    case 'title-asc':
+      return 'Titles Alphabetically';
+    case 'title-dsc':
+      return 'Titles Alphabetically Desc';
+    default:
+      return 'Default';
+  }
+}
+
+function ExploreStudios({ studios, setQueryPacket, pageLimit, user }) {
   const [queryString, setQueryString] = useState('');
   const [selectedTag, setSelectedTag] = useState('all');
-  const [selectedVisualizationTags, setSelectedVisualizationTags] = useState(
-    [],
-  );
+  const [selectedSort, setSelectedSort] = useState('');
 
   function getUserid() {
     return user ? user.data.id : 0;
   }
 
   function getPageFooter() {
-    if (projects) {
-      return `${projects.page} / ${projects.totalPages}`;
+    if (studios) {
+      return `${studios.page} / ${studios.totalPages}`;
     }
     return '1 / 1';
   }
@@ -65,7 +77,7 @@ function ExploreProjects({ projects, setQueryPacket, pageLimit, user }) {
       offset: 0,
       limit: pageLimit,
       tag: selectedTag,
-      visualizationTag: selectedVisualizationTags,
+      sort: selectedSort,
       queryString,
       userid: getUserid(),
     });
@@ -96,7 +108,7 @@ function ExploreProjects({ projects, setQueryPacket, pageLimit, user }) {
             marginTop="1rem"
           >
             <SearchInput
-              placeholder="Search projects..."
+              placeholder="Search studios..."
               value={queryString}
               onChange={e => setQueryString(e.target.value)}
               flex={1}
@@ -109,54 +121,60 @@ function ExploreProjects({ projects, setQueryPacket, pageLimit, user }) {
               }}
               onBlur={() => submitQueryWithCurrentState()}
             />
-            {IMPLEMENTED_PROJECT_TAGGING && (
-              <Popover
-                position={Position.LEFT}
-                content={
-                  <Pane
-                    display="flex"
-                    flexDirection="column"
-                    paddingLeft="1.5rem"
-                  >
-                    {visualizationTagList.map(tag => (
-                      <Checkbox
-                        key={tag}
-                        label={getVisualizationTypeTitle(tag)}
-                        checked={selectedVisualizationTags.find(
-                          selectedTag => selectedTag === tag,
-                        )}
-                        onChange={e => {
-                          if (e.target.checked) {
-                            const updatedTagList = Array.from(
-                              selectedVisualizationTags,
-                            );
-                            updatedTagList.push(tag);
-                            setSelectedVisualizationTags(updatedTagList);
-                          } else {
-                            let updatedTagList = Array.from(
-                              selectedVisualizationTags,
-                            );
-                            updatedTagList = updatedTagList.filter(
-                              selectedTag => selectedTag !== tag,
-                            );
-                            setSelectedVisualizationTags(updatedTagList);
-                          }
+            <Popover
+              position={Position.LEFT}
+              content={
+                <Menu>
+                  <Menu.Group>
+                    {Object.values(SORTING_ENUMS).map(sortingStrategy => (
+                      <Menu.Item
+                        key={sortingStrategy}
+                        onSelect={() => {
+                          setQueryPacket({
+                            offset: 0,
+                            limit: pageLimit,
+                            tag: selectedTag,
+                            sort: sortingStrategy,
+                            queryString,
+                            userid: getUserid(),
+                          });
+                          setSelectedSort(sortingStrategy);
                         }}
-                      />
+                      >
+                        {getSortingDisplayString(sortingStrategy)}
+                      </Menu.Item>
                     ))}
-                  </Pane>
-                }
-                onCloseComplete={() => submitQueryWithCurrentState()}
+                  </Menu.Group>
+                  <Menu.Divider />
+                  <Menu.Group>
+                    <Menu.Item
+                      key="default"
+                      onSelect={() => {
+                        setQueryPacket({
+                          offset: 0,
+                          limit: pageLimit,
+                          tag: selectedTag,
+                          sort: '',
+                          queryString,
+                          userid: getUserid(),
+                        });
+                        setSelectedSort('');
+                      }}
+                    >
+                      {getSortingDisplayString('')}
+                    </Menu.Item>
+                  </Menu.Group>
+                </Menu>
+              }
+            >
+              <Button
+                iconBefore={SortIcon}
+                intent="success"
+                appearance="primary"
               >
-                <Button
-                  iconBefore={TagIcon}
-                  intent="success"
-                  appearance="primary"
-                >
-                  Tags
-                </Button>
-              </Popover>
-            )}
+                Sort
+              </Button>
+            </Popover>
           </Pane>
           <Pane
             aria-label="Badges"
@@ -179,7 +197,7 @@ function ExploreProjects({ projects, setQueryPacket, pageLimit, user }) {
                     offset: 0,
                     limit: pageLimit,
                     tag,
-                    visualizationTag: selectedVisualizationTags,
+                    sort: selectedSort,
                     queryString,
                     userid: getUserid(),
                   });
@@ -197,23 +215,17 @@ function ExploreProjects({ projects, setQueryPacket, pageLimit, user }) {
               marginRight="0.5rem"
               aria-label="Divider between tags and visualization tags"
             />
-            {IMPLEMENTED_PROJECT_TAGGING && (
-              <Pane display="flex">
-                <Strong
-                  size={300}
-                  color="grey"
-                  marginRight="1rem"
-                  alignSelf="center"
-                >
-                  Visualization Types:
-                </Strong>
-                {selectedVisualizationTags.map(tag => (
-                  <Badge key={tag} color="green" isSolid marginRight="1rem">
-                    {tag}
-                  </Badge>
-                ))}
-              </Pane>
-            )}
+            <Strong
+              size={300}
+              color="grey"
+              marginRight="1rem"
+              alignSelf="center"
+            >
+              Sort Studios by:
+            </Strong>
+            <Badge key={selectedSort} color="green" isSolid marginRight="1rem">
+              {getSortingDisplayString(selectedSort)}
+            </Badge>
           </Pane>
         </Pane>
         <Pane
@@ -233,9 +245,9 @@ function ExploreProjects({ projects, setQueryPacket, pageLimit, user }) {
               appearance="minimal"
               intent="success"
               height={40}
-              disabled={projects ? projects.page === 1 : true}
+              disabled={studios ? studios.page === 1 : true}
               onClick={() => {
-                let offsetBase = projects.page - 2;
+                let offsetBase = studios.page - 2;
                 if (offsetBase < 0) {
                   offsetBase = 0;
                 }
@@ -243,7 +255,7 @@ function ExploreProjects({ projects, setQueryPacket, pageLimit, user }) {
                   offset: offsetBase * pageLimit,
                   limit: pageLimit,
                   tag: selectedTag,
-                  visualizationTag: selectedVisualizationTags,
+                  sort: selectedSort,
                   queryString,
                   userid: getUserid(),
                 });
@@ -257,10 +269,10 @@ function ExploreProjects({ projects, setQueryPacket, pageLimit, user }) {
           >
             <Pane flex={1} />
             <Pane display="flex" flexWrap="wrap" width="84rem">
-              {projects &&
-                projects.docs.map(project => (
+              {studios &&
+                studios.docs.map(studio => (
                   <Pane
-                    key={project._id}
+                    key={studio._id}
                     display="flex"
                     flexDirection="column"
                     alignItems="center"
@@ -268,7 +280,7 @@ function ExploreProjects({ projects, setQueryPacket, pageLimit, user }) {
                     marginRight="1rem"
                     marginTop="1rem"
                   >
-                    <ProjectCard project={project} />
+                    <StudioCard studio={studio} />
                   </Pane>
                 ))}
             </Pane>
@@ -301,7 +313,7 @@ function ExploreProjects({ projects, setQueryPacket, pageLimit, user }) {
                   borderTopWidth="0.1rem"
                   borderColor={ColorPallete.lightGrey}
                 >
-                  {`Total Projects: ${projects ? projects.totalDocs : 0}`}
+                  {`Total Studios: ${studios ? studios.totalDocs : 0}`}
                 </Heading>
                 <Pane display="flex" flexGrow={1} />
               </Pane>
@@ -320,13 +332,13 @@ function ExploreProjects({ projects, setQueryPacket, pageLimit, user }) {
               appearance="minimal"
               intent="success"
               height={40}
-              disabled={projects ? projects.page >= projects.totalPages : true}
+              disabled={studios ? studios.page >= studios.totalPages : true}
               onClick={() =>
                 setQueryPacket({
-                  offset: projects.page * pageLimit,
+                  offset: studios.page * pageLimit,
                   limit: pageLimit,
                   tag: selectedTag,
-                  visualizationTag: selectedVisualizationTags,
+                  sort: selectedSort,
                   queryString,
                   userid: getUserid(),
                 })
@@ -339,6 +351,6 @@ function ExploreProjects({ projects, setQueryPacket, pageLimit, user }) {
   );
 }
 
-ExploreProjects.propTypes = {};
+ExploreStudios.propTypes = {};
 
-export default memo(ExploreProjects);
+export default memo(ExploreStudios);

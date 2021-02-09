@@ -2,23 +2,23 @@
 /* eslint-disable no-underscore-dangle */
 /**
  *
- * ProjectCard
+ * StudioCard
  *
  */
 
 import React, { memo } from 'react';
-import { Avatar, Card, Heading, Pane, Text } from 'evergreen-ui';
+import { Card, Heading, Pane, Text } from 'evergreen-ui';
 
+import DefaultThumbnail from 'images/default-studio-thumbnail.jpg';
 import history from 'utils/history';
 import { truncateString } from 'utils/stringUtil';
-import DefaultThumbnail from 'images/default-project-thumbnail.png';
 
 import ColorPallete from '../../colorPallete';
 
-function ProjectCard({ project, onClickCallback }) {
+function StudioCard({ studio }) {
   return (
     <Card
-      key={project._id}
+      key={studio._id}
       elevation={2}
       height="auto"
       maxWidth="10rem"
@@ -26,18 +26,12 @@ function ProjectCard({ project, onClickCallback }) {
       flexDirection="column"
       background="white"
       onClick={() => {
-        if (onClickCallback) {
-          // Custom callback supplied
-          onClickCallback();
-        } else {
-          // Default callback
-          history.push({
-            pathname: `/project-preview`,
-            state: {
-              projectid: project._id,
-            },
-          });
-        }
+        history.push({
+          pathname: `/studio`,
+          state: {
+            studioid: studio._id,
+          },
+        });
       }}
     >
       <img
@@ -51,17 +45,15 @@ function ProjectCard({ project, onClickCallback }) {
           borderTopRightRadius: '5px',
         }}
         src={DefaultThumbnail}
-        alt="Vizblock default project thumbnail"
+        alt="Vizblock default studio thumbnail"
       />
       <Pane display="flex" alignItems="center" padding="0.2rem">
-        <Avatar
-          isSolid
-          name={project.author.username}
-          size={24}
-          marginLeft="0.3rem"
-          marginRight="0.5rem"
-        />
-        <Pane display="flex" flexDirection="column" flexWrap="wrap">
+        <Pane
+          display="flex"
+          flexDirection="column"
+          flexWrap="wrap"
+          marginLeft="0.5rem"
+        >
           <Heading
             size={400}
             color={ColorPallete.grey}
@@ -69,7 +61,7 @@ function ProjectCard({ project, onClickCallback }) {
             height="20px"
             overflow="hidden"
           >
-            {truncateString(project.title, 13)}
+            {truncateString(studio.title, 16)}
           </Heading>
           <Text
             size={300}
@@ -78,7 +70,7 @@ function ProjectCard({ project, onClickCallback }) {
             height="16px"
             overflow="hidden"
           >
-            {truncateString(project.author.username, 15)}
+            {`Curators: ${studio.curators.length}`}
           </Text>
         </Pane>
       </Pane>
@@ -86,6 +78,6 @@ function ProjectCard({ project, onClickCallback }) {
   );
 }
 
-ProjectCard.propTypes = {};
+StudioCard.propTypes = {};
 
-export default memo(ProjectCard);
+export default memo(StudioCard);

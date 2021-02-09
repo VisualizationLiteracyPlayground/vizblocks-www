@@ -20,15 +20,17 @@ import { useInjectReducer } from 'utils/injectReducer';
 import {
   makeSelectExplorePage,
   makeSelectProjects,
+  makeSelectStudios,
   makeSelectError,
 } from './selectors';
-import { searchProjects, searchFailure } from './actions';
+import { searchProjects, searchStudios, searchFailure } from './actions';
 import reducer from './reducer';
 import saga from './saga';
 import ColorPallete from '../../colorPallete';
 import { makeSelectCurrentUser } from '../App/selectors';
 import NavigationBar from '../../components/NavigationBar';
 import ExploreProjects from '../../components/ExploreProjects';
+import ExploreStudios from '../../components/ExploreStudios';
 
 const tabs = ['Projects', 'Studios', 'Users'];
 const PAGE_LIMIT = 14;
@@ -36,8 +38,10 @@ const PAGE_LIMIT = 14;
 export function ExplorePage({
   user,
   projects,
+  studios,
   error,
   searchProjects,
+  searchStudios,
   setError,
 }) {
   useInjectReducer({ key: 'explorePage', reducer });
@@ -52,6 +56,14 @@ export function ExplorePage({
     queryString: '',
     userid: user ? user.data.id : 0,
   });
+  const [studioQueryPacket, setStudioQueryPacket] = useState({
+    offset: 0,
+    limit: PAGE_LIMIT,
+    tag: 'all',
+    sort: '',
+    queryString: '',
+    userid: user ? user.data.id : 0,
+  });
 
   useEffect(() => {
     // Catch and alert error messages
@@ -63,6 +75,9 @@ export function ExplorePage({
   useEffect(() => {
     searchProjects(queryPacket);
   }, [queryPacket]);
+  useEffect(() => {
+    searchStudios(studioQueryPacket);
+  }, [studioQueryPacket]);
 
   return (
     <Pane height="100vh" background={ColorPallete.secondaryColor}>
@@ -110,6 +125,14 @@ export function ExplorePage({
           user={user}
         />
       )}
+      {currentTab === 1 && (
+        <ExploreStudios
+          studios={studios}
+          setQueryPacket={setStudioQueryPacket}
+          pageLimit={PAGE_LIMIT}
+          user={user}
+        />
+      )}
     </Pane>
   );
 }
@@ -122,6 +145,7 @@ const mapStateToProps = createStructuredSelector({
   explorePage: makeSelectExplorePage(),
   user: makeSelectCurrentUser(),
   projects: makeSelectProjects(),
+  studios: makeSelectStudios(),
   error: makeSelectError(),
 });
 
@@ -129,6 +153,7 @@ function mapDispatchToProps(dispatch) {
   return {
     dispatch,
     searchProjects: queryPacket => dispatch(searchProjects(queryPacket)),
+    searchStudios: queryPacket => dispatch(searchStudios(queryPacket)),
     setError: error => dispatch(searchFailure(error)),
   };
 }

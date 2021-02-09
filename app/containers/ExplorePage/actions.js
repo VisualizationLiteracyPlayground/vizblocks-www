@@ -8,6 +8,8 @@ import {
   DEFAULT_ACTION,
   SEARCH_PROJECTS,
   SEARCH_PROJECTS_SUCCESS,
+  SEARCH_STUDIOS,
+  SEARCH_STUDIOS_SUCCESS,
   SEARCH_FAILURE,
 } from './constants';
 
@@ -28,6 +30,20 @@ export function searchProjectsSuccess(projects) {
   return {
     type: SEARCH_PROJECTS_SUCCESS,
     projects,
+  };
+}
+
+export function searchStudios(queryPacket) {
+  return {
+    type: SEARCH_STUDIOS,
+    queryPacket,
+  };
+}
+
+export function searchStudiosSuccess(studios) {
+  return {
+    type: SEARCH_STUDIOS_SUCCESS,
+    studios,
   };
 }
 
