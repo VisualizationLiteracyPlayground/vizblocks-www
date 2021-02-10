@@ -202,9 +202,21 @@ export function UserPage({
                   display="flex"
                   flexDirection="column"
                 >
-                  <Heading size={600} marginLeft="1rem">
-                    {profileinfo.username}
-                  </Heading>
+                  <Pane display="flex" alignItems="center">
+                    <Heading size={600} marginLeft="1rem" marginRight="1rem">
+                      {profileinfo.username}
+                    </Heading>
+                    <Pane
+                      height="100%"
+                      borderWidth="0.15rem"
+                      borderLeftStyle="solid"
+                      borderColor={ColorPallete.lightGrey}
+                      aria-label="Divider between username and email"
+                    />
+                    <Heading size={400} marginLeft="0.5rem" color="gray">
+                      {profileinfo.email}
+                    </Heading>
+                  </Pane>
                   <Heading
                     size={300}
                     marginTop="0.5rem"

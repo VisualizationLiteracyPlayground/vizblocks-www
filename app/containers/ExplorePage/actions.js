@@ -10,6 +10,8 @@ import {
   SEARCH_PROJECTS_SUCCESS,
   SEARCH_STUDIOS,
   SEARCH_STUDIOS_SUCCESS,
+  SEARCH_USERS,
+  SEARCH_USERS_SUCCESS,
   SEARCH_FAILURE,
 } from './constants';
 
@@ -44,6 +46,20 @@ export function searchStudiosSuccess(studios) {
   return {
     type: SEARCH_STUDIOS_SUCCESS,
     studios,
+  };
+}
+
+export function searchUsers(queryPacket) {
+  return {
+    type: SEARCH_USERS,
+    queryPacket,
+  };
+}
+
+export function searchUsersSuccess(users) {
+  return {
+    type: SEARCH_USERS_SUCCESS,
+    users,
   };
 }
 

@@ -1,8 +1,8 @@
-/* eslint-disable no-underscore-dangle */
 /* eslint-disable react/prop-types */
+/* eslint-disable no-underscore-dangle */
 /**
  *
- * ExploreStudios
+ * ExploreUsers
  *
  */
 
@@ -24,32 +24,32 @@ import {
 } from 'evergreen-ui';
 
 import ColorPallete from '../../colorPallete';
-import StudioCard from '../StudioCard';
+import UserCard from '../UserCard';
 
 const tagList = ['all', 'friends'];
 const SORTING_ENUMS = {
-  MODIFIED_DESC: 'modified-desc',
-  MODIFIED_ASC: 'modified-asc',
-  TITLE_ASC: 'title-asc',
-  TITLE_DSC: 'title-dsc',
+  JOINED_DESC: 'joined-desc',
+  JOINED_ASC: 'joined-asc',
+  USERNAME_ASC: 'username-asc',
+  USERNAME_DSC: 'username-dsc',
 };
 
 function getSortingDisplayString(sortingEnum) {
   switch (sortingEnum) {
-    case 'modified-desc':
-      return 'Updated Recently';
-    case 'modified-asc':
-      return 'Least Recently Updated';
-    case 'title-asc':
-      return 'Titles Alphabetically';
-    case 'title-dsc':
-      return 'Titles Alphabetically Desc';
+    case 'joined-desc':
+      return 'Joined Recently';
+    case 'joined-asc':
+      return 'Joined Least Recently';
+    case 'username-asc':
+      return 'Username Alphabetically';
+    case 'username-dsc':
+      return 'Username Alphabetically Desc';
     default:
       return 'Default';
   }
 }
 
-function ExploreStudios({ studios, setQueryPacket, pageLimit, user }) {
+function ExploreUsers({ users, setQueryPacket, pageLimit, user }) {
   const [queryString, setQueryString] = useState('');
   const [selectedTag, setSelectedTag] = useState('all');
   const [selectedSort, setSelectedSort] = useState('');
@@ -59,8 +59,8 @@ function ExploreStudios({ studios, setQueryPacket, pageLimit, user }) {
   }
 
   function getPageFooter() {
-    if (studios) {
-      return `${studios.page} / ${studios.totalPages}`;
+    if (users) {
+      return `${users.page} / ${users.totalPages}`;
     }
     return '1 / 1';
   }
@@ -108,7 +108,7 @@ function ExploreStudios({ studios, setQueryPacket, pageLimit, user }) {
             marginTop="1rem"
           >
             <SearchInput
-              placeholder="Search studios..."
+              placeholder="Search users..."
               value={queryString}
               onChange={e => setQueryString(e.target.value)}
               flex={1}
@@ -223,7 +223,7 @@ function ExploreStudios({ studios, setQueryPacket, pageLimit, user }) {
               marginRight="1rem"
               alignSelf="center"
             >
-              Sort Studios by:
+              Sort Users by:
             </Strong>
             <Badge key={selectedSort} color="green" isSolid marginRight="1rem">
               {getSortingDisplayString(selectedSort)}
@@ -247,9 +247,9 @@ function ExploreStudios({ studios, setQueryPacket, pageLimit, user }) {
               appearance="minimal"
               intent="success"
               height={40}
-              disabled={studios ? studios.page === 1 : true}
+              disabled={users ? users.page === 1 : true}
               onClick={() => {
-                let offsetBase = studios.page - 2;
+                let offsetBase = users.page - 2;
                 if (offsetBase < 0) {
                   offsetBase = 0;
                 }
@@ -271,10 +271,10 @@ function ExploreStudios({ studios, setQueryPacket, pageLimit, user }) {
           >
             <Pane flex={1} />
             <Pane display="flex" flexWrap="wrap" width="84rem">
-              {studios &&
-                studios.docs.map(studio => (
+              {users &&
+                users.docs.map(userDoc => (
                   <Pane
-                    key={studio._id}
+                    key={userDoc._id}
                     display="flex"
                     flexDirection="column"
                     alignItems="center"
@@ -282,7 +282,7 @@ function ExploreStudios({ studios, setQueryPacket, pageLimit, user }) {
                     marginRight="1rem"
                     marginTop="1rem"
                   >
-                    <StudioCard studio={studio} />
+                    <UserCard user={userDoc} />
                   </Pane>
                 ))}
             </Pane>
@@ -315,7 +315,7 @@ function ExploreStudios({ studios, setQueryPacket, pageLimit, user }) {
                   borderTopWidth="0.1rem"
                   borderColor={ColorPallete.lightGrey}
                 >
-                  {`Total Studios: ${studios ? studios.totalDocs : 0}`}
+                  {`Total Users: ${users ? users.totalDocs : 0}`}
                 </Heading>
                 <Pane display="flex" flexGrow={1} />
               </Pane>
@@ -334,10 +334,10 @@ function ExploreStudios({ studios, setQueryPacket, pageLimit, user }) {
               appearance="minimal"
               intent="success"
               height={40}
-              disabled={studios ? studios.page >= studios.totalPages : true}
+              disabled={users ? users.page >= users.totalPages : true}
               onClick={() =>
                 setQueryPacket({
-                  offset: studios.page * pageLimit,
+                  offset: users.page * pageLimit,
                   limit: pageLimit,
                   tag: selectedTag,
                   sort: selectedSort,
@@ -353,6 +353,6 @@ function ExploreStudios({ studios, setQueryPacket, pageLimit, user }) {
   );
 }
 
-ExploreStudios.propTypes = {};
+ExploreUsers.propTypes = {};
 
-export default memo(ExploreStudios);
+export default memo(ExploreUsers);

@@ -30,6 +30,12 @@ const makeSelectStudios = () =>
     substate => substate.studios,
   );
 
+const makeSelectUsers = () =>
+  createSelector(
+    selectExplorePageDomain,
+    substate => substate.users,
+  );
+
 const makeSelectError = () =>
   createSelector(
     selectExplorePageDomain,
@@ -41,5 +47,6 @@ export {
   makeSelectExplorePage,
   makeSelectProjects,
   makeSelectStudios,
+  makeSelectUsers,
   makeSelectError,
 };

@@ -175,15 +175,17 @@ function ExploreProjects({ projects, setQueryPacket, pageLimit, user }) {
                 isSolid={tag === selectedTag}
                 marginRight="0.5rem"
                 onClick={() => {
-                  setQueryPacket({
-                    offset: 0,
-                    limit: pageLimit,
-                    tag,
-                    visualizationTag: selectedVisualizationTags,
-                    queryString,
-                    userid: getUserid(),
-                  });
-                  setSelectedTag(tag);
+                  if (isBadgeInteractive(tag)) {
+                    setQueryPacket({
+                      offset: 0,
+                      limit: pageLimit,
+                      tag,
+                      visualizationTag: selectedVisualizationTags,
+                      queryString,
+                      userid: getUserid(),
+                    });
+                    setSelectedTag(tag);
+                  }
                 }}
               >
                 {tag}

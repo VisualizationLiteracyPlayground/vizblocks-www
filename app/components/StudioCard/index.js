@@ -54,22 +54,10 @@ function StudioCard({ studio }) {
           flexWrap="wrap"
           marginLeft="0.5rem"
         >
-          <Heading
-            size={400}
-            color={ColorPallete.grey}
-            width="7.5rem"
-            height="20px"
-            overflow="hidden"
-          >
+          <Heading size={400} color={ColorPallete.grey} overflow="hidden">
             {truncateString(studio.title, 16)}
           </Heading>
-          <Text
-            size={300}
-            color={ColorPallete.grey}
-            width="7.5rem"
-            height="16px"
-            overflow="hidden"
-          >
+          <Text size={300} color={ColorPallete.grey} overflow="hidden">
             {`Curators: ${studio.curators.length}`}
           </Text>
         </Pane>

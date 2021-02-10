@@ -62,23 +62,11 @@ function ProjectCard({ project, onClickCallback }) {
           marginRight="0.5rem"
         />
         <Pane display="flex" flexDirection="column" flexWrap="wrap">
-          <Heading
-            size={400}
-            color={ColorPallete.grey}
-            width="7.5rem"
-            height="20px"
-            overflow="hidden"
-          >
+          <Heading size={400} color={ColorPallete.grey} overflow="hidden">
             {truncateString(project.title, 13)}
           </Heading>
-          <Text
-            size={300}
-            color={ColorPallete.grey}
-            width="7.5rem"
-            height="16px"
-            overflow="hidden"
-          >
-            {truncateString(project.author.username, 15)}
+          <Text size={300} color={ColorPallete.grey} overflow="hidden">
+            {truncateString(project.author.username, 16)}
           </Text>
         </Pane>
       </Pane>

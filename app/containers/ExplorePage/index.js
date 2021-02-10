@@ -21,9 +21,15 @@ import {
   makeSelectExplorePage,
   makeSelectProjects,
   makeSelectStudios,
+  makeSelectUsers,
   makeSelectError,
 } from './selectors';
-import { searchProjects, searchStudios, searchFailure } from './actions';
+import {
+  searchProjects,
+  searchStudios,
+  searchUsers,
+  searchFailure,
+} from './actions';
 import reducer from './reducer';
 import saga from './saga';
 import ColorPallete from '../../colorPallete';
@@ -31,6 +37,7 @@ import { makeSelectCurrentUser } from '../App/selectors';
 import NavigationBar from '../../components/NavigationBar';
 import ExploreProjects from '../../components/ExploreProjects';
 import ExploreStudios from '../../components/ExploreStudios';
+import ExploreUsers from '../../components/ExploreUsers';
 
 const tabs = ['Projects', 'Studios', 'Users'];
 const PAGE_LIMIT = 14;
@@ -39,9 +46,11 @@ export function ExplorePage({
   user,
   projects,
   studios,
+  users,
   error,
   searchProjects,
   searchStudios,
+  searchUsers,
   setError,
 }) {
   useInjectReducer({ key: 'explorePage', reducer });
@@ -64,6 +73,14 @@ export function ExplorePage({
     queryString: '',
     userid: user ? user.data.id : 0,
   });
+  const [usersQueryPacket, setUsersQueryPacket] = useState({
+    offset: 0,
+    limit: PAGE_LIMIT,
+    tag: 'all',
+    sort: '',
+    queryString: '',
+    userid: user ? user.data.id : 0,
+  });
 
   useEffect(() => {
     // Catch and alert error messages
@@ -78,6 +95,9 @@ export function ExplorePage({
   useEffect(() => {
     searchStudios(studioQueryPacket);
   }, [studioQueryPacket]);
+  useEffect(() => {
+    searchUsers(usersQueryPacket);
+  }, [usersQueryPacket]);
 
   return (
     <Pane height="100vh" background={ColorPallete.secondaryColor}>
@@ -133,6 +153,14 @@ export function ExplorePage({
           user={user}
         />
       )}
+      {currentTab === 2 && (
+        <ExploreUsers
+          users={users}
+          setQueryPacket={setUsersQueryPacket}
+          pageLimit={PAGE_LIMIT}
+          user={user}
+        />
+      )}
     </Pane>
   );
 }
@@ -146,6 +174,7 @@ const mapStateToProps = createStructuredSelector({
   user: makeSelectCurrentUser(),
   projects: makeSelectProjects(),
   studios: makeSelectStudios(),
+  users: makeSelectUsers(),
   error: makeSelectError(),
 });
 
@@ -154,6 +183,7 @@ function mapDispatchToProps(dispatch) {
     dispatch,
     searchProjects: queryPacket => dispatch(searchProjects(queryPacket)),
     searchStudios: queryPacket => dispatch(searchStudios(queryPacket)),
+    searchUsers: queryPacket => dispatch(searchUsers(queryPacket)),
     setError: error => dispatch(searchFailure(error)),
   };
 }

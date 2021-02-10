@@ -84,6 +84,8 @@ function validateCurrentFocusInput(currentFocus) {
   return msg;
 }
 
+const IMPLEMENTED_PROFILE_PICTURE = false;
+
 export function EditUserPage({
   user,
   userinfo,
@@ -192,12 +194,14 @@ export function EditUserPage({
               height="8vh"
             >
               <Avatar isSolid name={user.data.username} size={52} />
-              <IconButton
-                icon={EditIcon}
-                appearance="minimal"
-                display="inline-block"
-                alignSelf="flex-end"
-              />
+              {IMPLEMENTED_PROFILE_PICTURE && (
+                <IconButton
+                  icon={EditIcon}
+                  appearance="minimal"
+                  display="inline-block"
+                  alignSelf="flex-end"
+                />
+              )}
               <Pane display="flex" flexDirection="column">
                 <Heading size={600} marginLeft="1rem">
                   {user.data.username}
