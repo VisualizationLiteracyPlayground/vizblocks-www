@@ -214,6 +214,16 @@ export function RegisterUser({ error, setError, registerUser }) {
             }
             value={retypePassword}
             onChange={e => setRetypePassword(e.target.value)}
+            onKeyPress={event => {
+              if (event.key === 'Enter') {
+                const validation = validateForm();
+                if (validation) {
+                  toaster.danger(validation);
+                } else {
+                  setConfirmationIsShown(true);
+                }
+              }
+            }}
           />
           <Checkbox
             label="Show password"
