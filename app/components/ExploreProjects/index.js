@@ -7,7 +7,7 @@
  *
  */
 
-import React, { memo, useState } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import {
   Badge,
   Button,
@@ -32,6 +32,7 @@ import {
 } from '../../utils/vlatUtil';
 import ColorPallete from '../../colorPallete';
 import ProjectCard from '../ProjectCard';
+import EmptyDataPlaceholder from '../EmptyDataPlaceholder';
 
 const tagList = ['all', 'friends'];
 const SORTING_ENUMS = {
@@ -104,6 +105,11 @@ function ExploreProjects({ projects, setQueryPacket, pageLimit, user }) {
       userid: getUserid(),
     });
   }
+
+  useEffect(() => {
+    // Need to reload documents after transitioning
+    submitQueryWithCurrentState();
+  }, []);
 
   return (
     <Pane display="flex" height="88vh" flexDirection="column">
@@ -397,6 +403,11 @@ function ExploreProjects({ projects, setQueryPacket, pageLimit, user }) {
                   </Pane>
                 ))}
             </Pane>
+            {projects && projects.docs.length === 0 && (
+              <Pane display="flex" alignSelf="center">
+                <EmptyDataPlaceholder title="No projects found" />
+              </Pane>
+            )}
             <Pane
               aria-label="Page footer"
               display="flex"

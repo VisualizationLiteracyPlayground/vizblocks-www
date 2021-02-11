@@ -6,7 +6,7 @@
  *
  */
 
-import React, { memo, useState } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import {
   Badge,
   Button,
@@ -25,6 +25,7 @@ import {
 
 import ColorPallete from '../../colorPallete';
 import StudioCard from '../StudioCard';
+import EmptyDataPlaceholder from '../EmptyDataPlaceholder';
 
 const tagList = ['all', 'friends'];
 const SORTING_ENUMS = {
@@ -82,6 +83,11 @@ function ExploreStudios({ studios, setQueryPacket, pageLimit, user }) {
       userid: getUserid(),
     });
   }
+
+  useEffect(() => {
+    // Need to reload documents after transitioning
+    submitQueryWithCurrentState();
+  }, []);
 
   return (
     <Pane display="flex" height="88vh" flexDirection="column">
@@ -286,6 +292,11 @@ function ExploreStudios({ studios, setQueryPacket, pageLimit, user }) {
                   </Pane>
                 ))}
             </Pane>
+            {studios && studios.docs.length === 0 && (
+              <Pane display="flex" alignSelf="center">
+                <EmptyDataPlaceholder title="No studios found" />
+              </Pane>
+            )}
             <Pane
               aria-label="Page footer"
               display="flex"

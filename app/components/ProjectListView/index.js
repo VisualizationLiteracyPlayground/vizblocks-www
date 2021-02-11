@@ -44,6 +44,7 @@ import {
 } from 'containers/MyStuff/actions';
 import DeleteProjectConfirmation from 'components/DeleteProjectConfirmation';
 import UndeleteProjectConfirmation from 'components/UndeleteProjectConfirmation';
+import EmptyDataPlaceholder from 'components/EmptyDataPlaceholder';
 
 import ColorPallete from '../../colorPallete';
 
@@ -90,6 +91,32 @@ function ProjectListView({
     title: '',
   });
 
+  function getEmptyPlaceholderTitle() {
+    if (showDeleted) {
+      return 'No deleted projects found';
+    }
+    if (!showDeleted && !showBookmark) {
+      return 'No projects found';
+    }
+    if (showBookmark) {
+      return 'No bookmarked projects found';
+    }
+    return '';
+  }
+
+  function getEmptyPlaceholderSubtitle() {
+    if (showDeleted) {
+      return 'You have not deleted any projects!';
+    }
+    if (!showDeleted && !showBookmark) {
+      return 'Start creating projects now!';
+    }
+    if (showBookmark) {
+      return 'You have not bookmarked any projects!';
+    }
+    return '';
+  }
+
   useEffect(() => {
     if (showDeleted) {
       setData(deletedProjects);
@@ -101,174 +128,186 @@ function ProjectListView({
   }, [projects, bookmarkedProjects, deletedProjects]);
 
   return (
-    <Pane>
-      {showDeleted && deletedProjects.length === 0 && (
-        <Paragraph>You have not deleted any projects!</Paragraph>
-      )}
-      {!showDeleted && !showBookmark && projects.length === 0 && (
-        <Paragraph>Start creating projects now!</Paragraph>
-      )}
-      {showBookmark && bookmarkedProjects.length === 0 && (
-        <Paragraph>You have not bookmarked any projects!</Paragraph>
-      )}
-      <Table display="flex" height="62vh">
-        <Table.Body>
-          {data
-            .sort((a, b) => {
-              const aCreated = Date.parse(a.history.created);
-              const bCreated = Date.parse(b.history.created);
-              return sortDateDesc(aCreated, bCreated);
-            })
-            .map(project => (
-              <Table.Row
-                key={project._id}
-                height="auto"
-                paddingY={12}
-                isSelectable
-                onSelect={
-                  showDeleted
-                    ? () => {}
-                    : () => redirectToProjectPreview(project)
-                }
-              >
-                <Table.Cell>
-                  <img
-                    style={{
-                      width: 'auto',
-                      height: '8rem',
-                      marginRight: '3rem',
-                      borderStyle: 'solid',
-                      borderWidth: '0.2rem',
-                      borderColor: ColorPallete.backgroundColor,
-                    }}
-                    src={DefaultThumbnail}
-                    alt="Vizblock default project thumbnail"
-                  />
-                  <Pane
-                    flex={1}
-                    height="8rem"
-                    display="flex"
-                    flexDirection="column"
-                    alignItems="left"
-                    padding="0.5rem"
-                  >
-                    <Pane display="flex">
-                      {showBookmark && (
-                        <Pane display="flex" alignItems="center">
-                          <Avatar
-                            isSolid
-                            name={project.author.username}
-                            size={32}
-                          />
-                          <Heading size={500} marginX="0.5rem">
-                            {project.author.username}
+    <Pane height="100%">
+      {data.length > 0 && (
+        <Table display="flex" height="62vh">
+          <Table.Body>
+            {data
+              .sort((a, b) => {
+                const aCreated = Date.parse(a.history.created);
+                const bCreated = Date.parse(b.history.created);
+                return sortDateDesc(aCreated, bCreated);
+              })
+              .map(project => (
+                <Table.Row
+                  key={project._id}
+                  height="auto"
+                  paddingY={12}
+                  isSelectable
+                  onSelect={
+                    showDeleted
+                      ? () => {}
+                      : () => redirectToProjectPreview(project)
+                  }
+                >
+                  <Table.Cell>
+                    <img
+                      style={{
+                        width: 'auto',
+                        height: '8rem',
+                        marginRight: '3rem',
+                        borderStyle: 'solid',
+                        borderWidth: '0.2rem',
+                        borderColor: ColorPallete.backgroundColor,
+                      }}
+                      src={DefaultThumbnail}
+                      alt="Vizblock default project thumbnail"
+                    />
+                    <Pane
+                      flex={1}
+                      height="8rem"
+                      display="flex"
+                      flexDirection="column"
+                      alignItems="left"
+                      padding="0.5rem"
+                    >
+                      <Pane display="flex">
+                        {showBookmark && (
+                          <Pane display="flex" alignItems="center">
+                            <Avatar
+                              isSolid
+                              name={project.author.username}
+                              size={32}
+                            />
+                            <Heading size={500} marginX="0.5rem">
+                              {project.author.username}
+                            </Heading>
+                            <Pane
+                              height="100%"
+                              borderColor={ColorPallete.grey}
+                              borderWidth="0.1rem"
+                              borderLeftStyle="solid"
+                              justifySelf="center"
+                              alignSelf="center"
+                              marginRight="1rem"
+                              aria-label="Vertical divider"
+                            />
+                          </Pane>
+                        )}
+                        <Pane display="flex" flexDirection="column">
+                          <Heading size={600}>
+                            {project.title ? project.title : 'Untitled'}
                           </Heading>
-                          <Pane
-                            height="100%"
-                            borderColor={ColorPallete.grey}
-                            borderWidth="0.1rem"
-                            borderLeftStyle="solid"
-                            justifySelf="center"
-                            alignSelf="center"
-                            marginRight="1rem"
-                            aria-label="Vertical divider"
-                          />
+                          <Heading
+                            size={300}
+                            marginTop="0.2rem"
+                            color="dark-gray"
+                          >
+                            Last modified:{' '}
+                            {prettyDateFormat(project.history.modified)}
+                          </Heading>
                         </Pane>
-                      )}
-                      <Pane display="flex" flexDirection="column">
-                        <Heading size={600}>
-                          {project.title ? project.title : 'Untitled'}
-                        </Heading>
-                        <Heading
-                          size={300}
-                          marginTop="0.2rem"
-                          color="dark-gray"
-                        >
-                          Last modified:{' '}
-                          {prettyDateFormat(project.history.modified)}
-                        </Heading>
+                      </Pane>
+                      <Pane display="flex" flexGrow={1} />
+                      <Pane display="flex" alignItems="flex-end">
+                        <EyeOpenIcon color="info" marginRight="0.5rem" />
+                        <Text marginRight="0.5rem">{project.stats.views}</Text>
+                        <HeartIcon color="danger" marginRight="0.5rem" />
+                        <Text marginRight="0.5rem">{project.stats.loves}</Text>
+                        <BookmarkIcon color="success" marginRight="0.5rem" />
+                        <Text marginRight="0.5rem">
+                          {project.stats.favorites}
+                        </Text>
+                        <CommentIcon color="info" marginRight="0.5rem" />
+                        <Text marginRight="0.5rem">
+                          {project.stats.comments}
+                        </Text>
+                        <ForkIcon color="success" marginRight="0.5rem" />
+                        <Text marginRight="0.5rem">
+                          {project.stats.remixes}
+                        </Text>
                       </Pane>
                     </Pane>
-                    <Pane display="flex" flexGrow={1} />
-                    <Pane display="flex" alignItems="flex-end">
-                      <EyeOpenIcon color="info" marginRight="0.5rem" />
-                      <Text marginRight="0.5rem">{project.stats.views}</Text>
-                      <HeartIcon color="danger" marginRight="0.5rem" />
-                      <Text marginRight="0.5rem">{project.stats.loves}</Text>
-                      <BookmarkIcon color="success" marginRight="0.5rem" />
-                      <Text marginRight="0.5rem">
-                        {project.stats.favorites}
-                      </Text>
-                      <CommentIcon color="info" marginRight="0.5rem" />
-                      <Text marginRight="0.5rem">{project.stats.comments}</Text>
-                      <ForkIcon color="success" marginRight="0.5rem" />
-                      <Text marginRight="0.5rem">{project.stats.remixes}</Text>
-                    </Pane>
-                  </Pane>
-                  {!showDeleted && !showBookmark && (
-                    <Pane>
-                      <Tooltip content="See Inside">
-                        <EyeOpenIcon
-                          marginRight="1.5rem"
+                    {!showDeleted && !showBookmark && (
+                      <Pane>
+                        <Tooltip content="See Inside">
+                          <EyeOpenIcon
+                            marginRight="1.5rem"
+                            size={24}
+                            onClickCapture={event => {
+                              event.stopPropagation();
+                              redirectToProjectGui(project);
+                            }}
+                          />
+                        </Tooltip>
+                        <TrashIcon
+                          marginRight="2rem"
                           size={24}
                           onClickCapture={event => {
                             event.stopPropagation();
-                            redirectToProjectGui(project);
+                            setCurrentProject({
+                              id: project._id,
+                              title: project.title,
+                            });
+                            setShowDeleteConfirmation(true);
+                          }}
+                        />
+                      </Pane>
+                    )}
+                    {showBookmark && (
+                      <Tooltip content="Unbookmark">
+                        <BookmarkIcon
+                          marginRight="1rem"
+                          color="success"
+                          size={24}
+                          onClickCapture={event => {
+                            event.stopPropagation();
+                            setCurrentProject({
+                              id: project._id,
+                              title: project.title,
+                            });
+                            setShowUnbookmarkConfirmation(true);
                           }}
                         />
                       </Tooltip>
-                      <TrashIcon
-                        marginRight="2rem"
-                        size={24}
-                        onClickCapture={event => {
-                          event.stopPropagation();
-                          setCurrentProject({
-                            id: project._id,
-                            title: project.title,
-                          });
-                          setShowDeleteConfirmation(true);
-                        }}
-                      />
-                    </Pane>
-                  )}
-                  {showBookmark && (
-                    <Tooltip content="Unbookmark">
-                      <BookmarkIcon
-                        marginRight="1rem"
-                        color="success"
-                        size={24}
-                        onClickCapture={event => {
-                          event.stopPropagation();
-                          setCurrentProject({
-                            id: project._id,
-                            title: project.title,
-                          });
-                          setShowUnbookmarkConfirmation(true);
-                        }}
-                      />
-                    </Tooltip>
-                  )}
-                  {showDeleted && (
-                    <Tooltip content="Undo">
-                      <UndoIcon
-                        marginRight="1rem"
-                        size={24}
-                        onClickCapture={event => {
-                          event.stopPropagation();
-                          setCurrentProject({
-                            id: project._id,
-                            title: project.title,
-                          });
-                          setShowUndeleteConfirmation(true);
-                        }}
-                      />
-                    </Tooltip>
-                  )}
-                </Table.Cell>
-              </Table.Row>
-            ))}
-        </Table.Body>
-      </Table>
+                    )}
+                    {showDeleted && (
+                      <Tooltip content="Undo">
+                        <UndoIcon
+                          marginRight="1rem"
+                          size={24}
+                          onClickCapture={event => {
+                            event.stopPropagation();
+                            setCurrentProject({
+                              id: project._id,
+                              title: project.title,
+                            });
+                            setShowUndeleteConfirmation(true);
+                          }}
+                        />
+                      </Tooltip>
+                    )}
+                  </Table.Cell>
+                </Table.Row>
+              ))}
+          </Table.Body>
+        </Table>
+      )}
+      {data.length === 0 && (
+        <Pane
+          aria-label="empty-placeholder-illustration"
+          display="flex"
+          height="100%"
+          width="100%"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <EmptyDataPlaceholder
+            title={getEmptyPlaceholderTitle()}
+            subtitle={getEmptyPlaceholderSubtitle()}
+          />
+        </Pane>
+      )}
       <DeleteProjectConfirmation
         currentProject={currentProject}
         isShown={showDeleteConfirmation}
