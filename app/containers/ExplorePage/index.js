@@ -61,6 +61,7 @@ export function ExplorePage({
     offset: 0,
     limit: PAGE_LIMIT,
     tag: 'all',
+    sort: '',
     visualizationTag: [],
     queryString: '',
     userid: user ? user.data.id : 0,

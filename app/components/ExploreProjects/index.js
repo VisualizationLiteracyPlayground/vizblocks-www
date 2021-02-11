@@ -16,11 +16,13 @@ import {
   CircleArrowRightIcon,
   Heading,
   IconButton,
+  Menu,
   Pane,
   Popover,
   Position,
   SearchInput,
   Strong,
+  SortIcon,
   TagIcon,
 } from 'evergreen-ui';
 
@@ -32,12 +34,43 @@ import ColorPallete from '../../colorPallete';
 import ProjectCard from '../ProjectCard';
 
 const tagList = ['all', 'friends'];
+const SORTING_ENUMS = {
+  MOST_VIEWS: 'most-views',
+  MOST_LIKES: 'most-likes',
+  MOST_BOOKMARKS: 'most-bookmarks',
+  MOST_COMMENTS: 'most-comments',
+  MOST_REMIXES: 'most-remixes',
+  TITLE_ASC: 'title-asc',
+  TITLE_DSC: 'title-dsc',
+};
 const visualizationTagList = Object.values(VISUALIZATION_TYPE);
 const IMPLEMENTED_PROJECT_TAGGING = false;
+
+function getSortingDisplayString(sortingEnum) {
+  switch (sortingEnum) {
+    case 'most-views':
+      return 'Most Views';
+    case 'most-likes':
+      return 'Most Likes';
+    case 'most-bookmarks':
+      return 'Most Bookmarks';
+    case 'most-comments':
+      return 'Most Comments';
+    case 'most-remixes':
+      return 'Most Remixes';
+    case 'title-asc':
+      return 'Titles Alphabetically';
+    case 'title-dsc':
+      return 'Titles Alphabetically Desc';
+    default:
+      return 'Default';
+  }
+}
 
 function ExploreProjects({ projects, setQueryPacket, pageLimit, user }) {
   const [queryString, setQueryString] = useState('');
   const [selectedTag, setSelectedTag] = useState('all');
+  const [selectedSort, setSelectedSort] = useState('');
   const [selectedVisualizationTags, setSelectedVisualizationTags] = useState(
     [],
   );
@@ -65,6 +98,7 @@ function ExploreProjects({ projects, setQueryPacket, pageLimit, user }) {
       offset: 0,
       limit: pageLimit,
       tag: selectedTag,
+      sort: selectedSort,
       visualizationTag: selectedVisualizationTags,
       queryString,
       userid: getUserid(),
@@ -109,6 +143,62 @@ function ExploreProjects({ projects, setQueryPacket, pageLimit, user }) {
               }}
               onBlur={() => submitQueryWithCurrentState()}
             />
+            <Popover
+              position={Position.LEFT}
+              content={
+                <Menu>
+                  <Menu.Group>
+                    {Object.values(SORTING_ENUMS).map(sortingStrategy => (
+                      <Menu.Item
+                        key={sortingStrategy}
+                        onSelect={() => {
+                          setQueryPacket({
+                            offset: 0,
+                            limit: pageLimit,
+                            tag: selectedTag,
+                            sort: sortingStrategy,
+                            visualizationTag: selectedVisualizationTags,
+                            queryString,
+                            userid: getUserid(),
+                          });
+                          setSelectedSort(sortingStrategy);
+                        }}
+                      >
+                        {getSortingDisplayString(sortingStrategy)}
+                      </Menu.Item>
+                    ))}
+                  </Menu.Group>
+                  <Menu.Divider />
+                  <Menu.Group>
+                    <Menu.Item
+                      key="default"
+                      onSelect={() => {
+                        setQueryPacket({
+                          offset: 0,
+                          limit: pageLimit,
+                          tag: selectedTag,
+                          sort: '',
+                          visualizationTag: selectedVisualizationTags,
+                          queryString,
+                          userid: getUserid(),
+                        });
+                        setSelectedSort('');
+                      }}
+                    >
+                      {getSortingDisplayString('')}
+                    </Menu.Item>
+                  </Menu.Group>
+                </Menu>
+              }
+            >
+              <Button
+                iconBefore={SortIcon}
+                intent="success"
+                appearance="primary"
+              >
+                Sort
+              </Button>
+            </Popover>
             {IMPLEMENTED_PROJECT_TAGGING && (
               <Popover
                 position={Position.LEFT}
@@ -152,6 +242,7 @@ function ExploreProjects({ projects, setQueryPacket, pageLimit, user }) {
                   iconBefore={TagIcon}
                   intent="success"
                   appearance="primary"
+                  marginLeft="1rem"
                 >
                   Tags
                 </Button>
@@ -180,6 +271,7 @@ function ExploreProjects({ projects, setQueryPacket, pageLimit, user }) {
                       offset: 0,
                       limit: pageLimit,
                       tag,
+                      sort: selectedSort,
                       visualizationTag: selectedVisualizationTags,
                       queryString,
                       userid: getUserid(),
@@ -191,16 +283,46 @@ function ExploreProjects({ projects, setQueryPacket, pageLimit, user }) {
                 {tag}
               </Badge>
             ))}
-            <Pane
-              height="100%"
-              borderWidth="0.15rem"
-              borderLeftStyle="solid"
-              borderColor={ColorPallete.lightGrey}
-              marginRight="0.5rem"
-              aria-label="Divider between tags and visualization tags"
-            />
+            <Pane display="flex" height="100%" aria-label="sorting-badge">
+              <Pane
+                height="100%"
+                borderWidth="0.15rem"
+                borderLeftStyle="solid"
+                borderColor={ColorPallete.lightGrey}
+                marginRight="0.5rem"
+                aria-label="Divider between tags and sorting tag"
+              />
+              <Strong
+                size={300}
+                color="grey"
+                marginRight="1rem"
+                alignSelf="center"
+              >
+                Sort Projects by:
+              </Strong>
+              <Badge
+                key={selectedSort}
+                color="green"
+                isSolid
+                marginRight="0.5rem"
+              >
+                {getSortingDisplayString(selectedSort)}
+              </Badge>
+            </Pane>
             {IMPLEMENTED_PROJECT_TAGGING && (
-              <Pane display="flex">
+              <Pane
+                display="flex"
+                height="100%"
+                aria-label="visualization-type-badges"
+              >
+                <Pane
+                  height="100%"
+                  borderWidth="0.15rem"
+                  borderLeftStyle="solid"
+                  borderColor={ColorPallete.lightGrey}
+                  marginRight="0.5rem"
+                  aria-label="Divider between sorting tag and visualization tags"
+                />
                 <Strong
                   size={300}
                   color="grey"
@@ -245,6 +367,7 @@ function ExploreProjects({ projects, setQueryPacket, pageLimit, user }) {
                   offset: offsetBase * pageLimit,
                   limit: pageLimit,
                   tag: selectedTag,
+                  sort: selectedSort,
                   visualizationTag: selectedVisualizationTags,
                   queryString,
                   userid: getUserid(),
@@ -328,6 +451,7 @@ function ExploreProjects({ projects, setQueryPacket, pageLimit, user }) {
                   offset: projects.page * pageLimit,
                   limit: pageLimit,
                   tag: selectedTag,
+                  sort: selectedSort,
                   visualizationTag: selectedVisualizationTags,
                   queryString,
                   userid: getUserid(),
