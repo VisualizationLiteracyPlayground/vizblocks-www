@@ -15,6 +15,12 @@ import DefaultThumbnail from 'images/default-project-thumbnail.png';
 
 import ColorPallete from '../../colorPallete';
 
+function getProjectThumbnail(project) {
+  return project.image
+    ? `data:${project.image.contentType};base64,${project.image.data}`
+    : DefaultThumbnail;
+}
+
 function ProjectCard({ project, onClickCallback }) {
   return (
     <Card
@@ -50,8 +56,10 @@ function ProjectCard({ project, onClickCallback }) {
           borderTopLeftRadius: '5px',
           borderTopRightRadius: '5px',
         }}
-        src={DefaultThumbnail}
-        alt="Vizblock default project thumbnail"
+        src={getProjectThumbnail(project)}
+        alt={
+          project.image ? project.image.filename : 'Vizblock project thumbnail'
+        }
       />
       <Pane display="flex" alignItems="center" padding="0.2rem">
         <Avatar

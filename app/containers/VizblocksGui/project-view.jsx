@@ -41,6 +41,7 @@ class Preview extends React.Component {
       'handleUpdateProjectTitle',
       'loadProjectDetails',
       'handleUpdateProjectId',
+      'handleUpdateProjectThumbnail',
       'handleGreenFlag',
     ]);
   }
@@ -145,6 +146,21 @@ class Preview extends React.Component {
     } 
   }
 
+  handleUpdateProjectThumbnail (_id, blob) {
+    if (this.canSave()) {
+      return new Promise((resolve, reject) => {
+        api.post(
+          `/asset/internalapi/project/thumbnail/${this.state.projectId}`,
+          blob,
+          response => {
+            resolve(response.data);
+          },
+          e => reject(e.response),
+        );
+      });
+    }
+  };
+
   loadProjectDetails (projectId) {
     return new Promise((resolve, reject) => {
       api.get(
@@ -204,6 +220,7 @@ class Preview extends React.Component {
           onUpdateProjectData={this.handleUpdateProjectData}
           onUpdateProjectTitle={this.handleUpdateProjectTitle}
           onUpdateProjectId={this.handleUpdateProjectId}
+          onUpdateProjectThumbnail={this.handleUpdateProjectThumbnail}
         />
       </React.Fragment>
     );

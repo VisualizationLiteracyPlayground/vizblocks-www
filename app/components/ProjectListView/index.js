@@ -68,6 +68,12 @@ function redirectToProjectPreview(project) {
   });
 }
 
+function getProjectThumbnail(project) {
+  return project.image
+    ? `data:${project.image.contentType};base64,${project.image.data}`
+    : DefaultThumbnail;
+}
+
 function ProjectListView({
   showDeleted,
   showBookmark,
@@ -160,8 +166,12 @@ function ProjectListView({
                         borderWidth: '0.2rem',
                         borderColor: ColorPallete.backgroundColor,
                       }}
-                      src={DefaultThumbnail}
-                      alt="Vizblock default project thumbnail"
+                      src={getProjectThumbnail(project)}
+                      alt={
+                        project.image
+                          ? project.image.filename
+                          : 'Vizblock project thumbnail'
+                      }
                     />
                     <Pane
                       flex={1}
