@@ -31,9 +31,9 @@ export function checkTestTypeEnum(testType) {
 export function getTestTypeTitle(testTypeEnum) {
   switch (testTypeEnum) {
     case VLAT_TEST_TYPE.INITIAL_ASSESSMENT:
-      return 'Initial Assessment';
+      return 'Pre-Assessment';
     case VLAT_TEST_TYPE.POST_ASSESSMENT:
-      return 'Post Assessment';
+      return 'Post-Assessment';
     default:
       return 'Assessment';
   }

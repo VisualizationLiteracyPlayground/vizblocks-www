@@ -66,7 +66,7 @@ export function VlatLandingPage({ user }) {
             flexDirection="column"
             aria-label="first-pane description"
           >
-            <Heading size={600}>Initial Assessment</Heading>
+            <Heading size={600}>Pre-Assessment</Heading>
             <Heading size={400} marginTop="1rem">
               {`Take an initial test to assess your proficiency in data visualizations`}
             </Heading>
@@ -110,7 +110,7 @@ export function VlatLandingPage({ user }) {
             aria-label="second-pane description"
           >
             <Heading size={600} alignSelf="flex-end">
-              Post Assessment
+              Post-Assessment
             </Heading>
             <Heading size={400} marginTop="1rem">
               {`After exploring Vizblocks, take a post-learning test to gauge your improvements with data visualizations!`}

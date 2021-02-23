@@ -123,7 +123,7 @@ export function VlatCategoryPage({ user, vlatScore, loadUserVlatScore }) {
                     : 'visible'
                 }
               >
-                <Tooltip content="Initial Assessment">
+                <Tooltip content="Pre-Assessment">
                   <IconButton
                     icon={ArrowLeftIcon}
                     appearance="minimal"
@@ -159,8 +159,8 @@ export function VlatCategoryPage({ user, vlatScore, loadUserVlatScore }) {
                 />
                 <Heading size={500}>
                   {testType === VLAT_TEST_TYPE.INITIAL_ASSESSMENT
-                    ? 'Initial Assessment'
-                    : 'Post Assessment'}
+                    ? 'Pre-Assessment'
+                    : 'Post-Assessment'}
                 </Heading>
               </Pane>
               <Pane
@@ -170,7 +170,7 @@ export function VlatCategoryPage({ user, vlatScore, loadUserVlatScore }) {
                     : 'visible'
                 }
               >
-                <Tooltip content="Post Assessment">
+                <Tooltip content="Post-Assessment">
                   <IconButton
                     icon={ArrowRightIcon}
                     appearance="minimal"

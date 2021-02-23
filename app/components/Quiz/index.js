@@ -24,9 +24,6 @@ function Quiz({ user, quiz, submitQuizCallback, setSubmittedCallback }) {
   }
 
   useEffect(() => {
-    console.log(`${correctQuestions}/${totalQuestions}`);
-  }, [correctQuestions]);
-  useEffect(() => {
     if (quiz) {
       let questions = 0;
       quiz.questions.forEach(question => {
@@ -75,19 +72,21 @@ function Quiz({ user, quiz, submitQuizCallback, setSubmittedCallback }) {
                 </Heading>
                 <Heading size={400}>{question.title}</Heading>
               </Pane>
-              <img
-                style={{
-                  width: 'auto',
-                  maxWidth: '50vw',
-                  height: 'max-content',
-                  maxHeight: '40vh',
-                  marginTop: '1rem',
-                }}
-                src={`data:${question.img.contentType};base64,${
-                  question.img.data
-                }`}
-                alt="question visualization"
-              />
+              {question.image && (
+                <img
+                  style={{
+                    width: 'auto',
+                    maxWidth: '50vw',
+                    height: 'max-content',
+                    maxHeight: '40vh',
+                    marginTop: '1rem',
+                  }}
+                  src={`data:${question.image.contentType};base64,${
+                    question.image.data
+                  }`}
+                  alt={question.image.desc || 'question visualization'}
+                />
+              )}
             </Pane>
             {question.mcqSubquestions.map((subquestion, subindex) => (
               <McqQuestion
