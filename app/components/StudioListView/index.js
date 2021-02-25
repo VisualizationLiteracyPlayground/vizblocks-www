@@ -20,6 +20,12 @@ import DefaultThumbnail from 'images/default-studio-thumbnail.jpg';
 
 import ColorPallete from '../../colorPallete';
 
+function getStudioThumbnail(studio) {
+  return studio.image
+    ? `data:${studio.image.contentType};base64,${studio.image.data}`
+    : DefaultThumbnail;
+}
+
 function StudioListView({ studios }) {
   return (
     <Pane height="100%">
@@ -65,15 +71,20 @@ function StudioListView({ studios }) {
                   <Table.Cell>
                     <img
                       style={{
-                        width: 'auto',
+                        width: '10rem',
                         height: '8rem',
                         marginRight: '3rem',
                         borderStyle: 'solid',
                         borderWidth: '0.2rem',
                         borderColor: ColorPallete.backgroundColor,
+                        objectFit: 'cover',
                       }}
-                      src={DefaultThumbnail}
-                      alt="Vizblock default studio thumbnail"
+                      src={getStudioThumbnail(studio)}
+                      alt={
+                        studio.image
+                          ? studio.image.filename
+                          : 'Vizblock default studio thumbnail'
+                      }
                     />
                     <Pane
                       flex={1}

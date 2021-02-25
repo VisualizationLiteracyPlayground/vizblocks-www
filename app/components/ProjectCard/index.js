@@ -55,6 +55,7 @@ function ProjectCard({ project, onClickCallback }) {
           borderColor: ColorPallete.backgroundColor,
           borderTopLeftRadius: '5px',
           borderTopRightRadius: '5px',
+          objectFit: 'cover',
         }}
         src={getProjectThumbnail(project)}
         alt={

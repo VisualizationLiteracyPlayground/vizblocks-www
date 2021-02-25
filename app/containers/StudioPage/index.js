@@ -44,6 +44,7 @@ import {
   loadStudioFailure,
   updateStudioPermissions,
   updateStudioInformation,
+  updateStudioThumbnail,
   addFollower,
   removeFollower,
 } from './actions';
@@ -63,6 +64,7 @@ import CuratorListView from '../../components/CuratorListView';
 import StudioInformationDialog from '../../components/StudioInformationDialog';
 import StudioPermissionsDialog from '../../components/StudioPermissionsDialog';
 import StudioUnfollowConfirmation from '../../components/StudioUnfollowConfirmation';
+import UploadImage from '../../components/UploadImage';
 import { makeSelectCurrentUser } from '../App/selectors';
 import history from '../../utils/history';
 
@@ -73,6 +75,12 @@ function getStudioHeaderInfo(studio) {
     : '';
 }
 
+function getStudioThumbnail(studio) {
+  return studio.image
+    ? `data:${studio.image.contentType};base64,${studio.image.data}`
+    : DefaultThumbnail;
+}
+
 export function StudioPage({
   user,
   studio,
@@ -80,6 +88,7 @@ export function StudioPage({
   loadStudio,
   updateStudioPermissions,
   updateStudioInformation,
+  updateStudioThumbnail,
   addFollower,
   removeFollower,
   error,
@@ -102,6 +111,7 @@ export function StudioPage({
   // Dialog States
   const [showPermissions, setShowPermissions] = useState(false);
   const [showInformation, setShowInformation] = useState(false);
+  const [showThumbnailUpload, setShowThumbnailUpload] = useState(false);
   const [showShareURL, setShowShareURL] = useState(false);
   const [showUnfollowConfirmation, setShowUnfollowConfirmation] = useState(
     false,
@@ -229,16 +239,21 @@ export function StudioPage({
           >
             <img
               style={{
-                width: 'auto',
+                width: '10rem',
                 height: '8rem',
                 marginLeft: '1rem',
                 marginRight: '3rem',
                 borderStyle: 'solid',
                 borderWidth: '0.2rem',
                 borderColor: ColorPallete.backgroundColor,
+                objectFit: 'cover',
               }}
-              src={DefaultThumbnail}
-              alt="Vizblock default studio thumbnail"
+              src={getStudioThumbnail(studio)}
+              alt={
+                studio.image
+                  ? studio.image.filename
+                  : 'Vizblock default studio thumbnail'
+              }
             />
             <Pane
               flex={1}
@@ -288,6 +303,12 @@ export function StudioPage({
                         onClick={() => setShowPermissions(true)}
                       >
                         Permissions
+                      </Button>
+                      <Button
+                        appearance="minimal"
+                        onClick={() => setShowThumbnailUpload(true)}
+                      >
+                        Thumbnail
                       </Button>
                     </Pane>
                   }
@@ -416,6 +437,14 @@ export function StudioPage({
             validationErrorCallback={error => setError(error)}
             setShown={shown => setShowInformation(shown)}
           />
+          <UploadImage
+            title="Update Studio Thumbnail"
+            isShown={showThumbnailUpload}
+            setShownCallback={shown => setShowThumbnailUpload(shown)}
+            submitCallback={(filename, data, contentType) =>
+              updateStudioThumbnail(studioid, filename, data, contentType)
+            }
+          />
           <Dialog
             isShown={showShareURL}
             hasFooter={false}
@@ -482,6 +511,8 @@ function mapDispatchToProps(dispatch) {
       dispatch(updateStudioPermissions(studioid, permissions)),
     updateStudioInformation: (studioid, information) =>
       dispatch(updateStudioInformation(studioid, information)),
+    updateStudioThumbnail: (studioid, filename, data, contentType) =>
+      dispatch(updateStudioThumbnail(studioid, filename, data, contentType)),
     addFollower: studioid => dispatch(addFollower(studioid)),
     removeFollower: studioid => dispatch(removeFollower(studioid)),
     setError: error => dispatch(loadStudioFailure(error)),

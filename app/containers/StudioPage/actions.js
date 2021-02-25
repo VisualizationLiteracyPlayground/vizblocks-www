@@ -16,6 +16,8 @@ import {
   UPDATE_STUDIO_PERMISSIONS_FAILURE,
   UPDATE_STUDIO_INFORMATION,
   UPDATE_STUDIO_INFORMATION_FAILURE,
+  UPDATE_STUDIO_THUMBNAIL,
+  UPDATE_STUDIO_THUMBNAIL_FAILURE,
   ADD_FOLLOWER,
   ADD_FOLLOWER_FAILURE,
   REMOVE_FOLLOWER,
@@ -119,6 +121,23 @@ export function updateStudioInformation(studioid, information) {
 export function updateStudioInformationFailure(error) {
   return {
     type: UPDATE_STUDIO_INFORMATION_FAILURE,
+    error,
+  };
+}
+
+export function updateStudioThumbnail(studioid, filename, data, contentType) {
+  return {
+    type: UPDATE_STUDIO_THUMBNAIL,
+    studioid,
+    filename,
+    data,
+    contentType,
+  };
+}
+
+export function updateStudioThumbnailFailure(error) {
+  return {
+    type: UPDATE_STUDIO_THUMBNAIL_FAILURE,
     error,
   };
 }

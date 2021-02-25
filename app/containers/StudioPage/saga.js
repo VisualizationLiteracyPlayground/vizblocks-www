@@ -9,6 +9,7 @@ import {
   LOAD_STUDIO,
   UPDATE_STUDIO_PERMISSIONS,
   UPDATE_STUDIO_INFORMATION,
+  UPDATE_STUDIO_THUMBNAIL,
   ADD_FOLLOWER,
   REMOVE_FOLLOWER,
   UPDATE_CURATOR_ROLE,
@@ -28,6 +29,7 @@ import {
   loadStudioSuccess,
   updateStudioPermissionsFailure,
   updateStudioInformationFailure,
+  updateStudioThumbnailFailure,
   addFollowerFailure,
   removeFollowerFailure,
   updateCuratorRoleFailure,
@@ -140,6 +142,35 @@ function* updateStudioInformation({ studioid, information }) {
       msg = response.data.error;
     }
     yield put(updateStudioInformationFailure(msg));
+  }
+}
+
+function* updateStudioThumbnail({ studioid, filename, data, contentType }) {
+  const [success, response] = yield patch(
+    `/studio/thumbnail/${studioid}`,
+    {
+      filename,
+      data,
+      contentType,
+    },
+    response => response.data,
+    e => e.response,
+  );
+  if (success) {
+    const { studio } = response.data;
+    yield put(updateStudioSuccess(studio));
+    yield put(
+      setSuccess({
+        title: 'Studio thumbnail updated',
+        description: '',
+      }),
+    );
+  } else {
+    let msg = 'Unable to reach the server, please try again later.';
+    if (response) {
+      msg = response.data.error;
+    }
+    yield put(updateStudioThumbnailFailure(msg));
   }
 }
 
@@ -482,6 +513,7 @@ export default function* studioPageSaga() {
   yield takeLatest(LOAD_STUDIO, loadStudio);
   yield takeLatest(UPDATE_STUDIO_PERMISSIONS, updateStudioPermissions);
   yield takeLatest(UPDATE_STUDIO_INFORMATION, updateStudioInformation);
+  yield takeLatest(UPDATE_STUDIO_THUMBNAIL, updateStudioThumbnail);
   yield takeLatest(ADD_FOLLOWER, addFollower);
   yield takeLatest(REMOVE_FOLLOWER, removeFollower);
   yield takeLatest(UPDATE_CURATOR_ROLE, updateCuratorRole);

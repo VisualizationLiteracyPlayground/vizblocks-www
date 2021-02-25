@@ -159,12 +159,13 @@ function ProjectListView({
                   <Table.Cell>
                     <img
                       style={{
-                        width: 'auto',
+                        width: '10rem',
                         height: '8rem',
                         marginRight: '3rem',
                         borderStyle: 'solid',
                         borderWidth: '0.2rem',
                         borderColor: ColorPallete.backgroundColor,
+                        objectFit: 'cover',
                       }}
                       src={getProjectThumbnail(project)}
                       alt={

@@ -15,6 +15,12 @@ import { truncateString } from 'utils/stringUtil';
 
 import ColorPallete from '../../colorPallete';
 
+function getStudioThumbnail(studio) {
+  return studio.image
+    ? `data:${studio.image.contentType};base64,${studio.image.data}`
+    : DefaultThumbnail;
+}
+
 function StudioCard({ studio }) {
   return (
     <Card
@@ -43,9 +49,14 @@ function StudioCard({ studio }) {
           borderColor: ColorPallete.backgroundColor,
           borderTopLeftRadius: '5px',
           borderTopRightRadius: '5px',
+          objectFit: 'cover',
         }}
-        src={DefaultThumbnail}
-        alt="Vizblock default studio thumbnail"
+        src={getStudioThumbnail(studio)}
+        alt={
+          studio.image
+            ? studio.image.filename
+            : 'Vizblock default studio thumbnail'
+        }
       />
       <Pane display="flex" alignItems="center" padding="0.2rem">
         <Pane
