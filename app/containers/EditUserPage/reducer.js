@@ -11,6 +11,8 @@ import {
   LOAD_USER_INFO_SUCCESS,
   UPDATE_USER_INFO_FAILURE,
   UPDATE_USER_INFO_SUCCESS,
+  UPDATE_USER_PROFILE_PICTURE_FAILURE,
+  UPDATE_USER_PROFILE_PICTURE_SUCCESS,
   UNFOLLOW_USER_FAILURE,
   UNFOLLOW_USER_SUCCESS,
 } from './constants';
@@ -29,11 +31,13 @@ const editUserPageReducer = (state = initialState, action) =>
         break;
       case LOAD_USER_INFO_FAILURE:
       case UPDATE_USER_INFO_FAILURE:
+      case UPDATE_USER_PROFILE_PICTURE_FAILURE:
       case UNFOLLOW_USER_FAILURE:
         draft.error = action.error;
         break;
       case LOAD_USER_INFO_SUCCESS:
       case UPDATE_USER_INFO_SUCCESS:
+      case UPDATE_USER_PROFILE_PICTURE_SUCCESS:
       case UNFOLLOW_USER_SUCCESS:
         draft.userinfo = action.userinfo;
         break;

@@ -41,6 +41,7 @@ import {
   loadUserInfo,
   loadUserInfoFailure,
   updateUserInfo,
+  updateUserProfilePicture,
   unfollowUser,
 } from './actions';
 import {
@@ -53,7 +54,9 @@ import saga from './saga';
 import ColorPallete from '../../colorPallete';
 import { makeSelectCurrentUser } from '../App/selectors';
 import NavigationBar from '../../components/NavigationBar';
+import UploadImage from '../../components/UploadImage';
 import history from '../../utils/history';
+import { getAvaterImage } from '../../utils/util';
 
 function getUserDetailsSubtitle(userinfo) {
   if (userinfo) {
@@ -84,14 +87,13 @@ function validateCurrentFocusInput(currentFocus) {
   return msg;
 }
 
-const IMPLEMENTED_PROFILE_PICTURE = false;
-
 export function EditUserPage({
   user,
   userinfo,
   error,
   loadUserInfo,
   updateUserInfo,
+  updateUserProfilePicture,
   unfollowUser,
   setError,
 }) {
@@ -103,6 +105,7 @@ export function EditUserPage({
   const [userCurrentFocus, setUserCurrentFocus] = useState('');
   const [searchValue, setSearchValue] = useState('');
   const [showUnfollowDialog, setShowUnfollowDialog] = useState(false);
+  const [showProfileUpload, setShowProfileUpload] = useState(false);
   const [userToUnfollow, setUserToUnfollow] = useState({
     username: '',
     id: '',
@@ -193,15 +196,20 @@ export function EditUserPage({
               flexDirection="row"
               height="8vh"
             >
-              <Avatar isSolid name={user.data.username} size={52} />
-              {IMPLEMENTED_PROFILE_PICTURE && (
-                <IconButton
-                  icon={EditIcon}
-                  appearance="minimal"
-                  display="inline-block"
-                  alignSelf="flex-end"
-                />
-              )}
+              <Avatar
+                isSolid
+                src={getAvaterImage(user.data)}
+                name={user.data.username}
+                size={52}
+              />
+              <IconButton
+                icon={EditIcon}
+                appearance="minimal"
+                intent="success"
+                display="inline-block"
+                alignSelf="flex-end"
+                onClick={() => setShowProfileUpload(true)}
+              />
               <Pane display="flex" flexDirection="column">
                 <Heading size={600} marginLeft="1rem">
                   {user.data.username}
@@ -318,7 +326,12 @@ export function EditUserPage({
                       onSelect={() => redirectToPreview(friend._id)}
                     >
                       <Table.Cell flexGrow={2}>
-                        <Avatar isSolid name={friend.username} size={24} />
+                        <Avatar
+                          isSolid
+                          src={getAvaterImage(friend)}
+                          name={friend.username}
+                          size={24}
+                        />
                         <Text size={300} marginLeft="1rem">
                           {friend.username}
                         </Text>
@@ -345,6 +358,14 @@ export function EditUserPage({
           </Pane>
         </Pane>
       )}
+      <UploadImage
+        title="Upload Profile Picture"
+        isShown={showProfileUpload}
+        setShownCallback={shown => setShowProfileUpload(shown)}
+        submitCallback={(filename, data, contentType) =>
+          updateUserProfilePicture(filename, data, contentType)
+        }
+      />
       <Dialog
         isShown={showUnfollowDialog}
         hasHeader={false}
@@ -379,6 +400,8 @@ function mapDispatchToProps(dispatch) {
     dispatch,
     loadUserInfo: () => dispatch(loadUserInfo()),
     updateUserInfo: information => dispatch(updateUserInfo(information)),
+    updateUserProfilePicture: (filename, data, contentType) =>
+      dispatch(updateUserProfilePicture(filename, data, contentType)),
     unfollowUser: userid => dispatch(unfollowUser(userid)),
     setError: error => dispatch(loadUserInfoFailure(error)),
   };

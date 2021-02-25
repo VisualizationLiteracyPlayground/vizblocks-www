@@ -53,6 +53,7 @@ import ColorPallete from '../../colorPallete';
 import { makeSelectCurrentUser } from '../App/selectors';
 import NavigationBar from '../../components/NavigationBar';
 import history from '../../utils/history';
+import { getAvaterImage } from '../../utils/util';
 import ProjectCard from '../../components/ProjectCard';
 
 function getProfileJoinDate(profileinfo) {
@@ -196,7 +197,12 @@ export function UserPage({
                 height="26%"
                 padding="1rem"
               >
-                <Avatar isSolid name={profileinfo.username} size={52} />
+                <Avatar
+                  isSolid
+                  src={getAvaterImage(profileinfo)}
+                  name={profileinfo.username}
+                  size={52}
+                />
                 <Pane
                   aria-label="user name"
                   display="flex"
@@ -334,7 +340,12 @@ export function UserPage({
                         onSelect={() => redirectToPreview(friend._id)}
                       >
                         <Table.Cell>
-                          <Avatar isSolid name={friend.username} size={24} />
+                          <Avatar
+                            isSolid
+                            src={getAvaterImage(friend)}
+                            name={friend.username}
+                            size={24}
+                          />
                           <Text size={300} marginLeft="1rem">
                             {friend.username}
                           </Text>

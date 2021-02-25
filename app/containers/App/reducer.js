@@ -18,6 +18,7 @@ import {
   SET_SUCCESS,
   USER_SIGNED_IN,
   USER_SIGNED_OUT,
+  USER_UPDATED_PROFILE_PICTURE,
 } from './constants';
 
 // The initial state of the App
@@ -45,6 +46,12 @@ const appReducer = (state = initialState, action) =>
       case USER_SIGNED_OUT:
         draft.currentUser = false;
         localStorage.removeItem('user');
+        break;
+      case USER_UPDATED_PROFILE_PICTURE:
+        const userObj = draft.currentUser;
+        userObj.data.image = action.image;
+        draft.currentUser = userObj;
+        localStorage.setItem('user', JSON.stringify(userObj));
         break;
       default:
         return draft;

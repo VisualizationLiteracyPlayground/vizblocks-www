@@ -25,6 +25,7 @@ import {
 import { makeSelectComments } from 'containers/StudioPage/selectors';
 import { addComment, loadComments } from 'containers/StudioPage/actions';
 import CommentsBackground from 'images/comments-background.jpg';
+import { getAvaterImage } from 'utils/util';
 import CommentBubble from 'components/CommentBubble';
 
 import { USER_ROLE } from '../../containers/StudioPage/constants';
@@ -184,6 +185,7 @@ function StudioCommentView({
       >
         <Avatar
           isSolid
+          src={user ? getAvaterImage(user.data) : null}
           name={user ? user.data.username : 'Guest'}
           size={32}
           marginRight="1rem"

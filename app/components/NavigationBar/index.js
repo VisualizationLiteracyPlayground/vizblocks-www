@@ -31,6 +31,7 @@ import LogoWord from '../LogoWord';
 import LogoutConfirmation from '../LogoutConfirmation';
 import { userSignedOut } from '../../containers/App/actions';
 import history from '../../utils/history';
+import { getAvaterImage } from '../../utils/util';
 
 function NavigationBar({ user, userSignedOut }) {
   const [displayLogout, setDisplayLogout] = useState(false);
@@ -164,7 +165,12 @@ function NavigationBar({ user, userSignedOut }) {
             }
           >
             <Pane display="flex" alignItems="center">
-              <Avatar isSolid name={user.data.username} size={32} />
+              <Avatar
+                isSolid
+                src={getAvaterImage(user.data)}
+                name={user.data.username}
+                size={32}
+              />
               <Strong
                 color="white"
                 marginLeft="1rem"

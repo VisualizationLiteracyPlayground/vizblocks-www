@@ -12,6 +12,9 @@ import {
   UPDATE_USER_INFO,
   UPDATE_USER_INFO_SUCCESS,
   UPDATE_USER_INFO_FAILURE,
+  UPDATE_USER_PROFILE_PICTURE,
+  UPDATE_USER_PROFILE_PICTURE_SUCCESS,
+  UPDATE_USER_PROFILE_PICTURE_FAILURE,
   UNFOLLOW_USER,
   UNFOLLOW_USER_SUCCESS,
   UNFOLLOW_USER_FAILURE,
@@ -60,6 +63,29 @@ export function updateUserInfoFailure(error) {
 export function updateUserInfoSuccess(userinfo) {
   return {
     type: UPDATE_USER_INFO_SUCCESS,
+    userinfo,
+  };
+}
+
+export function updateUserProfilePicture(filename, data, contentType) {
+  return {
+    type: UPDATE_USER_PROFILE_PICTURE,
+    filename,
+    data,
+    contentType,
+  };
+}
+
+export function updateUserProfilePictureFailure(error) {
+  return {
+    type: UPDATE_USER_PROFILE_PICTURE_FAILURE,
+    error,
+  };
+}
+
+export function updateUserProfilePictureSuccess(userinfo) {
+  return {
+    type: UPDATE_USER_PROFILE_PICTURE_SUCCESS,
     userinfo,
   };
 }

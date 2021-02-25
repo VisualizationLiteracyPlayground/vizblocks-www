@@ -3,16 +3,23 @@ import { put, takeLatest } from 'redux-saga/effects';
 
 import { get, patch } from 'utils/api';
 
-import { LOAD_USER_INFO, UPDATE_USER_INFO, UNFOLLOW_USER } from './constants';
+import {
+  LOAD_USER_INFO,
+  UPDATE_USER_INFO,
+  UPDATE_USER_PROFILE_PICTURE,
+  UNFOLLOW_USER,
+} from './constants';
 import {
   loadUserInfoFailure,
   loadUserInfoSuccess,
   updateUserInfoFailure,
   updateUserInfoSuccess,
+  updateUserProfilePictureFailure,
+  updateUserProfilePictureSuccess,
   unfollowUserFailure,
   unfollowUserSuccess,
 } from './actions';
-import { setSuccess } from '../App/actions';
+import { userUpdatedProfilePicture, setSuccess } from '../App/actions';
 
 function* loadUserInfo() {
   const [success, response] = yield get(
@@ -59,6 +66,36 @@ function* updateUserInfo({ information }) {
   }
 }
 
+function* updateUserProfilePicture({ filename, data, contentType }) {
+  const [success, response] = yield patch(
+    `/user/thumbnail`,
+    {
+      filename,
+      data,
+      contentType,
+    },
+    response => response.data,
+    e => e.response,
+  );
+  if (success) {
+    const userinfo = response.data;
+    yield put(updateUserProfilePictureSuccess(userinfo));
+    yield put(
+      setSuccess({
+        title: 'Profile picture updated',
+        description: '',
+      }),
+    );
+    yield put(userUpdatedProfilePicture(userinfo.image));
+  } else {
+    let msg = 'Unable to reach the server, please try again later.';
+    if (response) {
+      msg = response.data.error;
+    }
+    yield put(updateUserProfilePictureFailure(msg));
+  }
+}
+
 function* unfollowUser({ userid }) {
   const [success, response] = yield patch(
     `/user/unfollow/${userid}`,
@@ -88,5 +125,6 @@ function* unfollowUser({ userid }) {
 export default function* editUserPageSaga() {
   yield takeLatest(LOAD_USER_INFO, loadUserInfo);
   yield takeLatest(UPDATE_USER_INFO, updateUserInfo);
+  yield takeLatest(UPDATE_USER_PROFILE_PICTURE, updateUserProfilePicture);
   yield takeLatest(UNFOLLOW_USER, unfollowUser);
 }

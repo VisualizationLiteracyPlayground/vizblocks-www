@@ -10,6 +10,7 @@ import React, { memo } from 'react';
 import { Avatar, Card, Heading, Pane, Text } from 'evergreen-ui';
 
 import history from 'utils/history';
+import { getAvaterImage } from 'utils/util';
 import { truncateString } from 'utils/stringUtil';
 import DefaultThumbnail from 'images/default-project-thumbnail.png';
 
@@ -65,6 +66,7 @@ function ProjectCard({ project, onClickCallback }) {
       <Pane display="flex" alignItems="center" padding="0.2rem">
         <Avatar
           isSolid
+          src={getAvaterImage(project.author)}
           name={project.author.username}
           size={24}
           marginLeft="0.3rem"

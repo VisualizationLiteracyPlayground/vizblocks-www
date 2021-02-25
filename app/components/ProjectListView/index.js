@@ -31,6 +31,7 @@ import {
 
 import history from 'utils/history';
 import { sortDateDesc, prettyDateFormat } from 'utils/dateUtil';
+import { getAvaterImage } from 'utils/util';
 import DefaultThumbnail from 'images/default-project-thumbnail.png';
 import {
   makeSelectProjects,
@@ -187,6 +188,7 @@ function ProjectListView({
                           <Pane display="flex" alignItems="center">
                             <Avatar
                               isSolid
+                              src={getAvaterImage(project.author)}
                               name={project.author.username}
                               size={32}
                             />

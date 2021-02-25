@@ -26,6 +26,7 @@ import { updateCuratorRole } from 'containers/StudioPage/actions';
 
 import StudioCuratorRoleDialog from '../StudioCuratorRoleDialog';
 import history from '../../utils/history';
+import { getAvaterImage } from '../../utils/util';
 
 function CuratorListView({
   userRole,
@@ -81,7 +82,12 @@ function CuratorListView({
                 }
               >
                 <Table.Cell flexGrow={2}>
-                  <Avatar isSolid name={curator.user.username} size={24} />
+                  <Avatar
+                    isSolid
+                    src={getAvaterImage(curator.user)}
+                    name={curator.user.username}
+                    size={24}
+                  />
                   <Text size={300} marginLeft="1rem">
                     {curator.user.username}
                   </Text>

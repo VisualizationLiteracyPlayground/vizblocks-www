@@ -12,6 +12,7 @@ import { Avatar, Card, Heading, Pane, Text } from 'evergreen-ui';
 import history from 'utils/history';
 import { truncateString } from 'utils/stringUtil';
 import { prettyDateFormat } from 'utils/dateUtil';
+import { getAvaterImage } from 'utils/util';
 
 import ColorPallete from '../../colorPallete';
 
@@ -37,7 +38,12 @@ function UserCard({ user }) {
         borderWidth="0.2rem"
         borderColor={ColorPallete.backgroundColor}
       >
-        <Avatar isSolid name={user.username} size={64} />
+        <Avatar
+          isSolid
+          src={getAvaterImage(user)}
+          name={user.username}
+          size={64}
+        />
       </Pane>
       <Pane display="flex" alignSelf="center" padding="0.2rem">
         <Pane

@@ -34,6 +34,7 @@ import {
 import { Link } from 'react-router-dom';
 
 import { prettyDateFormat } from 'utils/dateUtil';
+import { getAvaterImage } from 'utils/util';
 
 import ColorPallete from '../../colorPallete';
 
@@ -170,7 +171,12 @@ function ProjectInfo({
     >
       <Pane aria-label="project-header" display="flex" marginBottom="1rem">
         <Link to={`/user-profile/${project.author._id}`}>
-          <Avatar isSolid name={project.author.username} size={52} />
+          <Avatar
+            isSolid
+            src={getAvaterImage(project.author)}
+            name={project.author.username}
+            size={52}
+          />
         </Link>
         <Pane
           aria-label="project-header-info"
@@ -347,6 +353,7 @@ function ProjectInfo({
                   >
                     <Avatar
                       isSolid
+                      src={getAvaterImage(project.remix.parent.author)}
                       name={project.remix.parent.author.username}
                       size={36}
                     />
@@ -385,6 +392,7 @@ function ProjectInfo({
                   >
                     <Avatar
                       isSolid
+                      src={getAvaterImage(project.remix.root.author)}
                       name={project.remix.root.author.username}
                       size={36}
                     />
