@@ -65,7 +65,16 @@ export function RegisterUser({ error, setError, registerUser }) {
   function validateFormFields(field) {
     switch (field) {
       case formFields.USERNAME:
-        return username === '' ? 'Username is required' : null;
+        if (username === '') {
+          return 'Username is required';
+        }
+        if (username.length > 50) {
+          return `${username.length}/50 characters`;
+        }
+        if (username.length < 3) {
+          return 'Username needs to be at least 3 characters';
+        }
+        return null;
       case formFields.EMAIL:
         if (email === '') {
           return 'Email is required';

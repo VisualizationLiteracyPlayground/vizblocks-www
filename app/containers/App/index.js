@@ -28,6 +28,7 @@ import StudioPage from 'containers/StudioPage/Loadable';
 import VizblocksGui from 'containers/VizblocksGui';
 import EditUserPage from 'containers/EditUserPage/Loadable';
 import UserPage from 'containers/UserPage/Loadable';
+import AccountSetting from 'containers/AccountSetting/Loadable';
 import IdeasPage from 'containers/IdeasPage/Loadable';
 import ExplorePage from 'containers/ExplorePage/Loadable';
 import VideoTutorialPage from 'containers/VideoTutorialPage/Loadable';
@@ -185,6 +186,11 @@ export function App({
             path="/edit-profile"
             isAuthenticated={user}
             component={EditUserPage}
+          />
+          <PrivateRoute
+            path="/account-settings"
+            isAuthenticated={user}
+            component={AccountSetting}
           />
           <Route exact path="/user-profile/:profileid" component={UserPage} />
           <Route exact path="/studio" component={StudioPage} />

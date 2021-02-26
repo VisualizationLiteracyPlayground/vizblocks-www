@@ -50,6 +50,10 @@ function NavigationBar({ user, userSignedOut }) {
     history.push(`/user-profile/${userid}`);
   }
 
+  function redirectToAccountSettings() {
+    history.push('/account-settings');
+  }
+
   function redirectToVlatStats() {
     history.push('/vlat-stats');
   }
@@ -138,8 +142,7 @@ function NavigationBar({ user, userSignedOut }) {
                 <Button
                   iconBefore={SettingsIcon}
                   appearance="minimal"
-                  onClick={() => {}}
-                  disabled
+                  onClick={() => redirectToAccountSettings()}
                 >
                   Account Setting
                 </Button>
