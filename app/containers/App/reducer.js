@@ -47,6 +47,7 @@ const appReducer = (state = initialState, action) =>
       case USER_SIGNED_OUT:
         draft.currentUser = false;
         localStorage.removeItem('user');
+        draft.success = { title: "Signed out!" };
         break;
       case USER_UPDATED_PROFILE_PICTURE:
         let userObj = draft.currentUser;

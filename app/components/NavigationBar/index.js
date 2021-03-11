@@ -21,7 +21,6 @@ import {
   Popover,
   SettingsIcon,
   Strong,
-  Tooltip,
   UserIcon,
 } from 'evergreen-ui';
 import { Link } from 'react-router-dom';
@@ -75,13 +74,11 @@ function NavigationBar({ user, userSignedOut }) {
             <b>Ideas</b>
           </Strong>
         </Link>
-        {/* <Link to="/" style={{ textDecoration: 'none' }}> */}
-        <Tooltip content="Coming soon">
+        <Link to="/about" style={{ textDecoration: 'none' }}>
           <Strong color="white" marginLeft="3rem" size={500}>
             <b>About</b>
           </Strong>
-        </Tooltip>
-        {/* </Link> */}
+        </Link>
         <Link to="/explore" style={{ textDecoration: 'none' }}>
           <Strong color="white" marginLeft="3rem" size={500}>
             <b>Explore</b>

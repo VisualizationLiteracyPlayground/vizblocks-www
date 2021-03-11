@@ -15,6 +15,7 @@ import { Button, Heading, Pane } from 'evergreen-ui';
 
 import { useInjectSaga } from 'utils/injectSaga';
 import { useInjectReducer } from 'utils/injectReducer';
+import history from 'utils/history';
 
 import { makeSelectHomePage, makeSelectFeaturedProjects } from './selectors';
 import reducer from './reducer';
@@ -55,6 +56,7 @@ export function HomePage({ user, featuredProjects, loadFeatured }) {
           intent="success"
           borderRadius="50px"
           marginX="2rem"
+          onClick={() => history.push('/about')}
         >
           About
         </Button>
@@ -63,6 +65,7 @@ export function HomePage({ user, featuredProjects, loadFeatured }) {
           intent="success"
           borderRadius="50px"
           marginX="2rem"
+          onClick={() => history.push('/about/lesson-plan')}
         >
           For Educators
         </Button>

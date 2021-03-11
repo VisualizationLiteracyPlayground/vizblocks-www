@@ -9,6 +9,10 @@ const ColorPallete = {
   paneOne: '#E2F0CB',
   paneTwo: '#B5EAD7',
   paneThree: '#C7CEEA',
+  pastelOne: '#F1E0B0',
+  pastelTwo: '#F1CDB0',
+  pastelThree: '#E7CFC8',
+  pastelFour: '#BFD4DB',
 };
 
 export default ColorPallete;

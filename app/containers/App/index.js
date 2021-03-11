@@ -20,6 +20,9 @@ import styled from 'styled-components';
 
 import PrivateRoute from 'components/PrivateRoute';
 import HomePage from 'containers/HomePage/Loadable';
+import AboutPage from 'containers/AboutPage/Loadable';
+import LessonPlanPage from 'containers/LessonPlanPage/Loadable';
+import CreditsPage from 'containers/CreditsPage/Loadable';
 import MyStuff from 'containers/MyStuff/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
 import RegisterUser from 'containers/RegisterUser/Loadable';
@@ -129,6 +132,9 @@ export function App({
       {loaded && (
         <Switch>
           <Route exact path="/" component={HomePage} />
+          <Route exact path="/about" component={AboutPage} />
+          <Route exact path="/about/lesson-plan" component={LessonPlanPage} />
+          <Route exact path="/about/credits" component={CreditsPage} />
           <PrivateRoute
             path="/my-stuff"
             isAuthenticated={user}

@@ -16,7 +16,6 @@ import {
   Heading,
   LightbulbIcon,
   Pane,
-  Paragraph,
   Strong,
   Tooltip,
 } from 'evergreen-ui';
@@ -41,7 +40,7 @@ export function IdeasPage({ user }) {
   useInjectSaga({ key: 'ideasPage', saga });
 
   return (
-    <Pane height="100vh" background={ColorPallete.backgroundColor}>
+    <Pane height="100vh" background={ColorPallete.pastelFour}>
       <NavigationBar user={user} />
       <Pane
         aria-label="Landing mast"
@@ -83,6 +82,7 @@ export function IdeasPage({ user }) {
           height="30vh"
           alignItems="center"
           justifyItems="center"
+          background={ColorPallete.paneTwo}
         >
           <img
             style={{
@@ -104,9 +104,10 @@ export function IdeasPage({ user }) {
             <Heading size={500} marginTop="0.5rem">
               Visualization Literacy Assessment Test
             </Heading>
-            <Paragraph>
-              {`Take a quick test to find out your proficiency on data visualizations!`}
-            </Paragraph>
+            <Heading size={400}>
+              Take a quick test to find out your proficiency on data
+              visualizations!
+            </Heading>
             <Button
               iconBefore={LightbulbIcon}
               appearance="primary"
@@ -119,15 +120,6 @@ export function IdeasPage({ user }) {
             </Button>
           </Pane>
         </Pane>
-        <Pane
-          borderColor={ColorPallete.lightGrey}
-          width="100%"
-          borderWidth="0.1rem"
-          borderTopStyle="solid"
-          justifySelf="center"
-          alignSelf="center"
-          aria-label="Horizontal divider"
-        />
         <Pane
           aria-label="Tutorial cards"
           display="flex"
@@ -169,8 +161,8 @@ export function IdeasPage({ user }) {
             </Heading>
           </Pane>
           <Pane
-            height="15vh"
-            borderColor={ColorPallete.lightGrey}
+            height="20vh"
+            borderColor={ColorPallete.grey}
             borderWidth="0.1rem"
             borderLeftStyle="solid"
             justifySelf="center"
