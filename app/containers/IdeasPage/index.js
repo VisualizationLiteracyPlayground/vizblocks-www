@@ -40,7 +40,13 @@ export function IdeasPage({ user }) {
   useInjectSaga({ key: 'ideasPage', saga });
 
   return (
-    <Pane height="100vh" background={ColorPallete.pastelFour}>
+    <Pane
+      height="100vh"
+      display="flex"
+      flexDirection="column"
+      overflowY="auto"
+      background={ColorPallete.pastelFour}
+    >
       <NavigationBar user={user} />
       <Pane
         aria-label="Landing mast"
@@ -163,7 +169,7 @@ export function IdeasPage({ user }) {
           <Pane
             height="20vh"
             borderColor={ColorPallete.grey}
-            borderWidth="0.1rem"
+            borderWidth="0.15rem"
             borderLeftStyle="solid"
             justifySelf="center"
             alignSelf="center"

@@ -213,7 +213,13 @@ export function StudioPage({
   }, [success]);
 
   return isStateful ? (
-    <Pane height="100vh" background={ColorPallete.secondaryColor}>
+    <Pane
+      height="100vh"
+      display="flex"
+      flexDirection="column"
+      overflowY="auto"
+      background={ColorPallete.secondaryColor}
+    >
       <NavigationBar user={user} />
       {!studio && (
         <Pane

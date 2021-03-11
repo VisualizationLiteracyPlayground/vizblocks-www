@@ -83,7 +83,13 @@ export function VlatCategoryPage({ user, vlatScore, loadUserVlatScore }) {
     }
   }, []);
   return (
-    <Pane height="100vh" background={getBackgroundColorForTestType(testType)}>
+    <Pane
+      height="100vh"
+      display="flex"
+      flexDirection="column"
+      overflowY="auto"
+      background={getBackgroundColorForTestType(testType)}
+    >
       <NavigationBar user={user} />
       <Pane
         display="flex"

@@ -165,7 +165,13 @@ export function EditUserPage({
   }, [error]);
 
   return (
-    <Pane height="120vh" background={ColorPallete.backgroundColor}>
+    <Pane
+      height="100vh"
+      display="flex"
+      flexDirection="column"
+      overflowY="auto"
+      background={ColorPallete.backgroundColor}
+    >
       <NavigationBar user={user} />
       {!userinfo && (
         <Pane
@@ -298,8 +304,6 @@ export function EditUserPage({
                   onChange={value => setSearchValue(value)}
                   placeholder="Search friends"
                 />
-                {/* This empty text element is needed to align the header cells */}
-                <Text size={300} marginLeft="1rem" />
                 <Table.HeaderCell>
                   <Text size={300}>
                     <b>Projects</b>
@@ -311,9 +315,13 @@ export function EditUserPage({
                   </Text>
                 </Table.HeaderCell>
               </Table.Head>
-              <Table.Body height="25vh">
+              <Table.Body height="20vh">
                 {userinfo.following
-                  .filter(friend => friend.username.includes(searchValue))
+                  .filter(friend =>
+                    friend.username
+                      .toLowerCase()
+                      .includes(searchValue.toLowerCase()),
+                  )
                   .sort((friendA, friendB) =>
                     friendA.username.localeCompare(friendB.username),
                   )

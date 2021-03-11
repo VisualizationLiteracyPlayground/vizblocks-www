@@ -43,7 +43,13 @@ export function LessonPlanPage({ user }) {
   }
 
   return (
-    <Pane height="100vh" background={ColorPallete.paneTwo} overflowY="auto">
+    <Pane
+      height="100vh"
+      display="flex"
+      flexDirection="column"
+      overflowY="auto"
+      background={ColorPallete.paneTwo}
+    >
       <NavigationBar user={user} />
       <link
         rel="stylesheet"

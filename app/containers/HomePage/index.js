@@ -41,7 +41,13 @@ export function HomePage({ user, featuredProjects, loadFeatured }) {
   }, []);
 
   return (
-    <Pane height="100vh" background={ColorPallete.secondaryColor}>
+    <Pane
+      height="100vh"
+      display="flex"
+      flexDirection="column"
+      overflowY="auto"
+      background={ColorPallete.secondaryColor}
+    >
       <NavigationBar user={user} />
       <LandingMast />
       <Pane

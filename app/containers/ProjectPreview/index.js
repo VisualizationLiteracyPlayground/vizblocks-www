@@ -112,7 +112,13 @@ export function ProjectPreview({
     }
   }, [projectid]);
   return (
-    <Pane height="100vh" background={ColorPallete.backgroundColor}>
+    <Pane
+      height="100vh"
+      display="flex"
+      flexDirection="column"
+      overflowY="auto"
+      background={ColorPallete.backgroundColor}
+    >
       <NavigationBar user={user} />
       <Pane display="flex" aria-label="header" background="white">
         <Pane display="flex" flexGrow={1} />

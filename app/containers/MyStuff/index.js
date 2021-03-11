@@ -75,7 +75,13 @@ export function MyStuff({
     }
   }, [error]);
   return (
-    <Pane height="100vh" background={ColorPallete.backgroundColor}>
+    <Pane
+      height="100vh"
+      display="flex"
+      flexDirection="column"
+      overflowY="auto"
+      background={ColorPallete.backgroundColor}
+    >
       <NavigationBar user={user} />
       <MyStuffMast />
       <Pane padding="1.5rem">

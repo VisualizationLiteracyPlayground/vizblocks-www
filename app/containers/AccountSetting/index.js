@@ -127,13 +127,19 @@ export function AccountSetting({
   }, [success]);
 
   return (
-    <Pane height="100vh" background={ColorPallete.backgroundColor}>
+    <Pane
+      height="100vh"
+      display="flex"
+      flexDirection="column"
+      overflowY="auto"
+      background={ColorPallete.secondaryColor}
+    >
       <NavigationBar user={user} />
       <Pane
         height="92vh"
         display="flex"
         padding="2rem"
-        background={ColorPallete.backgroundColor}
+        background={ColorPallete.secondaryColor}
       >
         <Pane
           display="flex"
