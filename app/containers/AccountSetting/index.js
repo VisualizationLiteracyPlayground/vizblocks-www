@@ -44,7 +44,7 @@ import ColorPallete from '../../colorPallete';
 import { makeSelectCurrentUser } from '../App/selectors';
 import NavigationBar from '../../components/NavigationBar';
 
-function validateUsername(username) {
+function validateUsername(username, isAdmin) {
   if (username === '') {
     return 'Username is required';
   }
@@ -53,6 +53,9 @@ function validateUsername(username) {
   }
   if (username.length < 3) {
     return 'Username needs to be at least 3 characters';
+  }
+  if (!isAdmin && username.toLowerCase().includes('vizblock')) {
+    return 'Website name is reserved and unavailable as username';
   }
   return null;
 }
@@ -198,13 +201,16 @@ export function AccountSetting({
                 value={newUsername}
                 onChange={e => setNewUsername(e.target.value)}
                 marginBottom="0.5rem"
-                validationMessage={validateUsername(newUsername)}
+                validationMessage={validateUsername(
+                  newUsername,
+                  user.data.isAdmin,
+                )}
               />
               <Pane display="flex">
                 <Button
                   intent="success"
                   appearance="primary"
-                  disabled={validateUsername(newUsername)}
+                  disabled={validateUsername(newUsername, user.data.isAdmin)}
                   onClick={() => {
                     updateUsername(newUsername);
                     setNewUsername('');

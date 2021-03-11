@@ -74,6 +74,9 @@ export function RegisterUser({ error, setError, registerUser }) {
         if (username.length < 3) {
           return 'Username needs to be at least 3 characters';
         }
+        if (username.toLowerCase().includes('vizblock')) {
+          return 'Website name is reserved and unavailable as username';
+        }
         return null;
       case formFields.EMAIL:
         if (email === '') {
