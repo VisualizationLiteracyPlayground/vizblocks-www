@@ -330,12 +330,11 @@ export function addCommentFailure(error) {
   };
 }
 
-export function loadComments(studioid, pageIndex, loadedComments) {
+export function loadComments(studioid, queryPacket) {
   return {
     type: LOAD_COMMENTS,
     studioid,
-    pageIndex,
-    loadedComments,
+    queryPacket,
   };
 }
 

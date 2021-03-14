@@ -412,6 +412,7 @@ export function StudioPage({
                       userRole={userRole}
                       studioid={studioid}
                       commentsListRef={commentsListRef}
+                      setError={setError}
                     />
                   )}
                   {index === 2 && (

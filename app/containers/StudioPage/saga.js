@@ -468,40 +468,26 @@ function* addComment({ studioid, comment, loadedComments }) {
 }
 
 // eslint-disable-next-line no-unused-vars
-function* loadComments({ studioid, pageIndex, loadedComments }) {
+function* loadComments({ studioid, queryPacket }) {
   if (studioid === 0) {
     yield put(loadCommentsSuccess([]));
     return;
   }
-  const [success, response] = yield post(
-    `/studio/comments/${studioid}`,
-    {
-      pageIndex,
-    },
+  const queryString = Object.keys(queryPacket)
+    .map(key => `${key}=${queryPacket[key]}`)
+    .join('&');
+
+  const [success, response] = yield get(
+    `/comment/${studioid}?${queryString}`,
     response => response.data,
     e => e.response,
   );
   if (success) {
-    const { comments } = response.data;
-    /* 
-     * Pagination should only serve a page at a time
-     * The original idea is to concat the new page with the loadedComments
-     * However, an issue is that when user is not on page 0.
-     * The loadComments call that is firing in the background is not fetching new comments
-     * 
-     * Current quick solution is to not fetch all comments from page 0 to the current pageIndex
-     * 2 Solutions:
-     * - Add a date field in the backend call, to control loading of comments
-     * - Subscription based model
-    if (pageIndex !== 0) {
-      comments = loadedComments.concat(comments);
-    }
-    */
-    yield put(loadCommentsSuccess(comments));
+    yield put(loadCommentsSuccess(response.data.docs));
   } else {
     let msg = 'Unable to reach the server, please try again later.';
     if (response) {
-      msg = response.data.error;
+      msg = response.error;
     }
     yield put(loadCommentsFailure(msg));
   }

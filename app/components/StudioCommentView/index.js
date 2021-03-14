@@ -40,6 +40,7 @@ function StudioCommentView({
   userRole,
   studioid,
   commentsListRef,
+  setError,
   comments,
   addComment,
   loadComments,
@@ -48,7 +49,7 @@ function StudioCommentView({
   const [loadMoreNumber, setLoadMoreNumber] = useState(0);
   const [fullyLoaded, setFullyLoaded] = useState(false);
   const [loaded, setLoaded] = useState(false);
-  const [pageIndex, setPageIndex] = useState(0);
+  const [pageIndex, setPageIndex] = useState(1);
   const [addCommentTriggered, setAddCommentTriggered] = useState(false);
   const [refreshComment, setRefreshComment] = useState(null);
   const lastInterval = useRef();
@@ -56,28 +57,31 @@ function StudioCommentView({
   function isCommentingDisabled() {
     switch (userRole) {
       case USER_ROLE.GUEST:
-        // Commenting is disabled for non-signed in users
+      case USER_ROLE.UNLISTED:
+        // Commenting is disabled for non-signed in and unlisted users
         return true;
       case USER_ROLE.MANAGER:
         // Manager of studio can always comment
         return false;
-      default:
-        // Member and unlisted share the same permission
+      case USER_ROLE.MEMBER:
+        // Member of studio can comment base on permissions settings
         return !memberCommentPermission;
+      default:
+        return true;
     }
   }
 
   function showLoadMoreButton() {
     return (
       comments &&
-      comments.length % 50 === 0 &&
+      comments.length % pageCount === 0 &&
       !fullyLoaded &&
       comments.length > 0
     );
   }
 
   function showAllLoadedText() {
-    return comments && (comments.length % 50 !== 0 || fullyLoaded);
+    return comments && (comments.length % pageCount !== 0 || fullyLoaded);
   }
 
   function cleanupInterval() {
@@ -93,14 +97,15 @@ function StudioCommentView({
   useEffect(() => {
     if (!loaded) {
       // Initial loading of comments
-      loadComments(studioid, pageIndex, comments);
+      loadComments(studioid, { offset: 0, limit: pageIndex * pageCount });
       if (debugIntervalFlag) {
         console.log(`Initiated first interval, PageIndex:${pageIndex}`);
         console.log(comments);
       }
       setRefreshComment(
         setInterval(
-          () => loadComments(studioid, pageIndex, []),
+          () =>
+            loadComments(studioid, { offset: 0, limit: pageIndex * pageCount }),
           intervalWindow,
         ),
       );
@@ -120,12 +125,12 @@ function StudioCommentView({
   }, [refreshComment]);
 
   useEffect(() => {
-    if (debugIntervalFlag) {
-      console.log(`Clearup interval initiated in [pageIndex]`);
-    }
-    cleanupInterval();
-    loadComments(studioid, pageIndex, comments);
-    if (pageIndex !== 0) {
+    if (pageIndex !== 1) {
+      if (debugIntervalFlag) {
+        console.log(`Clearup interval initiated in [pageIndex]`);
+      }
+      cleanupInterval();
+      loadComments(studioid, { offset: 0, limit: pageIndex * pageCount });
       if (debugIntervalFlag) {
         console.log(
           `Initiated new interval in [pageIndex], PageIndex:${pageIndex}`,
@@ -134,7 +139,8 @@ function StudioCommentView({
       }
       setRefreshComment(
         setInterval(
-          () => loadComments(studioid, pageIndex, comments),
+          () =>
+            loadComments(studioid, { offset: 0, limit: pageIndex * pageCount }),
           intervalWindow,
         ),
       );
@@ -148,21 +154,14 @@ function StudioCommentView({
       setFullyLoaded(true);
     }
     if (addCommentTriggered) {
-      let commentPayload = [...comments];
-      if (pageIndex * pageCount < comments.length) {
-        // Update page index and trigger interval call
-        if (debugIntervalFlag) {
-          console.log('Comments spliced');
-        }
-        commentPayload = commentPayload.splice(0, pageIndex * pageCount);
-      }
       if (debugIntervalFlag) {
         console.log(`Initiated interval in [comments], PageIndex:${pageIndex}`);
-        console.log(commentPayload);
+        console.log(comments);
       }
       setRefreshComment(
         setInterval(
-          () => loadComments(studioid, pageIndex, commentPayload),
+          () =>
+            loadComments(studioid, { offset: 0, limit: pageIndex * pageCount }),
           intervalWindow,
         ),
       );
@@ -196,8 +195,10 @@ function StudioCommentView({
           value={commentValue}
           onChange={e => setCommentValue(e.target.value)}
           onKeyPress={event => {
-            if (event.key === 'Enter') {
-              if (commentValue !== '') {
+            if (event.key === 'Enter' && commentValue !== '') {
+              if (commentValue.length > 255) {
+                setError(`Comment too long ${commentValue.length}/255`);
+              } else {
                 if (debugIntervalFlag) {
                   console.log(
                     `Clearup interval initiated in add comment button`,
@@ -206,8 +207,8 @@ function StudioCommentView({
                 cleanupInterval();
                 addComment(studioid, commentValue, comments);
                 setAddCommentTriggered(true);
+                setCommentValue('');
               }
-              setCommentValue('');
             }
           }}
           disabled={isCommentingDisabled()}
@@ -219,14 +220,20 @@ function StudioCommentView({
           intent="success"
           onClick={() => {
             if (commentValue !== '') {
-              if (debugIntervalFlag) {
-                console.log(`Clearup interval initiated in add comment button`);
+              if (commentValue.length > 255) {
+                setError(`Comment too long ${commentValue.length}/255`);
+              } else {
+                if (debugIntervalFlag) {
+                  console.log(
+                    `Clearup interval initiated in add comment button`,
+                  );
+                }
+                cleanupInterval();
+                addComment(studioid, commentValue, comments);
+                setAddCommentTriggered(true);
+                setCommentValue('');
               }
-              cleanupInterval();
-              addComment(studioid, commentValue, comments);
-              setAddCommentTriggered(true);
             }
-            setCommentValue('');
           }}
           disabled={isCommentingDisabled()}
         />
@@ -254,7 +261,7 @@ function StudioCommentView({
                   setPageIndex(pageIndex + 1);
                   setLoadMoreNumber(comments.length);
                 }}
-                marginTop="0.2rem"
+                marginTop="1rem"
               >
                 Load more
               </Button>
@@ -267,7 +274,7 @@ function StudioCommentView({
             <Pane flexGrow={1} />
             <Pane display="flex">
               <Pane flexGrow={1} />
-              <Text size={300} color="grey" marginTop="0.2rem">
+              <Text size={300} color="grey" marginTop="1rem">
                 All comments loaded
               </Text>
               <Pane flexGrow={1} />
@@ -290,8 +297,8 @@ function mapDispatchToProps(dispatch) {
     dispatch,
     addComment: (studioid, comment, loadedComments) =>
       dispatch(addComment(studioid, comment, loadedComments)),
-    loadComments: (studioid, pageIndex, loadedComments) =>
-      dispatch(loadComments(studioid, pageIndex, loadedComments)),
+    loadComments: (studioid, queryPacket) =>
+      dispatch(loadComments(studioid, queryPacket)),
   };
 }
 

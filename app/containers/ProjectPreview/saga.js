@@ -35,7 +35,7 @@ function* loadProjectDetails({ projectid }) {
   } else {
     let msg = 'Unable to reach the server, please try again later.';
     if (response) {
-      msg = response.data.error;
+      msg = response.error;
     }
     yield put(loadProjectDetailsFailure(msg));
   }
@@ -53,7 +53,7 @@ function* loadUserInfo() {
   } else {
     let msg = 'Unable to reach the server, please try again later.';
     if (response) {
-      msg = response.data.error;
+      msg = response.error;
     }
     yield put(loadUserInfoFailure(msg));
   }
