@@ -29,6 +29,7 @@ import EmptyDataPlaceholder from '../EmptyDataPlaceholder';
 
 const tagList = ['all', 'friends'];
 const SORTING_ENUMS = {
+  CURATOR_COUNT: 'curator-count',
   MODIFIED_DESC: 'modified-desc',
   MODIFIED_ASC: 'modified-asc',
   TITLE_ASC: 'title-asc',
@@ -37,6 +38,8 @@ const SORTING_ENUMS = {
 
 function getSortingDisplayString(sortingEnum) {
   switch (sortingEnum) {
+    case 'curator-count':
+      return 'Curators';
     case 'modified-desc':
       return 'Updated Recently';
     case 'modified-asc':

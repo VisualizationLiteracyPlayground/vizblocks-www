@@ -71,7 +71,7 @@ import history from '../../utils/history';
 function getStudioHeaderInfo(studio) {
   return studio
     ? `Updated: ${prettyDateFormat(studio.history.modified)} | Curators: 
-      ${studio.curators.length}`
+      ${studio.curatorsCount}`
     : '';
 }
 

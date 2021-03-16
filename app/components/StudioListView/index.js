@@ -105,7 +105,7 @@ function StudioListView({ studios }) {
                           {prettyDateFormat(studio.history.modified)}
                         </Heading>
                         <Strong size={300} marginTop="0.5rem" color="gray">
-                          {`Curators: ${studio.curators.length}`}
+                          {`Curators: ${studio.curatorsCount}`}
                         </Strong>
                       </Pane>
                     </Pane>

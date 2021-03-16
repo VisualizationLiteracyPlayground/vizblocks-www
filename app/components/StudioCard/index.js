@@ -69,7 +69,7 @@ function StudioCard({ studio }) {
             {truncateString(studio.title, 16)}
           </Heading>
           <Text size={300} color={ColorPallete.grey} overflow="hidden">
-            {`Curators: ${studio.curators.length}`}
+            {`Curators: ${studio.curatorsCount}`}
           </Text>
         </Pane>
       </Pane>
