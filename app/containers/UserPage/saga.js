@@ -10,6 +10,7 @@ import {
   UNFOLLOW_USER,
 } from './constants';
 import {
+  loadProfileInfo,
   loadProfileInfoFailure,
   loadProfileInfoSuccess,
   loadUserFollowingFailure,
@@ -21,7 +22,7 @@ import {
 } from './actions';
 import { setSuccess } from '../App/actions';
 
-function* loadProfileInfo({ profileid }) {
+function* loadProfileInfoApiCall({ profileid }) {
   const [success, response] = yield get(
     `/user/${profileid}`,
     response => response.data,
@@ -78,6 +79,7 @@ function* followUser({ userid }) {
         description: '',
       }),
     );
+    yield put(loadProfileInfo(userid));
   } else {
     let msg = 'Unable to reach the server, please try again later.';
     if (response) {
@@ -103,6 +105,7 @@ function* unfollowUser({ userid }) {
         description: '',
       }),
     );
+    yield put(loadProfileInfo(userid));
   } else {
     let msg = 'Unable to reach the server, please try again later.';
     if (response) {
@@ -114,7 +117,7 @@ function* unfollowUser({ userid }) {
 
 // Individual exports for testing
 export default function* userPageSaga() {
-  yield takeLatest(LOAD_PROFILE_INFO, loadProfileInfo);
+  yield takeLatest(LOAD_PROFILE_INFO, loadProfileInfoApiCall);
   yield takeLatest(LOAD_USER_FOLLOWING, loadUserFollowing);
   yield takeLatest(FOLLOW_USER, followUser);
   yield takeLatest(UNFOLLOW_USER, unfollowUser);

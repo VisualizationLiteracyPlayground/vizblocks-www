@@ -60,9 +60,9 @@ import { getAvaterImage } from '../../utils/util';
 
 function getUserDetailsSubtitle(userinfo) {
   if (userinfo) {
-    return `Joined: ${prettyDateFormat(userinfo.joinDate)} | Friends: ${
+    return `Joined: ${prettyDateFormat(userinfo.joinDate)} | Following: ${
       userinfo.following.length
-    }`;
+    } | Followers: ${userinfo.followersCount}`;
   }
   return '';
 }

@@ -29,6 +29,7 @@ import EmptyDataPlaceholder from '../EmptyDataPlaceholder';
 
 const tagList = ['all', 'friends'];
 const SORTING_ENUMS = {
+  FOLLOWER_COUNT: 'follower-count',
   JOINED_DESC: 'joined-desc',
   JOINED_ASC: 'joined-asc',
   USERNAME_ASC: 'username-asc',
@@ -37,6 +38,8 @@ const SORTING_ENUMS = {
 
 function getSortingDisplayString(sortingEnum) {
   switch (sortingEnum) {
+    case 'follower-count':
+      return 'Followers';
     case 'joined-desc':
       return 'Joined Recently';
     case 'joined-asc':

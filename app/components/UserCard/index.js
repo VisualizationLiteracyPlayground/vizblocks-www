@@ -46,23 +46,30 @@ function UserCard({ user }) {
         />
       </Pane>
       <Pane display="flex" alignSelf="center" padding="0.2rem">
-        <Pane
-          display="flex"
-          flexDirection="column"
-          flexWrap="wrap"
-          alignItems="center"
-        >
-          <Heading size={500} color={ColorPallete.grey} overflow="hidden">
+        <Pane display="flex" flexDirection="column">
+          <Heading
+            size={500}
+            color={ColorPallete.grey}
+            alignSelf="center"
+            overflow="hidden"
+          >
             {truncateString(user.username, 16)}
           </Heading>
-          <Text size={300} color={ColorPallete.grey} overflow="hidden">
+          <Text
+            size={300}
+            color={ColorPallete.grey}
+            overflow="hidden"
+            marginTop="0.2rem"
+          >
             {truncateString(user.email, 23)}
           </Text>
           <Text size={300} color={ColorPallete.grey} overflow="hidden">
-            {`Joined ${prettyDateFormat(user.joinDate)}`}
+            <b>Joined: </b>
+            {prettyDateFormat(user.joinDate)}
           </Text>
           <Text size={300} color={ColorPallete.grey} overflow="hidden">
-            {`Friends: ${user.following.length}`}
+            <b>Followers: </b>
+            {user.followersCount}
           </Text>
         </Pane>
       </Pane>

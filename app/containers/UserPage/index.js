@@ -133,6 +133,18 @@ export function UserPage({
   // State
   const [loaded, setLoaded] = useState(false);
   const [currentProjectPage, setCurrentProjectPage] = useState(1);
+  const [showFollowing, setShowFollowing] = useState(true);
+  const [tableData, setTableData] = useState([]);
+
+  function setTableDataOnStateChange(shouldShowFollowing) {
+    if (profileinfo) {
+      if (shouldShowFollowing) {
+        setTableData(profileinfo.following);
+      } else {
+        setTableData(profileinfo.followers);
+      }
+    }
+  }
 
   useEffect(() => {
     if (!loaded) {
@@ -140,6 +152,11 @@ export function UserPage({
       setLoaded(true);
     }
   }, []);
+  useEffect(() => {
+    if (profileinfo) {
+      setTableDataOnStateChange(showFollowing);
+    }
+  }, [profileinfo]);
   useEffect(() => {
     if (user) {
       loadUserFollowing(user.data.id);
@@ -312,28 +329,80 @@ export function UserPage({
               borderLeftStyle="solid"
               aria-label="Vertical divider"
             />
-            <Pane aria-label="User Friends" width="30%">
+            <Pane aria-label="User Following-Followers" width="30%">
               <Pane
+                aria-label="tab-selection"
                 display="flex"
-                flexDirection="row"
                 alignItems="center"
-                marginBottom="0.5rem"
+                justifyContent="center"
+                borderColor={ColorPallete.backgroundColor}
+                borderWidth="0.2rem"
+                borderBottomStyle="solid"
               >
-                <Heading size={500} marginTop="0.5rem" marginLeft="1rem">
-                  Friends
-                </Heading>
-                <Heading
-                  size={400}
-                  marginTop="0.5rem"
-                  marginLeft="0.5rem"
-                  color="gray"
+                <Pane
+                  aria-label="tab-following"
+                  display="flex"
+                  flexDirection="column"
+                  justifyItems="center"
+                  alignItems="center"
+                  cursor="pointer"
+                  onClick={() => {
+                    setShowFollowing(true);
+                    setTableDataOnStateChange(true);
+                  }}
                 >
-                  {getProfileFriendsNumber(profileinfo)}
-                </Heading>
+                  <Pane display="flex" alignItems="center" marginTop="0.5rem">
+                    <Heading size={500}>Following</Heading>
+                    <Heading size={400} marginLeft="0.5rem" color="gray">
+                      {getProfileFriendsNumber(profileinfo)}
+                    </Heading>
+                  </Pane>
+                  <Pane
+                    width="8vw"
+                    borderColor={
+                      showFollowing ? ColorPallete.accentColor : 'white'
+                    }
+                    borderWidth="0.3rem"
+                    borderTopStyle="solid"
+                    borderRadius="5px"
+                    marginTop="0.3rem"
+                    aria-label="Horizontal divider"
+                  />
+                </Pane>
+                <Pane
+                  aria-label="tab-followers"
+                  display="flex"
+                  flexDirection="column"
+                  justifyItems="center"
+                  alignItems="center"
+                  cursor="pointer"
+                  onClick={() => {
+                    setShowFollowing(false);
+                    setTableDataOnStateChange(false);
+                  }}
+                >
+                  <Pane display="flex" alignItems="center" marginTop="0.5rem">
+                    <Heading size={500}>Followers</Heading>
+                    <Heading size={400} marginLeft="0.5rem" color="gray">
+                      {`| ${profileinfo.followersCount}`}
+                    </Heading>
+                  </Pane>
+                  <Pane
+                    width="8vw"
+                    borderColor={
+                      !showFollowing ? ColorPallete.accentColor : 'white'
+                    }
+                    borderWidth="0.3rem"
+                    borderTopStyle="solid"
+                    borderRadius="5px"
+                    marginTop="0.3rem"
+                    aria-label="Horizontal divider"
+                  />
+                </Pane>
               </Pane>
               <Table width="100%" id="friend-list">
-                <Table.Body height="35vh">
-                  {profileinfo.following
+                <Table.Body height="39vh">
+                  {tableData
                     .sort((friendA, friendB) =>
                       friendA.username.localeCompare(friendB.username),
                     )
