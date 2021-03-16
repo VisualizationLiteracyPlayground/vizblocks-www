@@ -22,7 +22,6 @@ import {
   Pane,
   Strong,
   TextareaField,
-  Tooltip,
   toaster,
 } from 'evergreen-ui';
 
@@ -34,16 +33,22 @@ import { WEBSITE_BASE_URL } from 'utils/constants';
 import {
   loadProjectDetails,
   loadUserInfo,
+  loadProjectComments,
+  addProjectComment,
   loadProjectDetailsFailure,
   userToggleLike,
   userToggleBookmark,
   updateProjectInformation,
+  updateProjectCommentPermissions,
+  setSuccess,
 } from './actions';
 import {
   makeSelectProjectPreview,
   makeSelectProject,
   makeSelectUserinfo,
+  makeSelectComments,
   makeSelectError,
+  makeSelectSuccess,
 } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
@@ -51,18 +56,25 @@ import ColorPallete from '../../colorPallete';
 import { makeSelectCurrentUser } from '../App/selectors';
 import NavigationBar from '../../components/NavigationBar';
 import ProjectInfo from '../../components/ProjectInfo';
+import ProjectComments from '../../components/ProjectComments';
 
 export function ProjectPreview({
   project,
   user,
   userinfo,
+  comments,
   loadProjectDetails,
   loadUserInfo,
+  loadProjectComments,
+  addProjectComment,
   userToggleLike,
   userToggleBookmark,
   updateProjectInformation,
+  updateProjectCommentPermissions,
   error,
   setError,
+  success,
+  setSuccess,
 }) {
   useInjectReducer({ key: 'projectPreview', reducer });
   useInjectSaga({ key: 'projectPreview', saga });
@@ -72,8 +84,8 @@ export function ProjectPreview({
   const projectid = location.state ? location.state.projectid : 0;
 
   const [currentTab, setCurrentTab] = useState(0);
-  const [success, setSuccess] = useState(false);
   const [showShareURL, setShowShareURL] = useState(false);
+
   // Text area that contains project share url
   const copyAreaRef = useRef(null);
 
@@ -154,13 +166,11 @@ export function ProjectPreview({
             flexDirection="column"
             justifyItems="center"
             alignItems="center"
-            onClick={() => {} /* setCurrentTab(1) */}
+            onClick={() => setCurrentTab(1)}
           >
-            <Tooltip content="Coming soon">
-              <Strong size={500} color={currentTab === 1 ? 'black' : 'grey'}>
-                Comments
-              </Strong>
-            </Tooltip>
+            <Strong size={500} color={currentTab === 1 ? 'black' : 'grey'}>
+              Comments
+            </Strong>
             <Pane
               width="10vw"
               borderColor={
@@ -187,6 +197,17 @@ export function ProjectPreview({
           bookmarkCallback={userToggleBookmark}
           errorCallback={setError}
           submitUpdateCallback={updateProjectInformation}
+        />
+      )}
+      {currentTab === 1 && project && (
+        <ProjectComments
+          user={user}
+          project={project}
+          setError={setError}
+          comments={comments}
+          addProjectComment={addProjectComment}
+          loadProjectComments={loadProjectComments}
+          updateProjectCommentPermissions={updateProjectCommentPermissions}
         />
       )}
       <Dialog
@@ -230,7 +251,9 @@ const mapStateToProps = createStructuredSelector({
   user: makeSelectCurrentUser(),
   project: makeSelectProject(),
   userinfo: makeSelectUserinfo(),
+  comments: makeSelectComments(),
   error: makeSelectError(),
+  success: makeSelectSuccess(),
 });
 
 function mapDispatchToProps(dispatch) {
@@ -238,6 +261,10 @@ function mapDispatchToProps(dispatch) {
     dispatch,
     loadProjectDetails: projectid => dispatch(loadProjectDetails(projectid)),
     loadUserInfo: () => dispatch(loadUserInfo()),
+    loadProjectComments: (projectid, queryPacket) =>
+      dispatch(loadProjectComments(projectid, queryPacket)),
+    addProjectComment: (projectid, comment, loadedComments) =>
+      dispatch(addProjectComment(projectid, comment, loadedComments)),
     userToggleLike: (projectid, likesProject) =>
       dispatch(userToggleLike(projectid, likesProject)),
     userToggleBookmark: (projectid, bookmarksProject) =>
@@ -246,7 +273,10 @@ function mapDispatchToProps(dispatch) {
       dispatch(
         updateProjectInformation(projectid, title, instructions, description),
       ),
+    updateProjectCommentPermissions: (projectid, permissions) =>
+      dispatch(updateProjectCommentPermissions(projectid, permissions)),
     setError: error => dispatch(loadProjectDetailsFailure(error)),
+    setSuccess: success => dispatch(setSuccess(success)),
   };
 }
 

@@ -467,7 +467,6 @@ function* addComment({ studioid, comment, loadedComments }) {
   }
 }
 
-// eslint-disable-next-line no-unused-vars
 function* loadComments({ studioid, queryPacket }) {
   if (studioid === 0) {
     yield put(loadCommentsSuccess([]));

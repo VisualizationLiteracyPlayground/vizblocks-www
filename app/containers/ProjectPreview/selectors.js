@@ -27,10 +27,22 @@ const makeSelectUserinfo = () =>
     substate => substate.userinfo,
   );
 
+const makeSelectComments = () =>
+  createSelector(
+    selectProjectPreviewDomain,
+    substate => substate.comments,
+  );
+
 const makeSelectError = () =>
   createSelector(
     selectProjectPreviewDomain,
     substate => substate.error,
+  );
+
+const makeSelectSuccess = () =>
+  createSelector(
+    selectProjectPreviewDomain,
+    substate => substate.success,
   );
 
 export {
@@ -38,5 +50,7 @@ export {
   selectProjectPreviewDomain,
   makeSelectProject,
   makeSelectUserinfo,
+  makeSelectComments,
   makeSelectError,
+  makeSelectSuccess,
 };

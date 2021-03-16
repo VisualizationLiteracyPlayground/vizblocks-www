@@ -39,7 +39,7 @@ function StudioCommentView({
   user,
   userRole,
   studioid,
-  commentsListRef,
+  currentTabIdx,
   setError,
   comments,
   addComment,
@@ -53,6 +53,7 @@ function StudioCommentView({
   const [addCommentTriggered, setAddCommentTriggered] = useState(false);
   const [refreshComment, setRefreshComment] = useState(null);
   const lastInterval = useRef();
+  const commentsListRef = useRef(null);
 
   function isCommentingDisabled() {
     switch (userRole) {
@@ -94,6 +95,29 @@ function StudioCommentView({
     }
   }
 
+  function captureNewCommentInput() {
+    if (commentValue !== '') {
+      if (commentValue.length > 255) {
+        setError(`Comment too long ${commentValue.length}/255`);
+      } else {
+        if (debugIntervalFlag) {
+          console.log(`Clearup interval initiated in add comment button`);
+        }
+        cleanupInterval();
+        addComment(studioid, commentValue, comments);
+        setAddCommentTriggered(true);
+        setCommentValue('');
+      }
+      resetCommentsScroll();
+    }
+  }
+
+  function resetCommentsScroll() {
+    if (commentsListRef) {
+      commentsListRef.current.scrollTop = 0;
+    }
+  }
+
   useEffect(() => {
     if (!loaded) {
       // Initial loading of comments
@@ -119,6 +143,11 @@ function StudioCommentView({
       }
     };
   }, []);
+
+  useEffect(() => {
+    // Reset scroll position upon switching tabs in Studio
+    resetCommentsScroll();
+  }, [currentTabIdx]);
 
   useEffect(() => {
     lastInterval.current = refreshComment;
@@ -195,20 +224,8 @@ function StudioCommentView({
           value={commentValue}
           onChange={e => setCommentValue(e.target.value)}
           onKeyPress={event => {
-            if (event.key === 'Enter' && commentValue !== '') {
-              if (commentValue.length > 255) {
-                setError(`Comment too long ${commentValue.length}/255`);
-              } else {
-                if (debugIntervalFlag) {
-                  console.log(
-                    `Clearup interval initiated in add comment button`,
-                  );
-                }
-                cleanupInterval();
-                addComment(studioid, commentValue, comments);
-                setAddCommentTriggered(true);
-                setCommentValue('');
-              }
+            if (event.key === 'Enter') {
+              captureNewCommentInput();
             }
           }}
           disabled={isCommentingDisabled()}
@@ -218,23 +235,7 @@ function StudioCommentView({
           marginLeft="0.5rem"
           borderRadius={40}
           intent="success"
-          onClick={() => {
-            if (commentValue !== '') {
-              if (commentValue.length > 255) {
-                setError(`Comment too long ${commentValue.length}/255`);
-              } else {
-                if (debugIntervalFlag) {
-                  console.log(
-                    `Clearup interval initiated in add comment button`,
-                  );
-                }
-                cleanupInterval();
-                addComment(studioid, commentValue, comments);
-                setAddCommentTriggered(true);
-                setCommentValue('');
-              }
-            }
-          }}
+          onClick={() => captureNewCommentInput()}
           disabled={isCommentingDisabled()}
         />
       </Pane>

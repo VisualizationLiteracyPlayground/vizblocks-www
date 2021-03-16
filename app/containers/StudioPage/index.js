@@ -118,7 +118,6 @@ export function StudioPage({
   );
   // Text area that contains studio share url
   const copyAreaRef = useRef(null);
-  const commentsListRef = useRef(null);
 
   const tabsList = ['Projects', 'Comments', 'Curators'];
 
@@ -131,17 +130,7 @@ export function StudioPage({
     });
   }
 
-  function resetCommentsScroll() {
-    if (commentsListRef) {
-      commentsListRef.current.scrollTop = 0;
-    }
-  }
-
   function switchTab(index) {
-    if (index === 1) {
-      // Comments view
-      resetCommentsScroll();
-    }
     setTabIndex(index);
   }
 
@@ -411,7 +400,7 @@ export function StudioPage({
                       user={user}
                       userRole={userRole}
                       studioid={studioid}
-                      commentsListRef={commentsListRef}
+                      currentTabIdx={tabIndex}
                       setError={setError}
                     />
                   )}
