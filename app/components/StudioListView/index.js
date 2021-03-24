@@ -6,14 +6,16 @@
  *
  */
 
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { Heading, Pane, Table, Strong } from 'evergreen-ui';
+import { Heading, Pane, PinIcon, Strong, Table, Tooltip } from 'evergreen-ui';
 
 import { makeSelectStudios } from 'containers/MyStuff/selectors';
+import { USER_ROLE } from 'containers/StudioPage/constants';
 import EmptyDataPlaceholder from 'components/EmptyDataPlaceholder';
+import StudioUnfollowConfirmation from 'components/StudioUnfollowConfirmation';
 import history from 'utils/history';
 import { sortDateDesc, prettyDateFormat } from 'utils/dateUtil';
 import DefaultThumbnail from 'images/default-studio-thumbnail.jpg';
@@ -26,7 +28,16 @@ function getStudioThumbnail(studio) {
     : DefaultThumbnail;
 }
 
-function StudioListView({ studios }) {
+function StudioListView({ studios, user, unfollowStudio }) {
+  const [currentStudio, setCurrentStudio] = useState({
+    id: 0,
+    curators: [],
+    userRole: USER_ROLE.UNLISTED,
+  });
+  const [showUnfollowConfirmation, setShowUnfollowConfirmation] = useState(
+    false,
+  );
+
   return (
     <Pane height="100%">
       {studios.length === 0 && (
@@ -109,12 +120,53 @@ function StudioListView({ studios }) {
                         </Strong>
                       </Pane>
                     </Pane>
+                    <Tooltip content="Unfollow">
+                      <PinIcon
+                        marginRight="2rem"
+                        size={24}
+                        onClickCapture={event => {
+                          event.stopPropagation();
+                          // Get user role
+                          let userRoleInStudio = USER_ROLE.UNLISTED;
+                          if (!user) {
+                            // Not logged in
+                            userRoleInStudio = USER_ROLE.GUEST;
+                          } else {
+                            const userCuratorProfile = studio.curators.find(
+                              curator => curator.user === user.data.id,
+                            );
+                            if (userCuratorProfile) {
+                              userRoleInStudio = userCuratorProfile.role;
+                            }
+                          }
+                          // Capture selected studio
+                          setCurrentStudio({
+                            id: studio._id,
+                            curators: studio.curators,
+                            userRole: userRoleInStudio,
+                          });
+                          setShowUnfollowConfirmation(true);
+                        }}
+                      />
+                    </Tooltip>
                   </Table.Cell>
                 </Table.Row>
               ))}
           </Table.Body>
         </Table>
       )}
+      <StudioUnfollowConfirmation
+        isShown={showUnfollowConfirmation}
+        userRole={currentStudio.userRole}
+        curators={currentStudio.curators}
+        closeCallback={() => setShowUnfollowConfirmation(false)}
+        confirmCallback={() => {
+          setShowUnfollowConfirmation(false);
+          if (currentStudio.id !== 0) {
+            unfollowStudio(currentStudio.id, studios);
+          }
+        }}
+      />
     </Pane>
   );
 }

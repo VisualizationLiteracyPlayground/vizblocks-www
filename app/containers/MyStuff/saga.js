@@ -2,7 +2,7 @@
 /* eslint-disable no-shadow */
 import { put, takeLatest } from 'redux-saga/effects';
 
-import { get, patch } from '../../utils/api';
+import { get, patch, post } from '../../utils/api';
 import { setSuccess } from '../App/actions';
 import {
   DELETE_PROJECT,
@@ -11,6 +11,7 @@ import {
   LOAD_PROJECTS,
   LOAD_BOOKMARKED_PROJECTS,
   LOAD_STUDIOS,
+  UNFOLLOW_STUDIO,
 } from './constants';
 import {
   loadDeletedSuccess,
@@ -26,6 +27,8 @@ import {
   updateDeletedSuccess,
   loadStudiosFailure,
   loadStudiosSuccess,
+  unfollowStudioFailure,
+  updateStudiosSuccess,
 } from './actions';
 
 function* loadProjects({ userid }) {
@@ -187,6 +190,33 @@ function* loadStudios({ userid }) {
   }
 }
 
+function* unfollowStudio({ studioid, studios }) {
+  const [success, response] = yield post(
+    `/studio/remove-curator/${studioid}`,
+    {},
+    response => response.data,
+    e => e.response,
+  );
+  if (success) {
+    const { unfollowed } = response.data;
+    yield put(
+      setSuccess({
+        title: 'Unfollowed studio:',
+        description: unfollowed,
+      }),
+    );
+    // remove studio from state
+    const newStudios = studios.filter(studio => studio._id !== studioid);
+    yield put(updateStudiosSuccess(newStudios));
+  } else {
+    let msg = 'Unable to reach the server, please try again later.';
+    if (response) {
+      msg = response.data.error;
+    }
+    yield put(unfollowStudioFailure(msg));
+  }
+}
+
 // Individual exports for testing
 export default function* myStuffSaga() {
   yield takeLatest(LOAD_PROJECTS, loadProjects);
@@ -195,4 +225,5 @@ export default function* myStuffSaga() {
   yield takeLatest(UNBOOKMARK_PROJECT, unbookmarkProject);
   yield takeLatest(UNDELETE_PROJECT, undeleteProject);
   yield takeLatest(LOAD_STUDIOS, loadStudios);
+  yield takeLatest(UNFOLLOW_STUDIO, unfollowStudio);
 }

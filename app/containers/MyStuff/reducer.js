@@ -20,6 +20,8 @@ import {
   UPDATE_DELETED_SUCCESS,
   LOAD_STUDIOS_FAILURE,
   LOAD_STUDIOS_SUCCESS,
+  UNFOLLOW_STUDIO_FAILURE,
+  UPDATE_STUDIOS_SUCCESS,
 } from './constants';
 
 export const initialState = {
@@ -43,6 +45,7 @@ const myStuffReducer = (state = initialState, action) =>
       case UNBOOKMARK_PROJECT_FAILURE:
       case UNDELETE_PROJECT_FAILURE:
       case LOAD_STUDIOS_FAILURE:
+      case UNFOLLOW_STUDIO_FAILURE:
         draft.error = action.error;
         break;
       case LOAD_PROJECTS_SUCCESS:
@@ -60,6 +63,7 @@ const myStuffReducer = (state = initialState, action) =>
         draft.bookmarkedProjects = action.projects;
         break;
       case LOAD_STUDIOS_SUCCESS:
+      case UPDATE_STUDIOS_SUCCESS:
         draft.error = false;
         draft.studios = action.studios;
         break;

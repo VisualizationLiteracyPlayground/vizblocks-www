@@ -22,6 +22,7 @@ import {
   loadProjects,
   loadBookmarkedProjects,
   loadStudios,
+  unfollowStudio,
   loadProjectsFailure,
 } from './actions';
 import {
@@ -48,6 +49,7 @@ export function MyStuff({
   loadProjects,
   loadBookmarkedProjects,
   loadStudios,
+  unfollowStudio,
 }) {
   useInjectReducer({ key: 'myStuff', reducer });
   useInjectSaga({ key: 'myStuff', saga });
@@ -130,7 +132,9 @@ export function MyStuff({
                     showBookmark={index === 2}
                   />
                 )}
-                {loaded && index === 1 && <StudioListView />}
+                {loaded && index === 1 && (
+                  <StudioListView user={user} unfollowStudio={unfollowStudio} />
+                )}
               </Pane>
             ))}
           </Pane>
@@ -160,6 +164,8 @@ function mapDispatchToProps(dispatch) {
     loadProjects: userid => dispatch(loadProjects(userid)),
     loadBookmarkedProjects: userid => dispatch(loadBookmarkedProjects(userid)),
     loadStudios: userid => dispatch(loadStudios(userid)),
+    unfollowStudio: (studioid, studios) =>
+      dispatch(unfollowStudio(studioid, studios)),
     setError: error => dispatch(loadProjectsFailure(error)),
   };
 }

@@ -25,6 +25,9 @@ import {
   LOAD_STUDIOS,
   LOAD_STUDIOS_FAILURE,
   LOAD_STUDIOS_SUCCESS,
+  UNFOLLOW_STUDIO,
+  UNFOLLOW_STUDIO_FAILURE,
+  UPDATE_STUDIOS_SUCCESS,
 } from './constants';
 
 export function defaultAction() {
@@ -167,6 +170,28 @@ export function loadStudiosFailure(error) {
 export function loadStudiosSuccess(studios) {
   return {
     type: LOAD_STUDIOS_SUCCESS,
+    studios,
+  };
+}
+
+export function unfollowStudio(studioid, studios) {
+  return {
+    type: UNFOLLOW_STUDIO,
+    studioid,
+    studios,
+  };
+}
+
+export function unfollowStudioFailure(error) {
+  return {
+    type: UNFOLLOW_STUDIO_FAILURE,
+    error,
+  };
+}
+
+export function updateStudiosSuccess(studios) {
+  return {
+    type: UPDATE_STUDIOS_SUCCESS,
     studios,
   };
 }
