@@ -224,8 +224,8 @@ function ProjectInfo({
               )}
               <IconButton
                 icon={EditIcon}
-                intent="success"
-                appearance={isEditMode ? 'primary' : 'default'}
+                intent={isEditMode ? 'warning' : 'success'}
+                appearance="primary"
                 onClick={() => {
                   resetProjectInformationFields();
                   setIsEditMode(!isEditMode);
@@ -431,32 +431,56 @@ function ProjectInfo({
               aria-label="Project description"
               marginTop={project.remix ? '1rem' : '2.5rem'}
             >
-              <TextareaField
-                id="instructions"
-                label="Instructions"
-                width="100%"
-                value={projectInstructionField}
-                onChange={e => setProjectInstructionField(e.target.value)}
-                validationMessage={validateProjectInstructions(
-                  projectInstructionField,
-                )}
-                readOnly={!isEditMode}
-              />
-              <TextareaField
-                id="description"
-                label="Description"
-                width="100%"
-                value={projectDescriptionField}
-                onChange={e => setProjectDescriptionField(e.target.value)}
-                validationMessage={validateProjectDescription(
-                  projectDescriptionField,
-                )}
-                readOnly={!isEditMode}
-              />
+              {!isEditMode && (
+                <Pane display="flex" flexDirection="column" marginBottom="1rem">
+                  <Heading size={400}>Instructions</Heading>
+                  <Pane height="6rem" marginTop="0.5rem" overflowY="auto">
+                    <Text>
+                      {projectInstructionField === ''
+                        ? '-'
+                        : projectInstructionField}
+                    </Text>
+                  </Pane>
+                  <Heading size={400} marginTop="1rem">
+                    Description
+                  </Heading>
+                  <Pane height="6rem" marginTop="0.5rem" overflowY="auto">
+                    <Text>
+                      {projectDescriptionField === ''
+                        ? '-'
+                        : projectDescriptionField}
+                    </Text>
+                  </Pane>
+                </Pane>
+              )}
+              {isEditMode && (
+                <Pane display="flex" flexDirection="column">
+                  <TextareaField
+                    id="instructions"
+                    label="Instructions"
+                    width="100%"
+                    value={projectInstructionField}
+                    onChange={e => setProjectInstructionField(e.target.value)}
+                    validationMessage={validateProjectInstructions(
+                      projectInstructionField,
+                    )}
+                  />
+                  <TextareaField
+                    id="description"
+                    label="Description"
+                    width="100%"
+                    value={projectDescriptionField}
+                    onChange={e => setProjectDescriptionField(e.target.value)}
+                    validationMessage={validateProjectDescription(
+                      projectDescriptionField,
+                    )}
+                  />
+                </Pane>
+              )}
               {isEditMode && (
                 <Button
                   iconBefore={ConfirmIcon}
-                  intent="success"
+                  intent="warning"
                   appearance="primary"
                   onClick={() => setShowUpdateConfirmation(true)}
                 >
