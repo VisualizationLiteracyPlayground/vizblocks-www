@@ -18,8 +18,8 @@ function* remixProject({ projectid }) {
     yield put(remixProjectSuccess(response));
     yield put(
       setSuccess({
-        title: 'Remixed project successfully!',
-        description: '',
+        title: `Successfully created a copy of '${response['content-title']}'`,
+        description: 'Added to MyStuff',
         overwriteZIndex: true,
       }),
     );

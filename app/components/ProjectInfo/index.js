@@ -234,17 +234,19 @@ function ProjectInfo({
               />
             </Pane>
           )}
-          {user && !userIsAuthor() && (
-            <Button
-              iconBefore={ForkIcon}
-              intent="success"
-              appearance="primary"
-              onClick={() => redirectToProjectGui(true)}
-              alignSelf="flex-end"
-              marginRight="1rem"
-            >
-              Remix
-            </Button>
+          {user && (
+            <Tooltip content="Create a copy">
+              <Button
+                iconBefore={ForkIcon}
+                intent="success"
+                appearance="primary"
+                onClick={() => redirectToProjectGui(true)}
+                alignSelf="flex-end"
+                marginRight="1rem"
+              >
+                Remix
+              </Button>
+            </Tooltip>
           )}
           <Button
             iconBefore={RefreshIcon}
