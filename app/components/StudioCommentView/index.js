@@ -203,6 +203,7 @@ function StudioCommentView({
       display="flex"
       flexDirection="column-reverse"
       backgroundImage={`url(${CommentsBackground})`}
+      backgroundSize="cover"
       height="54vh"
     >
       <Pane

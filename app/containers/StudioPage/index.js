@@ -225,7 +225,7 @@ export function StudioPage({
         <Pane padding="1.5rem">
           <Pane
             display="flex"
-            height="22vh"
+            height="10rem"
             background="white"
             padding="1rem"
             elevation={1}
