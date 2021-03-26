@@ -52,26 +52,30 @@ export function AboutPage({ user }) {
       <Pane
         aria-label="Header Information"
         display="flex"
-        flexDirection="column"
         alignItems="center"
-        paddingY="1rem"
+        justifyContent="center"
+        paddingTop="1rem"
+        paddingBottom="1.5rem"
         background={ColorPallete.secondaryColor}
       >
-        <img
-          style={{
-            maxWidth: '18vw',
-            height: 'auto',
-          }}
-          src={VizBlocksLogo}
-          alt="Vizblock logo with illustrations for landing page"
-        />
         <Pane
           aria-label="Header description"
           display="flex"
           flexDirection="column"
           width="40vw"
-          marginTop="0.5rem"
+          marginRight="3rem"
+          alignSelf="center"
         >
+          <img
+            style={{
+              width: 'auto',
+              height: '8rem',
+              alignSelf: 'center',
+              marginBottom: '1rem',
+            }}
+            src={VizBlocksLogo}
+            alt="Vizblock logo with illustrations for landing page"
+          />
           <Heading size={400} textAlign="justify">
             VizBlocks is an extension of Scratch built with the purpose to allow
             children to learn data visualization literacy skills creatively
@@ -86,6 +90,22 @@ export function AboutPage({ user }) {
             resources. This in turn, builds a community shared learning!
           </Heading>
         </Pane>
+        <Pane
+          borderStyle="solid"
+          borderColor={ColorPallete.grey}
+          borderWidth="0.3rem"
+          borderRadius="5px"
+        >
+          <iframe
+            width="480"
+            height="270"
+            src="https://www.youtube.com/embed/Oowtin1JjPQ?autoplay=1&loop=1&mute=1&playlist=Oowtin1JjPQ"
+            title="YouTube video player"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        </Pane>
       </Pane>
       <Pane
         aria-label="Bottom Section"
@@ -97,7 +117,7 @@ export function AboutPage({ user }) {
           aria-label="About Cards"
           display="flex"
           width="85vw"
-          marginTop="2rem"
+          marginTop="2.5rem"
         >
           <Pane flex={1} />
           <Card
