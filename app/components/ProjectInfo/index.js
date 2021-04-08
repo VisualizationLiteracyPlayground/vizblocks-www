@@ -14,6 +14,7 @@ import {
   Button,
   CommentIcon,
   ConfirmIcon,
+  CrossIcon,
   Dialog,
   EditIcon,
   EyeOpenIcon,
@@ -213,25 +214,39 @@ function ProjectInfo({
           {userIsAuthor() && (
             <Pane display="flex" alignSelf="flex-end">
               {isEditMode && (
-                <Heading
-                  size={300}
-                  marginRight="1rem"
-                  color="gray"
-                  alignSelf="center"
-                >
-                  Edit mode
-                </Heading>
+                <Pane display="flex">
+                  <Button
+                    iconBefore={ConfirmIcon}
+                    intent="success"
+                    appearance="primary"
+                    onClick={() => setShowUpdateConfirmation(true)}
+                    marginRight="1rem"
+                  >
+                    Update Project
+                  </Button>
+                  <Button
+                    iconBefore={CrossIcon}
+                    intent="warning"
+                    appearance="primary"
+                    onClick={() => {
+                      resetProjectInformationFields();
+                      setIsEditMode(false);
+                    }}
+                    marginRight="1rem"
+                  >
+                    Exit Edit
+                  </Button>
+                </Pane>
               )}
-              <IconButton
-                icon={EditIcon}
-                intent={isEditMode ? 'warning' : 'success'}
-                appearance="primary"
-                onClick={() => {
-                  resetProjectInformationFields();
-                  setIsEditMode(!isEditMode);
-                }}
-                marginRight="1rem"
-              />
+              {!isEditMode && (
+                <IconButton
+                  icon={EditIcon}
+                  intent="success"
+                  appearance="primary"
+                  onClick={() => setIsEditMode(true)}
+                  marginRight="1rem"
+                />
+              )}
             </Pane>
           )}
           {user && (
@@ -243,6 +258,7 @@ function ProjectInfo({
                 onClick={() => redirectToProjectGui(true)}
                 alignSelf="flex-end"
                 marginRight="1rem"
+                disabled={isEditMode}
               >
                 Remix
               </Button>
@@ -254,6 +270,7 @@ function ProjectInfo({
             appearance="primary"
             onClick={() => redirectToProjectGui(false)}
             alignSelf="flex-end"
+            disabled={isEditMode}
           >
             See Inside
           </Button>
@@ -477,16 +494,6 @@ function ProjectInfo({
                   />
                 </Pane>
               )}
-              {isEditMode && (
-                <Button
-                  iconBefore={ConfirmIcon}
-                  intent="warning"
-                  appearance="primary"
-                  onClick={() => setShowUpdateConfirmation(true)}
-                >
-                  Update Project
-                </Button>
-              )}
             </Pane>
             <Pane flexGrow={2} />
             <Pane
@@ -499,6 +506,7 @@ function ProjectInfo({
                 intent="success"
                 appearance="primary"
                 onClick={onClickShare}
+                disabled={isEditMode}
               >
                 Share
               </Button>
