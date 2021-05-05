@@ -44,6 +44,7 @@ import {
   loadStudioFailure,
   updateStudioPermissions,
   updateStudioInformation,
+  updateStudioThumbnail,
   addFollower,
   removeFollower,
 } from './actions';
@@ -63,14 +64,21 @@ import CuratorListView from '../../components/CuratorListView';
 import StudioInformationDialog from '../../components/StudioInformationDialog';
 import StudioPermissionsDialog from '../../components/StudioPermissionsDialog';
 import StudioUnfollowConfirmation from '../../components/StudioUnfollowConfirmation';
+import UploadImage from '../../components/UploadImage';
 import { makeSelectCurrentUser } from '../App/selectors';
 import history from '../../utils/history';
 
 function getStudioHeaderInfo(studio) {
   return studio
     ? `Updated: ${prettyDateFormat(studio.history.modified)} | Curators: 
-      ${studio.curators.length}`
+      ${studio.curatorsCount}`
     : '';
+}
+
+function getStudioThumbnail(studio) {
+  return studio.image
+    ? `data:${studio.image.contentType};base64,${studio.image.data}`
+    : DefaultThumbnail;
 }
 
 export function StudioPage({
@@ -80,6 +88,7 @@ export function StudioPage({
   loadStudio,
   updateStudioPermissions,
   updateStudioInformation,
+  updateStudioThumbnail,
   addFollower,
   removeFollower,
   error,
@@ -102,13 +111,13 @@ export function StudioPage({
   // Dialog States
   const [showPermissions, setShowPermissions] = useState(false);
   const [showInformation, setShowInformation] = useState(false);
+  const [showThumbnailUpload, setShowThumbnailUpload] = useState(false);
   const [showShareURL, setShowShareURL] = useState(false);
   const [showUnfollowConfirmation, setShowUnfollowConfirmation] = useState(
     false,
   );
   // Text area that contains studio share url
   const copyAreaRef = useRef(null);
-  const commentsListRef = useRef(null);
 
   const tabsList = ['Projects', 'Comments', 'Curators'];
 
@@ -121,17 +130,7 @@ export function StudioPage({
     });
   }
 
-  function resetCommentsScroll() {
-    if (commentsListRef) {
-      commentsListRef.current.scrollTop = 0;
-    }
-  }
-
   function switchTab(index) {
-    if (index === 1) {
-      // Comments view
-      resetCommentsScroll();
-    }
     setTabIndex(index);
   }
 
@@ -139,14 +138,15 @@ export function StudioPage({
     if (!user) {
       // Not logged in
       setUserRole(USER_ROLE.GUEST);
-    }
-    const userCuratorProfile = studio.curators.find(
-      curator => curator.user._id === user.data.id,
-    );
-    if (userCuratorProfile) {
-      setUserRole(userCuratorProfile.role);
     } else {
-      setUserRole(USER_ROLE.UNLISTED);
+      const userCuratorProfile = studio.curators.find(
+        curator => curator.user._id === user.data.id,
+      );
+      if (userCuratorProfile) {
+        setUserRole(userCuratorProfile.role);
+      } else {
+        setUserRole(USER_ROLE.UNLISTED);
+      }
     }
   }
 
@@ -202,7 +202,13 @@ export function StudioPage({
   }, [success]);
 
   return isStateful ? (
-    <Pane height="100vh" background={ColorPallete.backgroundColor}>
+    <Pane
+      height="100vh"
+      display="flex"
+      flexDirection="column"
+      overflowY="auto"
+      background={ColorPallete.secondaryColor}
+    >
       <NavigationBar user={user} />
       {!studio && (
         <Pane
@@ -219,7 +225,7 @@ export function StudioPage({
         <Pane padding="1.5rem">
           <Pane
             display="flex"
-            height="22vh"
+            height="10rem"
             background="white"
             padding="1rem"
             elevation={1}
@@ -228,16 +234,21 @@ export function StudioPage({
           >
             <img
               style={{
-                width: 'auto',
+                width: '10rem',
                 height: '8rem',
                 marginLeft: '1rem',
                 marginRight: '3rem',
                 borderStyle: 'solid',
                 borderWidth: '0.2rem',
                 borderColor: ColorPallete.backgroundColor,
+                objectFit: 'cover',
               }}
-              src={DefaultThumbnail}
-              alt="Vizblock default studio thumbnail"
+              src={getStudioThumbnail(studio)}
+              alt={
+                studio.image
+                  ? studio.image.filename
+                  : 'Vizblock default studio thumbnail'
+              }
             />
             <Pane
               flex={1}
@@ -288,6 +299,12 @@ export function StudioPage({
                       >
                         Permissions
                       </Button>
+                      <Button
+                        appearance="minimal"
+                        onClick={() => setShowThumbnailUpload(true)}
+                      >
+                        Thumbnail
+                      </Button>
                     </Pane>
                   }
                   position={Position.LEFT}
@@ -312,11 +329,17 @@ export function StudioPage({
                   disabled={userRole === USER_ROLE.GUEST}
                   appearance="primary"
                   intent={
-                    userRole === USER_ROLE.UNLISTED ? 'success' : 'warning'
+                    userRole === USER_ROLE.UNLISTED ||
+                    userRole === USER_ROLE.GUEST
+                      ? 'success'
+                      : 'warning'
                   }
                   onClick={() => triggerFollowUnfollow()}
                 >
-                  {userRole === USER_ROLE.UNLISTED ? 'Follow' : 'Unfollow'}
+                  {userRole === USER_ROLE.UNLISTED ||
+                  userRole === USER_ROLE.GUEST
+                    ? 'Follow'
+                    : 'Unfollow'}
                 </Button>
               </Pane>
             </Pane>
@@ -371,9 +394,14 @@ export function StudioPage({
                   )}
                   {index === 1 && (
                     <StudioCommentView
+                      memberCommentPermission={
+                        studio.settings.member.commenting
+                      }
                       user={user}
+                      userRole={userRole}
                       studioid={studioid}
-                      commentsListRef={commentsListRef}
+                      currentTabIdx={tabIndex}
+                      setError={setError}
                     />
                   )}
                   {index === 2 && (
@@ -404,6 +432,14 @@ export function StudioPage({
             }
             validationErrorCallback={error => setError(error)}
             setShown={shown => setShowInformation(shown)}
+          />
+          <UploadImage
+            title="Update Studio Thumbnail"
+            isShown={showThumbnailUpload}
+            setShownCallback={shown => setShowThumbnailUpload(shown)}
+            submitCallback={(filename, data, contentType) =>
+              updateStudioThumbnail(studioid, filename, data, contentType)
+            }
           />
           <Dialog
             isShown={showShareURL}
@@ -471,6 +507,8 @@ function mapDispatchToProps(dispatch) {
       dispatch(updateStudioPermissions(studioid, permissions)),
     updateStudioInformation: (studioid, information) =>
       dispatch(updateStudioInformation(studioid, information)),
+    updateStudioThumbnail: (studioid, filename, data, contentType) =>
+      dispatch(updateStudioThumbnail(studioid, filename, data, contentType)),
     addFollower: studioid => dispatch(addFollower(studioid)),
     removeFollower: studioid => dispatch(removeFollower(studioid)),
     setError: error => dispatch(loadStudioFailure(error)),

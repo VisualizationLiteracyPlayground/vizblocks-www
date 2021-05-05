@@ -9,12 +9,13 @@ import React, { memo } from 'react';
 import { Avatar, Heading, Pane, Paragraph, Text } from 'evergreen-ui';
 
 import { dateTimeFormat } from 'utils/dateUtil';
+import { getAvaterImage } from 'utils/util';
 
 import ColorPallete from '../../colorPallete';
 
 function CommentBubble({ user, comment }) {
   // eslint-disable-next-line no-underscore-dangle
-  const isCurrentUser = user.data.id === comment.author._id;
+  const isCurrentUser = user ? user.data.id === comment.author._id : false;
 
   return (
     <Pane>
@@ -24,6 +25,7 @@ function CommentBubble({ user, comment }) {
             <Pane flexGrow={1} />
             <Avatar
               isSolid
+              src={getAvaterImage(comment.author)}
               name={comment.author.username}
               size={32}
               marginRight="1rem"

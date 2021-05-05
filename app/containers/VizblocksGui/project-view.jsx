@@ -26,16 +26,22 @@ class Preview extends React.Component {
       authorId: this.props.authorid ? this.props.authorid : null,
       authorUsername: this.props.user ? this.props.user.data.username : null,
       projectTitle: this.props.title ? this.props.title : '',
+      isPlayerOnly: this.props.isPlayerOnly,
       history: this.props.history,
       location: this.props.location,
+      setSuccess: this.props.setSuccess,
+      setError: this.props.setError,
     };
     bindAll(this, [
       'setProjectId',
+      'setProjectTitle',
+      'canSave',
       'handleClickLogo',
       'handleUpdateProjectData',
       'handleUpdateProjectTitle',
       'loadProjectDetails',
       'handleUpdateProjectId',
+      'handleUpdateProjectThumbnail',
       'handleGreenFlag',
     ]);
   }
@@ -48,70 +54,112 @@ class Preview extends React.Component {
     this.state.projectTitle = newTitle;
   }
 
+  canSave() {
+    return this.state.authorId ? this.state.authorId === this.state.userId : true;
+  }
+
   handleClickLogo () {
-    this.state.history.push('/my-stuff');
+    this.state.history.goBack();
   }
 
   handleUpdateProjectData (projectId, vmState, params) {
     const creatingProject = projectId === null || typeof projectId === 'undefined';
     const queryParams = {};
-    if (params.hasOwnProperty('originalId')) queryParams.original_id = params.originalId;
-    if (params.hasOwnProperty('isCopy')) queryParams.is_copy = params.isCopy;
-    if (params.hasOwnProperty('isRemix')) queryParams.is_remix = params.isRemix;
-    // if (params.hasOwnProperty('title')) queryParams.title = params.title;
     if (!creatingProject && this.state.projectTitle !== '') queryParams.title = this.state.projectTitle;
     let qs = queryString.stringify(queryParams);
     if (qs) qs = `?${qs}`;
-    return new Promise((resolve, reject) => {
-      if (creatingProject) {
-        api.post(
-          `/project${qs}`,
+
+    if (this.canSave()) {
+      return new Promise((resolve, reject) => {
+        if (creatingProject) {
+          api.post(
+            `/project${qs}`,
+            {
+              vmState
+            },
+            response => {
+              this.setProjectId(response.data.id);
+              this.setProjectTitle(response.data["content-title"]);
+              resolve(response.data);
+              this.state.setSuccess('Created project!', '');
+            },
+            e => {
+              reject(e.response);
+              this.state.setError('Failed to create project', '');
+            }
+          );
+        } else {
+          api.put(
+            `/project/${projectId}${qs}`,
+            {
+              vmState
+            },
+            response => {
+              resolve(response.data);
+              this.state.setSuccess('Updated project!', '');
+            },
+            e => {
+              reject(e.response);
+              this.state.setError('Failed to update project', '');
+            }
+          );
+        }
+      });
+    }
+  }
+
+  handleUpdateProjectTitle (title) {
+    // Scratch-gui inits project title to be "Scratch Project"
+    // when creating new project
+    if (this.state.projectId === 0) {
+      // ignore this request
+      return;
+    }
+
+    if (this.canSave()) {
+      if (title.length > 50) {
+        this.state.setError('Failed to Update Title', `Exceeded character limit: ${title.length}/50`);
+        return;
+      }
+      return new Promise((resolve, reject) => {
+        api.put(
+          `/project/title/${this.state.projectId}`,
           {
-            vmState
+            title
           },
           response => {
-            this.setProjectId(response.data.id);
-            this.setProjectTitle(response.data["content-title"]);
+            this.setProjectTitle(title);
+            // Update title in location state
+            this.state.history.replace(
+              this.state.location.pathname,
+              {
+                projectid: this.state.projectId,
+                title,
+              },
+            );
+            resolve(response.data);
+            this.state.setSuccess('Updated Title', `New Title: ${title}`);
+          },
+          e => reject(e.response),
+        );
+      });
+    } 
+  }
+
+  handleUpdateProjectThumbnail (_id, blob) {
+    if (this.canSave()) {
+      return new Promise((resolve, reject) => {
+        api.post(
+          `/asset/internalapi/project/thumbnail/${this.state.projectId}`,
+          blob,
+          response => {
             resolve(response.data);
           },
           e => reject(e.response),
         );
-      } else {
-        api.put(
-          `/project/${projectId}${qs}`,
-          {
-            vmState
-          },
-          response => resolve(response.data),
-          e => reject(e.response),
-        );
-      }
-    });
-  }
-
-  handleUpdateProjectTitle (title) {
-    return new Promise((resolve, reject) => {
-      api.put(
-        `/project/title/${this.state.projectId}`,
-        {
-          title
-        },
-        response => {
-          this.setProjectTitle(title);
-          // Update title in location state
-          this.state.history.replace(
-            this.state.location.pathname,
-            {
-              projectid: this.state.projectId,
-              title,
-            },
-          );
-          resolve(response.data);
-        },
-        e => reject(e.response),
-      );
-    });
-  }
+      });
+    }
+  };
 
   loadProjectDetails (projectId) {
     return new Promise((resolve, reject) => {
@@ -126,14 +174,16 @@ class Preview extends React.Component {
   }
 
   handleUpdateProjectId (projectId, callback) {
-    this.state.projectId = projectId;
-    this.state.history.replace(
-      this.state.location.pathname,
-      {
-        projectid: projectId,
-        title: this.state.projectTitle,
-      },
-    );
+    this.setProjectId(projectId);
+    if (!this.state.isPlayerOnly) {
+      this.state.history.replace(
+        this.state.location.pathname,
+        {
+          projectid: projectId,
+          title: this.state.projectTitle,
+        },
+      );
+    }
     if (callback) callback();
   }
 
@@ -153,6 +203,7 @@ class Preview extends React.Component {
     return (
       <React.Fragment>
         <IntlGUI
+          isPlayerOnly={this.state.isPlayerOnly}
           projectId={this.state.projectId}
           projectHost={process.env.PROJECT_HOST}
           projectTitle={this.state.projectTitle}
@@ -163,12 +214,13 @@ class Preview extends React.Component {
           basePath="/"
           canCreateNew
           canEditTitle
-          canSave={this.state.authorId ? this.state.authorId === this.state.userId : true}
+          canSave={this.canSave()}
           onClickLogo={this.handleClickLogo}
           onGreenFlag={this.handleGreenFlag}
           onUpdateProjectData={this.handleUpdateProjectData}
           onUpdateProjectTitle={this.handleUpdateProjectTitle}
           onUpdateProjectId={this.handleUpdateProjectId}
+          onUpdateProjectThumbnail={this.handleUpdateProjectThumbnail}
         />
       </React.Fragment>
     );

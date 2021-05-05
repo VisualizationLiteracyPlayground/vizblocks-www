@@ -7,91 +7,85 @@
  */
 
 import React, { memo } from 'react';
-import { Avatar, Card, Heading, Pane, Text } from 'evergreen-ui';
+import { Avatar, Card, Heading, Pane, Text, Tooltip } from 'evergreen-ui';
 
 import history from 'utils/history';
+import { getAvaterImage } from 'utils/util';
+import { truncateString } from 'utils/stringUtil';
 import DefaultThumbnail from 'images/default-project-thumbnail.png';
 
 import ColorPallete from '../../colorPallete';
 
-function truncateString(stringValue, maxLength) {
-  let trimmed = stringValue.substring(
-    0,
-    Math.min(maxLength, stringValue.length),
-  );
-  if (stringValue.length > maxLength) {
-    trimmed = trimmed.concat('...');
-  }
-  return trimmed;
+function getProjectThumbnail(project) {
+  return project.image
+    ? `data:${project.image.contentType};base64,${project.image.data}`
+    : DefaultThumbnail;
 }
 
 function ProjectCard({ project, onClickCallback }) {
   return (
-    <Card
-      key={project._id}
-      elevation={2}
-      height="auto"
-      minWidth="10rem"
-      display="flex"
-      flexDirection="column"
-      onClick={() => {
-        if (onClickCallback) {
-          // Custom callback supplied
-          onClickCallback();
-        } else {
-          // Default callback
-          history.push({
-            pathname: `/project-gui`,
-            state: {
-              title: project.title,
-              projectid: project._id,
-              authorid: project.author,
-            },
-          });
-        }
-      }}
-    >
-      <img
-        style={{
-          width: 'auto',
-          height: '8rem',
-          borderBottomStyle: 'solid',
-          borderWidth: '0.2rem',
-          borderColor: ColorPallete.backgroundColor,
+    <Tooltip content={project.title}>
+      <Card
+        key={project._id}
+        elevation={2}
+        height="auto"
+        maxWidth="10rem"
+        display="flex"
+        flexDirection="column"
+        background="white"
+        onClick={() => {
+          if (onClickCallback) {
+            // Custom callback supplied
+            onClickCallback();
+          } else {
+            // Default callback
+            history.push({
+              pathname: `/project-preview`,
+              state: {
+                projectid: project._id,
+              },
+            });
+          }
         }}
-        src={DefaultThumbnail}
-        alt="Vizblock default project thumbnail"
-      />
-      <Pane display="flex" alignItems="center" padding="0.2rem">
-        <Avatar
-          isSolid
-          name={project.author.username}
-          size={24}
-          marginLeft="0.3rem"
-          marginRight="0.5rem"
+      >
+        <img
+          style={{
+            width: '10rem',
+            height: '8rem',
+            borderBottomStyle: 'solid',
+            borderWidth: '0.2rem',
+            borderColor: ColorPallete.backgroundColor,
+            borderTopLeftRadius: '5px',
+            borderTopRightRadius: '5px',
+            objectFit: 'cover',
+          }}
+          src={getProjectThumbnail(project)}
+          alt={
+            project.image
+              ? project.image.filename
+              : 'Vizblock project thumbnail'
+          }
         />
-        <Pane display="flex" flexDirection="column" flexWrap="wrap">
-          <Heading
-            size={400}
-            color={ColorPallete.grey}
-            width="7.5rem"
-            height="20px"
-            overflow="hidden"
-          >
-            {truncateString(project.title, 13)}
-          </Heading>
-          <Text
-            size={300}
-            color={ColorPallete.grey}
-            width="7.5rem"
-            height="16px"
-            overflow="hidden"
-          >
-            {truncateString(project.author.username, 15)}
-          </Text>
+        <Pane display="flex" alignItems="center" padding="0.2rem">
+          <Avatar
+            isSolid
+            src={getAvaterImage(project.author)}
+            name={project.author.username}
+            size={24}
+            marginLeft="0.3rem"
+            marginRight="0.5rem"
+          />
+          <Pane display="flex" flexDirection="column" flexWrap="wrap">
+            <Heading size={400} color={ColorPallete.grey} overflow="hidden">
+              {truncateString(project.title, 13)}
+            </Heading>
+            <Text size={300} color={ColorPallete.grey} overflow="hidden">
+              {truncateString(project.author.username, 16)}
+            </Text>
+          </Pane>
         </Pane>
-      </Pane>
-    </Card>
+      </Card>
+    </Tooltip>
   );
 }
 

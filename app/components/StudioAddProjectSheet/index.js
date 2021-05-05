@@ -29,6 +29,12 @@ import DefaultThumbnail from 'images/default-project-thumbnail.png';
 
 import ColorPallete from '../../colorPallete';
 
+function getProjectThumbnail(project) {
+  return project.image
+    ? `data:${project.image.contentType};base64,${project.image.data}`
+    : DefaultThumbnail;
+}
+
 function StudioAddProjectSheet({
   user,
   isShown,
@@ -66,7 +72,9 @@ function StudioAddProjectSheet({
     }
   }, []);
   useEffect(() => {
-    loadUserProjects(user.data.id, folder.projects);
+    if (user) {
+      loadUserProjects(user.data.id, folder.projects);
+    }
   }, [folder]);
   useEffect(() => {
     setLoaded(true);
@@ -180,8 +188,12 @@ function StudioAddProjectSheet({
                             borderWidth: '0.2rem',
                             borderColor: ColorPallete.backgroundColor,
                           }}
-                          src={DefaultThumbnail}
-                          alt="Vizblock default project thumbnail"
+                          src={getProjectThumbnail(project)}
+                          alt={
+                            project.image
+                              ? project.image.filename
+                              : 'Vizblock project thumbnail'
+                          }
                         />
                         <Pane
                           flex={1}

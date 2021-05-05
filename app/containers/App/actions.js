@@ -10,6 +10,8 @@ import {
   SET_SUCCESS,
   USER_SIGNED_IN,
   USER_SIGNED_OUT,
+  USER_UPDATED_PROFILE_PICTURE,
+  USER_UPDATED_USERNAME,
 } from './constants';
 
 export function setError(error) {
@@ -36,5 +38,19 @@ export function userSignedIn(user) {
 export function userSignedOut() {
   return {
     type: USER_SIGNED_OUT,
+  };
+}
+
+export function userUpdatedProfilePicture(image) {
+  return {
+    type: USER_UPDATED_PROFILE_PICTURE,
+    image,
+  };
+}
+
+export function userUpdatedUsername(username) {
+  return {
+    type: USER_UPDATED_USERNAME,
+    username,
   };
 }

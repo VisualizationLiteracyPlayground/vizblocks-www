@@ -2,24 +2,33 @@
 /* eslint-disable no-shadow */
 import { put, takeLatest } from 'redux-saga/effects';
 
-import { get, patch } from '../../utils/api';
+import { get, patch, post } from '../../utils/api';
 import { setSuccess } from '../App/actions';
 import {
   DELETE_PROJECT,
+  UNBOOKMARK_PROJECT,
   UNDELETE_PROJECT,
   LOAD_PROJECTS,
+  LOAD_BOOKMARKED_PROJECTS,
   LOAD_STUDIOS,
+  UNFOLLOW_STUDIO,
 } from './constants';
 import {
   loadDeletedSuccess,
   loadProjectsFailure,
   loadProjectsSuccess,
+  loadBookmarkedProjectsFailure,
+  loadBookmarkedProjectsSuccess,
   deleteProjectFailure,
+  unbookmarkProjectFailure,
   undeleteProjectFailure,
   updateProjectsSuccess,
+  updateBookmarksSuccess,
   updateDeletedSuccess,
   loadStudiosFailure,
   loadStudiosSuccess,
+  unfollowStudioFailure,
+  updateStudiosSuccess,
 } from './actions';
 
 function* loadProjects({ userid }) {
@@ -51,6 +60,31 @@ function* loadProjects({ userid }) {
   }
 }
 
+function* loadBookmarkedProjects({ userid }) {
+  const [success, response] = yield get(
+    `/user/bookmark-projects/${userid}`,
+    response => response.data,
+    e => e.response,
+  );
+  if (success) {
+    const { bookmarkedProjects } = response.data;
+    const projectDetails = [];
+    // Check each project for deleted flag
+    bookmarkedProjects.forEach(project => {
+      if (!project.deleted) {
+        projectDetails.push(project);
+      }
+    });
+    yield put(loadBookmarkedProjectsSuccess(projectDetails));
+  } else {
+    let msg = 'Unable to reach the server, please try again later.';
+    if (response) {
+      msg = response.data.error;
+    }
+    yield put(loadBookmarkedProjectsFailure(msg));
+  }
+}
+
 function* deleteProject({ projectid, projects, deletedProjects }) {
   const [success, response] = yield patch(
     `/project/remove/${projectid}`,
@@ -76,6 +110,35 @@ function* deleteProject({ projectid, projects, deletedProjects }) {
       msg = response.data.error;
     }
     yield put(deleteProjectFailure(msg));
+  }
+}
+
+function* unbookmarkProject({ projectid, bookmarkedProjects }) {
+  const [success, response] = yield patch(
+    `/project/toggle-bookmark/${projectid}`,
+    {
+      bookmarksProject: false,
+    },
+    response => response.data,
+    e => e.response,
+  );
+  if (success) {
+    const newBookmarkedProjects = bookmarkedProjects.filter(
+      project => project._id !== projectid,
+    );
+    yield put(
+      setSuccess({
+        title: 'Unbookmarked successfully',
+        description: `Project Title: ${response.title}`,
+      }),
+    );
+    yield put(updateBookmarksSuccess(newBookmarkedProjects));
+  } else {
+    let msg = 'Unable to reach the server, please try again later.';
+    if (response) {
+      msg = response.data.error;
+    }
+    yield put(unbookmarkProjectFailure(msg));
   }
 }
 
@@ -127,10 +190,40 @@ function* loadStudios({ userid }) {
   }
 }
 
+function* unfollowStudio({ studioid, studios }) {
+  const [success, response] = yield post(
+    `/studio/remove-curator/${studioid}`,
+    {},
+    response => response.data,
+    e => e.response,
+  );
+  if (success) {
+    const { unfollowed } = response.data;
+    yield put(
+      setSuccess({
+        title: 'Unfollowed studio:',
+        description: unfollowed,
+      }),
+    );
+    // remove studio from state
+    const newStudios = studios.filter(studio => studio._id !== studioid);
+    yield put(updateStudiosSuccess(newStudios));
+  } else {
+    let msg = 'Unable to reach the server, please try again later.';
+    if (response) {
+      msg = response.data.error;
+    }
+    yield put(unfollowStudioFailure(msg));
+  }
+}
+
 // Individual exports for testing
 export default function* myStuffSaga() {
   yield takeLatest(LOAD_PROJECTS, loadProjects);
+  yield takeLatest(LOAD_BOOKMARKED_PROJECTS, loadBookmarkedProjects);
   yield takeLatest(DELETE_PROJECT, deleteProject);
+  yield takeLatest(UNBOOKMARK_PROJECT, unbookmarkProject);
   yield takeLatest(UNDELETE_PROJECT, undeleteProject);
   yield takeLatest(LOAD_STUDIOS, loadStudios);
+  yield takeLatest(UNFOLLOW_STUDIO, unfollowStudio);
 }

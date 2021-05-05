@@ -13,3 +13,6 @@ export const SET_ERROR = 'app/App/SET_ERROR';
 export const SET_SUCCESS = 'app/App/SET_SUCCESS';
 export const USER_SIGNED_IN = 'app/App/USER_SIGNED_IN';
 export const USER_SIGNED_OUT = 'app/App/USER_SIGNED_OUT';
+export const USER_UPDATED_PROFILE_PICTURE =
+  'app/App/USER_UPDATED_PROFILE_PICTURE';
+export const USER_UPDATED_USERNAME = 'app/App/USER_UPDATED_USERNAME';

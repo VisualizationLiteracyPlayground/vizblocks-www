@@ -18,4 +18,21 @@ const makeSelectVizblocksGui = () =>
     substate => substate,
   );
 
-export { makeSelectVizblocksGui, selectVizblocksGuiDomain };
+const makeSelectRemixResponse = () =>
+  createSelector(
+    selectVizblocksGuiDomain,
+    substate => substate.remixResponse,
+  );
+
+const makeSelectError = () =>
+  createSelector(
+    selectVizblocksGuiDomain,
+    substate => substate.error,
+  );
+
+export {
+  makeSelectVizblocksGui,
+  selectVizblocksGuiDomain,
+  makeSelectRemixResponse,
+  makeSelectError,
+};

@@ -18,6 +18,7 @@ import {
   Card,
   Checkbox,
   Heading,
+  Paragraph,
   Strong,
   TextInputField,
   toaster,
@@ -64,7 +65,19 @@ export function RegisterUser({ error, setError, registerUser }) {
   function validateFormFields(field) {
     switch (field) {
       case formFields.USERNAME:
-        return username === '' ? 'Username is required' : null;
+        if (username === '') {
+          return 'Username is required';
+        }
+        if (username.length > 50) {
+          return `${username.length}/50 characters`;
+        }
+        if (username.length < 3) {
+          return 'Username needs to be at least 3 characters';
+        }
+        if (username.toLowerCase().includes('vizblock')) {
+          return 'Website name is reserved and unavailable as username';
+        }
+        return null;
       case formFields.EMAIL:
         if (email === '') {
           return 'Email is required';
@@ -213,6 +226,16 @@ export function RegisterUser({ error, setError, registerUser }) {
             }
             value={retypePassword}
             onChange={e => setRetypePassword(e.target.value)}
+            onKeyPress={event => {
+              if (event.key === 'Enter') {
+                const validation = validateForm();
+                if (validation) {
+                  toaster.danger(validation);
+                } else {
+                  setConfirmationIsShown(true);
+                }
+              }
+            }}
           />
           <Checkbox
             label="Show password"
@@ -229,6 +252,15 @@ export function RegisterUser({ error, setError, registerUser }) {
           >
             Create
           </Button>
+          <Link to="/sign-in" style={{ textDecoration: 'none' }}>
+            <Paragraph
+              color={ColorPallete.accentColor}
+              marginTop="1rem"
+              size={300}
+            >
+              <b>Already have account? Sign in instead</b>
+            </Paragraph>
+          </Link>
         </Card>
         <RegistrationConfirmationDialog
           isShown={confirmationIsShown}

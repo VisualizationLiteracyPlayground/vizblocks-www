@@ -9,16 +9,25 @@ import {
   LOAD_PROJECTS,
   LOAD_PROJECTS_FAILURE,
   LOAD_PROJECTS_SUCCESS,
+  LOAD_BOOKMARKED_PROJECTS,
+  LOAD_BOOKMARKED_PROJECTS_FAILURE,
+  LOAD_BOOKMARKED_PROJECTS_SUCCESS,
   LOAD_DELETED_SUCCESS,
   DELETE_PROJECT,
   DELETE_PROJECT_FAILURE,
   UNDELETE_PROJECT,
   UNDELETE_PROJECT_FAILURE,
+  UNBOOKMARK_PROJECT,
+  UNBOOKMARK_PROJECT_FAILURE,
   UPDATE_PROJECTS_SUCCESS,
+  UPDATE_BOOKMARKS_SUCCESS,
   UPDATE_DELETED_SUCCESS,
   LOAD_STUDIOS,
   LOAD_STUDIOS_FAILURE,
   LOAD_STUDIOS_SUCCESS,
+  UNFOLLOW_STUDIO,
+  UNFOLLOW_STUDIO_FAILURE,
+  UPDATE_STUDIOS_SUCCESS,
 } from './constants';
 
 export function defaultAction() {
@@ -44,6 +53,27 @@ export function loadProjectsFailure(error) {
 export function loadProjectsSuccess(projects) {
   return {
     type: LOAD_PROJECTS_SUCCESS,
+    projects,
+  };
+}
+
+export function loadBookmarkedProjects(userid) {
+  return {
+    type: LOAD_BOOKMARKED_PROJECTS,
+    userid,
+  };
+}
+
+export function loadBookmarkedProjectsFailure(error) {
+  return {
+    type: LOAD_BOOKMARKED_PROJECTS_FAILURE,
+    error,
+  };
+}
+
+export function loadBookmarkedProjectsSuccess(projects) {
+  return {
+    type: LOAD_BOOKMARKED_PROJECTS_SUCCESS,
     projects,
   };
 }
@@ -87,9 +117,31 @@ export function undeleteProjectFailure(error) {
   };
 }
 
+export function unbookmarkProject(projectid, bookmarkedProjects) {
+  return {
+    type: UNBOOKMARK_PROJECT,
+    projectid,
+    bookmarkedProjects,
+  };
+}
+
+export function unbookmarkProjectFailure(error) {
+  return {
+    type: UNBOOKMARK_PROJECT_FAILURE,
+    error,
+  };
+}
+
 export function updateProjectsSuccess(projects) {
   return {
     type: UPDATE_PROJECTS_SUCCESS,
+    projects,
+  };
+}
+
+export function updateBookmarksSuccess(projects) {
+  return {
+    type: UPDATE_BOOKMARKS_SUCCESS,
     projects,
   };
 }
@@ -118,6 +170,28 @@ export function loadStudiosFailure(error) {
 export function loadStudiosSuccess(studios) {
   return {
     type: LOAD_STUDIOS_SUCCESS,
+    studios,
+  };
+}
+
+export function unfollowStudio(studioid, studios) {
+  return {
+    type: UNFOLLOW_STUDIO,
+    studioid,
+    studios,
+  };
+}
+
+export function unfollowStudioFailure(error) {
+  return {
+    type: UNFOLLOW_STUDIO_FAILURE,
+    error,
+  };
+}
+
+export function updateStudiosSuccess(studios) {
+  return {
+    type: UPDATE_STUDIOS_SUCCESS,
     studios,
   };
 }

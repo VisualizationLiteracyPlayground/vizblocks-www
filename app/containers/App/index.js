@@ -20,12 +20,27 @@ import styled from 'styled-components';
 
 import PrivateRoute from 'components/PrivateRoute';
 import HomePage from 'containers/HomePage/Loadable';
+import AboutPage from 'containers/AboutPage/Loadable';
+import LessonPlanPage from 'containers/LessonPlanPage/Loadable';
+import CreditsPage from 'containers/CreditsPage/Loadable';
 import MyStuff from 'containers/MyStuff/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
 import RegisterUser from 'containers/RegisterUser/Loadable';
 import SignInPage from 'containers/SignInPage/Loadable';
 import StudioPage from 'containers/StudioPage/Loadable';
 import VizblocksGui from 'containers/VizblocksGui';
+import EditUserPage from 'containers/EditUserPage/Loadable';
+import UserPage from 'containers/UserPage/Loadable';
+import AccountSetting from 'containers/AccountSetting/Loadable';
+import IdeasPage from 'containers/IdeasPage/Loadable';
+import ExplorePage from 'containers/ExplorePage/Loadable';
+import VideoTutorialPage from 'containers/VideoTutorialPage/Loadable';
+import InteractiveTutorialPage from 'containers/InteractiveTutorialPage/Loadable';
+import ProjectPreview from 'containers/ProjectPreview/Loadable';
+import VlatLandingPage from 'containers/VlatLandingPage/Loadable';
+import VlatCategoryPage from 'containers/VlatCategoryPage/Loadable';
+import VlatQuizPage from 'containers/VlatQuizPage/Loadable';
+import VlatStats from 'containers/VlatStats/Loadable';
 
 import {
   makeSelectCurrentUser,
@@ -63,6 +78,15 @@ export function App({
   const [loaded, setLoaded] = useState(false);
   const storedUser = localStorage.getItem('user');
 
+  // Evergreen-ui toaster has zIndex of 30
+  // Scratch-gui components have custom zIndex up to the 1000 range
+  function overwriteToasterZIndex() {
+    const toasterOverlay = document.getElementsByClassName('css-1sugtjn');
+    if (toasterOverlay[0]) {
+      toasterOverlay[0].style.zIndex = '9000';
+    }
+  }
+
   useEffect(() => {
     if (!user && storedUser) {
       const temp = JSON.parse(storedUser);
@@ -78,6 +102,9 @@ export function App({
       toaster.danger(error.title, {
         description: error.description,
       });
+      if (error.overwriteZIndex) {
+        overwriteToasterZIndex();
+      }
       setError(false);
     }
   }, [error]);
@@ -86,6 +113,9 @@ export function App({
       toaster.success(success.title, {
         description: success.description,
       });
+      if (success.overwriteZIndex) {
+        overwriteToasterZIndex();
+      }
       setSuccess(false);
     }
   }, [success]);
@@ -102,10 +132,41 @@ export function App({
       {loaded && (
         <Switch>
           <Route exact path="/" component={HomePage} />
+          <Route exact path="/about" component={AboutPage} />
+          <Route exact path="/about/lesson-plan" component={LessonPlanPage} />
+          <Route exact path="/about/credits" component={CreditsPage} />
           <PrivateRoute
             path="/my-stuff"
             isAuthenticated={user}
             component={MyStuff}
+          />
+          <Route exact path="/ideas" component={IdeasPage} />
+          <Route exact path="/explore" component={ExplorePage} />
+          <Route
+            exact
+            path="/ideas/video-tutorials"
+            component={VideoTutorialPage}
+          />
+          <Route
+            exact
+            path="/ideas/interactive-tutorials"
+            component={InteractiveTutorialPage}
+          />
+          <Route exact path="/ideas/vlat" component={VlatLandingPage} />
+          <Route
+            exact
+            path="/ideas/vlat/:testType"
+            component={VlatCategoryPage}
+          />
+          <Route
+            exact
+            path="/vlat-quiz/:testType/:visualizationType"
+            component={VlatQuizPage}
+          />
+          <PrivateRoute
+            path="/vlat-stats"
+            isAuthenticated={user}
+            component={VlatStats}
           />
           <Route exact path="/register-user" component={RegisterUser} />
           <Route exact path="/sign-in" component={SignInPage} />
@@ -114,6 +175,30 @@ export function App({
             isAuthenticated={user}
             component={VizblocksGui}
           />
+          <Route exact path="/project-preview" component={ProjectPreview} />
+          <Route
+            exact
+            path="/share-project/:projectid"
+            render={props => (
+              <Redirect
+                to={{
+                  pathname: '/project-preview',
+                  state: { projectid: props.match.params.projectid },
+                }}
+              />
+            )}
+          />
+          <PrivateRoute
+            path="/edit-profile"
+            isAuthenticated={user}
+            component={EditUserPage}
+          />
+          <PrivateRoute
+            path="/account-settings"
+            isAuthenticated={user}
+            component={AccountSetting}
+          />
+          <Route exact path="/user-profile/:profileid" component={UserPage} />
           <Route exact path="/studio" component={StudioPage} />
           <Route
             exact

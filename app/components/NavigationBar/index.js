@@ -12,6 +12,7 @@ import { compose } from 'redux';
 import {
   Avatar,
   Button,
+  ChartIcon,
   ChevronDownIcon,
   HandIcon,
   LogInIcon,
@@ -20,7 +21,6 @@ import {
   Popover,
   SettingsIcon,
   Strong,
-  Tooltip,
   UserIcon,
 } from 'evergreen-ui';
 import { Link } from 'react-router-dom';
@@ -30,6 +30,7 @@ import LogoWord from '../LogoWord';
 import LogoutConfirmation from '../LogoutConfirmation';
 import { userSignedOut } from '../../containers/App/actions';
 import history from '../../utils/history';
+import { getAvaterImage } from '../../utils/util';
 
 function NavigationBar({ user, userSignedOut }) {
   const [displayLogout, setDisplayLogout] = useState(false);
@@ -44,10 +45,22 @@ function NavigationBar({ user, userSignedOut }) {
     history.push('/');
   }
 
+  function redirectToProfile(userid) {
+    history.push(`/user-profile/${userid}`);
+  }
+
+  function redirectToAccountSettings() {
+    history.push('/account-settings');
+  }
+
+  function redirectToVlatStats() {
+    history.push('/vlat-stats');
+  }
+
   return (
     <Pane
       background={ColorPallete.primaryColor}
-      height="3.5rem"
+      height="7vh"
       display="flex"
       alignItems="center"
       border="default"
@@ -56,27 +69,21 @@ function NavigationBar({ user, userSignedOut }) {
         <Link to="/">
           <LogoWord />
         </Link>
-        {/* <Link to="/" style={{ textDecoration: 'none' }}> */}
-        <Tooltip content="Coming soon">
+        <Link to="/ideas" style={{ textDecoration: 'none' }}>
           <Strong color="white" marginLeft="2rem" size={500}>
             <b>Ideas</b>
           </Strong>
-        </Tooltip>
-        {/* </Link> */}
-        {/* <Link to="/" style={{ textDecoration: 'none' }}> */}
-        <Tooltip content="Coming soon">
+        </Link>
+        <Link to="/about" style={{ textDecoration: 'none' }}>
           <Strong color="white" marginLeft="3rem" size={500}>
             <b>About</b>
           </Strong>
-        </Tooltip>
-        {/* </Link> */}
-        {/* <Link to="/" style={{ textDecoration: 'none' }}> */}
-        <Tooltip content="Coming soon">
+        </Link>
+        <Link to="/explore" style={{ textDecoration: 'none' }}>
           <Strong color="white" marginLeft="3rem" size={500}>
             <b>Explore</b>
           </Strong>
-        </Tooltip>
-        {/* </Link> */}
+        </Link>
         {user && (
           <Link to="/my-stuff" style={{ textDecoration: 'none' }}>
             <Strong color="white" marginLeft="3rem" size={500}>
@@ -125,19 +132,26 @@ function NavigationBar({ user, userSignedOut }) {
                 <Button
                   iconBefore={UserIcon}
                   appearance="minimal"
-                  onClick={() => {}}
-                  disabled
+                  onClick={() => redirectToProfile(user.data.id)}
                 >
                   Profile
                 </Button>
                 <Button
                   iconBefore={SettingsIcon}
                   appearance="minimal"
-                  onClick={() => {}}
-                  disabled
+                  onClick={() => redirectToAccountSettings()}
                 >
                   Account Setting
                 </Button>
+                {user.data.isAdmin && (
+                  <Button
+                    iconBefore={ChartIcon}
+                    appearance="minimal"
+                    onClick={() => redirectToVlatStats()}
+                  >
+                    VLAT Stats
+                  </Button>
+                )}
                 <Button
                   iconBefore={LogOutIcon}
                   appearance="minimal"
@@ -151,7 +165,12 @@ function NavigationBar({ user, userSignedOut }) {
             }
           >
             <Pane display="flex" alignItems="center">
-              <Avatar isSolid name={user.data.username} size={32} />
+              <Avatar
+                isSolid
+                src={getAvaterImage(user.data)}
+                name={user.data.username}
+                size={32}
+              />
               <Strong
                 color="white"
                 marginLeft="1rem"
